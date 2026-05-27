@@ -1081,3 +1081,33 @@ button { font: inherit; cursor: pointer; background: none; border: none; color: 
   .chip-grid { grid-template-columns: 1fr; }
   .cta-strip { padding: 40px 24px; }
 }
+
+/* ============================================================
+   FIX FINAL: respiro lateral em mobile (defesa em profundidade).
+   No fim do arquivo pra vencer cascata. !important pra escapar de
+   qualquer regra mais especifica que tente zerar o padding.
+   ============================================================ */
+@media (max-width: 768px) {
+  .container,
+  header .container,
+  nav .container,
+  .site-header .container,
+  .site-header > .container,
+  section .container,
+  footer .container,
+  main .container {
+    padding-left: 20px !important;
+    padding-right: 20px !important;
+    box-sizing: border-box !important;
+    max-width: 100% !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .container,
+  header .container,
+  .site-header .container {
+    padding-left: 18px !important;
+    padding-right: 18px !important;
+  }
+}
