@@ -95,4 +95,34 @@
       numbers.forEach(animateCounter);
     }
   }
+
+  // ========== Filtros Ciencia ==========
+  var filterGroups = document.querySelectorAll('.filter-chips');
+  var paperCards = document.querySelectorAll('.paper-card');
+  var papersEmpty = document.querySelector('.papers-empty');
+  if (filterGroups.length && paperCards.length) {
+    var filterState = { area: 'all', type: 'all' };
+    function applyFilters() {
+      var visible = 0;
+      paperCards.forEach(function (card) {
+        var matchArea = filterState.area === 'all' || card.dataset.area === filterState.area;
+        var matchType = filterState.type === 'all' || card.dataset.type === filterState.type;
+        var show = matchArea && matchType;
+        card.hidden = !show;
+        if (show) visible++;
+      });
+      if (papersEmpty) papersEmpty.hidden = visible > 0;
+    }
+    filterGroups.forEach(function (group) {
+      var filterName = group.dataset.filter;
+      group.querySelectorAll('.filter-chip').forEach(function (chip) {
+        chip.addEventListener('click', function () {
+          group.querySelectorAll('.filter-chip').forEach(function (c) { c.classList.remove('is-active'); });
+          chip.classList.add('is-active');
+          filterState[filterName] = chip.dataset.value;
+          applyFilters();
+        });
+      });
+    });
+  }
 })();
