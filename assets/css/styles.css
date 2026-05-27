@@ -219,11 +219,35 @@ button { font: inherit; cursor: pointer; background: none; border: none; color: 
   justify-content: center;
   align-items: center;
 }
-.molecular-svg {
+.receptor-svg {
   width: 100%;
   max-width: 540px;
   height: auto;
   filter: drop-shadow(0 0 32px rgba(95, 200, 155, 0.10));
+  overflow: visible;
+}
+/* Molecula desliza em direcao ao receptor (loop devagar) */
+@keyframes cannabinoid-bind {
+  0%, 100% { transform: translateX(0); }
+  50%      { transform: translateX(22px); }
+}
+.cannabinoid {
+  transform-origin: center;
+  animation: cannabinoid-bind 6s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+/* Binding sites pulsando */
+@keyframes binding-pulse {
+  0%, 100% { opacity: 0.35; transform: scale(1); }
+  50%      { opacity: 1;    transform: scale(1.25); }
+}
+.binding-site {
+  transform-origin: center;
+  transform-box: fill-box;
+  animation: binding-pulse 3.6s ease-in-out infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .cannabinoid  { animation: none; }
+  .binding-site { animation: none; opacity: 0.75; }
 }
 @media (max-width: 900px) {
   .hero-grid { grid-template-columns: 1fr; gap: 32px; min-height: auto; padding: 64px 0; }
@@ -498,7 +522,8 @@ button { font: inherit; cursor: pointer; background: none; border: none; color: 
 /* ---------- Team preview (home) ---------- */
 
 .team-preview { padding: 96px 0; }
-.team-preview-eyebrow {
+/* Scoped: nao colide com .section-eyebrow global das outras secoes */
+.team-preview .section-eyebrow {
   display: block;
   color: var(--brand-green);
   font-size: 13px;
@@ -507,7 +532,7 @@ button { font: inherit; cursor: pointer; background: none; border: none; color: 
   text-transform: uppercase;
   margin-bottom: 16px;
 }
-.team-preview-title {
+.team-preview .section-title {
   font-size: clamp(28px, 3vw, 40px);
   font-weight: 700;
   margin-bottom: 56px;
