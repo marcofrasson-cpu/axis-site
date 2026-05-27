@@ -221,17 +221,9 @@ button { font: inherit; cursor: pointer; background: none; border: none; color: 
 }
 .molecular-svg {
   width: 100%;
-  max-width: 480px;
+  max-width: 540px;
   height: auto;
-  filter: drop-shadow(0 0 24px rgba(95, 200, 155, 0.08));
-}
-@keyframes node-pulse {
-  0%, 100% { opacity: 1; r: 8; }
-  50%      { opacity: 0.6; r: 11; }
-}
-.node-pulse {
-  transform-origin: center;
-  animation: node-pulse 3s ease-in-out infinite;
+  filter: drop-shadow(0 0 32px rgba(95, 200, 155, 0.10));
 }
 @media (max-width: 900px) {
   .hero-grid { grid-template-columns: 1fr; gap: 32px; min-height: auto; padding: 64px 0; }
@@ -502,6 +494,33 @@ button { font: inherit; cursor: pointer; background: none; border: none; color: 
 .member-role { font-size: 13.5px; color: var(--brand-green); margin-bottom: 4px; }
 .member-crm { font-size: 12px; color: var(--text-subtle); margin-bottom: 12px; letter-spacing: 0.02em; }
 .member-bio { font-size: 13.5px; color: var(--text-muted); line-height: 1.6; }
+
+/* ---------- Team preview (home) ---------- */
+
+.team-preview { padding: 96px 0; }
+.team-preview-eyebrow {
+  display: block;
+  color: var(--brand-green);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  margin-bottom: 16px;
+}
+.team-preview-title {
+  font-size: clamp(28px, 3vw, 40px);
+  font-weight: 700;
+  margin-bottom: 56px;
+  color: var(--text-primary);
+  max-width: 720px;
+  line-height: 1.2;
+  letter-spacing: -0.015em;
+}
+.team-preview-cta {
+  display: flex;
+  justify-content: center;
+  margin-top: 48px;
+}
 
 /* ---------- Equipe (team cards padronizados) ---------- */
 

@@ -68,30 +68,55 @@
       </div>
     </div>
     <div class="hero-visual" aria-hidden="true">
-      <svg viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg" class="molecular-svg">
-        <g stroke="rgba(95, 200, 155, 0.25)" stroke-width="1" fill="none">
-          <line x1="200" y1="100" x2="120" y2="180"/>
-          <line x1="200" y1="100" x2="280" y2="180"/>
-          <line x1="200" y1="100" x2="200" y2="220"/>
-          <line x1="120" y1="180" x2="80"  y2="290"/>
-          <line x1="120" y1="180" x2="200" y2="220"/>
-          <line x1="280" y1="180" x2="320" y2="290"/>
-          <line x1="280" y1="180" x2="200" y2="220"/>
-          <line x1="200" y1="220" x2="200" y2="320"/>
-          <line x1="80"  y1="290" x2="200" y2="320"/>
-          <line x1="320" y1="290" x2="200" y2="320"/>
+      <svg viewBox="0 0 480 320" xmlns="http://www.w3.org/2000/svg" class="molecular-svg">
+        <!-- Anel aromático 1 (esquerda) -->
+        <g stroke="#5fc89b" stroke-width="2" fill="none" stroke-linejoin="round">
+          <polygon points="100,160 140,140 180,160 180,200 140,220 100,200"/>
+          <line x1="108" y1="160" x2="108" y2="200" stroke-width="1.5" opacity="0.55"/>
         </g>
+        <!-- Anel aromático 2 (centro) -->
+        <g stroke="#5fc89b" stroke-width="2" fill="none" stroke-linejoin="round">
+          <polygon points="220,160 260,140 300,160 300,200 260,220 220,200"/>
+          <line x1="228" y1="160" x2="228" y2="200" stroke-width="1.5" opacity="0.55"/>
+        </g>
+        <!-- Ligação entre os dois anéis -->
+        <line x1="180" y1="180" x2="220" y2="180" stroke="#5fc89b" stroke-width="2"/>
+        <!-- Cadeia lateral (pentilo) -->
+        <g stroke="#5fc89b" stroke-width="2" fill="none" stroke-linecap="round" opacity="0.85">
+          <line x1="300" y1="180" x2="330" y2="165"/>
+          <line x1="330" y1="165" x2="360" y2="180"/>
+          <line x1="360" y1="180" x2="390" y2="165"/>
+          <line x1="390" y1="165" x2="420" y2="180"/>
+        </g>
+        <!-- Grupos OH (hidroxilas) -->
+        <g>
+          <line x1="100" y1="160" x2="70" y2="145" stroke="#5fc89b" stroke-width="2" stroke-linecap="round"/>
+          <text x="58" y="142" font-family="-apple-system, Inter, sans-serif" font-size="14" font-weight="600" fill="#5fc89b">OH</text>
+          <line x1="100" y1="200" x2="70" y2="215" stroke="#5fc89b" stroke-width="2" stroke-linecap="round"/>
+          <text x="50" y="226" font-family="-apple-system, Inter, sans-serif" font-size="14" font-weight="600" fill="#5fc89b">HO</text>
+        </g>
+        <!-- Átomos nos vértices -->
         <g fill="#5fc89b">
-          <circle cx="200" cy="100" r="8" class="node-pulse"/>
-          <circle cx="200" cy="220" r="10" class="node-pulse" style="animation-delay: 0.6s"/>
-          <circle cx="200" cy="320" r="8" class="node-pulse" style="animation-delay: 1.2s"/>
+          <circle cx="100" cy="160" r="3.5"/>
+          <circle cx="100" cy="200" r="3.5"/>
+          <circle cx="140" cy="140" r="3"/>
+          <circle cx="140" cy="220" r="3"/>
+          <circle cx="180" cy="160" r="3"/>
+          <circle cx="180" cy="200" r="3"/>
+          <circle cx="220" cy="160" r="3"/>
+          <circle cx="220" cy="200" r="3"/>
+          <circle cx="260" cy="140" r="3"/>
+          <circle cx="260" cy="220" r="3"/>
+          <circle cx="300" cy="160" r="3"/>
+          <circle cx="300" cy="200" r="3"/>
         </g>
-        <g fill="rgba(95, 200, 155, 0.55)">
-          <circle cx="120" cy="180" r="6"/>
-          <circle cx="280" cy="180" r="6"/>
-          <circle cx="80"  cy="290" r="5"/>
-          <circle cx="320" cy="290" r="5"/>
-        </g>
+        <!-- Marca discreta -->
+        <text x="240" y="290" text-anchor="middle"
+              fill="#5fc89b" opacity="0.55"
+              font-family="-apple-system, Inter, sans-serif"
+              font-size="11" letter-spacing="0.35em" font-weight="500">
+          CANABIDIOL · C₂₁H₃₀O₂
+        </text>
       </svg>
     </div>
   </div>
@@ -187,39 +212,46 @@
 </section>
 
 <!-- Equipe preview -->
-<section class="section reveal">
+<section class="team-preview reveal" aria-labelledby="team-preview-title">
   <div class="container">
-    <div class="section-heading">
-      <span class="section-eyebrow">Equipe</span>
-      <h2>Médicos especialistas em medicina endocanabinoide</h2>
+    <span class="team-preview-eyebrow">Equipe</span>
+    <h2 id="team-preview-title" class="team-preview-title">Médicos especialistas em medicina endocanabinoide</h2>
+
+    <div class="team-row team-row-medicos">
+      <article class="team-card">
+        <img class="team-photo" src="assets/img/equipe/marco.jpg" alt="Dr. Marco Aurélio Frasson">
+        <div class="team-info">
+          <h3>Dr. Marco Aurélio Frasson</h3>
+          <p class="team-specialty">Ortopedista e Traumatologista</p>
+          <p class="team-crm">CRM 47986</p>
+          <p class="team-bio">Ortopedista e traumatologista pelo Hospital Universitário Cajuru, com certificação internacional WeCannAcademy. Coordena a prática clínica da Axis, focada em dor crônica musculoesquelética.</p>
+        </div>
+      </article>
+
+      <article class="team-card">
+        <div class="team-photo team-photo-placeholder">FOTO</div>
+        <div class="team-info">
+          <h3>Dr. Gustavo Amaral</h3>
+          <p class="team-specialty">Ortopedista e Traumatologista</p>
+          <p class="team-crm">CRM a preencher</p>
+          <p class="team-bio">Ortopedista pela UFPR, fellow em cirurgia da coluna, com certificação WeCannAcademy. Atua em avaliação clínica, prescrição responsável e coordenação clínica da Axis.</p>
+        </div>
+      </article>
+
+      <article class="team-card">
+        <div class="team-photo team-photo-placeholder">FOTO</div>
+        <div class="team-info">
+          <h3>Dr. Leandro Daniel Bortoluzzi</h3>
+          <p class="team-specialty">Médico Cirurgião Geral</p>
+          <p class="team-crm">CRM a preencher</p>
+          <p class="team-bio">Cirurgião geral formado pelo Hospital do Rocio, com certificação WeCannAcademy. Foco em dor crônica musculoesquelética e indicações para cannabis medicinal.</p>
+        </div>
+      </article>
     </div>
-    <div class="grid-3">
-      <div class="member-card">
-        <div class="member-photo">Foto</div>
-        <div class="member-body">
-          <div class="member-name">Dr. Marco Aurélio Frasson</div>
-          <div class="member-role">Ortopedista e Traumatologista</div>
-          <div class="member-crm">CRM 47986</div>
-        </div>
-      </div>
-      <div class="member-card">
-        <div class="member-photo">Foto</div>
-        <div class="member-body">
-          <div class="member-name">Dr. Gustavo Amaral</div>
-          <div class="member-role">Ortopedista e Traumatologista</div>
-          <div class="member-crm">CRM a preencher</div>
-        </div>
-      </div>
-      <div class="member-card">
-        <div class="member-photo">Foto</div>
-        <div class="member-body">
-          <div class="member-name">Dr. Leandro Daniel Bortoluzzi</div>
-          <div class="member-role">Especialidade a preencher</div>
-          <div class="member-crm">CRM a preencher</div>
-        </div>
-      </div>
+
+    <div class="team-preview-cta">
+      <a href="equipe.html" class="btn btn-ghost">Conhecer a equipe completa</a>
     </div>
-    <p style="text-align:center;margin-top:32px;"><a class="btn btn-ghost" href="equipe.html">Conhecer a equipe completa</a></p>
   </div>
 </section>
 
