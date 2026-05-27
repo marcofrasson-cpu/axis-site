@@ -305,6 +305,68 @@ button { font: inherit; cursor: pointer; background: none; border: none; color: 
 .member-crm { font-size: 12px; color: var(--text-subtle); margin-bottom: 12px; letter-spacing: 0.02em; }
 .member-bio { font-size: 13.5px; color: var(--text-muted); line-height: 1.6; }
 
+/* ---------- Equipe (team cards padronizados) ---------- */
+
+.team-section { padding: var(--space-section) 0; }
+
+.team-row-medicos {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
+
+.team-row-consultor {
+  display: flex;
+  justify-content: center;
+  margin-top: 32px;
+}
+.team-row-consultor .team-card {
+  width: calc((100% - 48px) / 3);  /* mesma largura de 1 card da linha de cima */
+}
+
+.team-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-hairline);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.team-photo {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+  object-position: center 25%;  /* prioriza rosto */
+  display: block;
+}
+
+.team-photo-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #1f3149 0%, #14253a 100%);
+  color: var(--text-subtle);
+  font-size: 14px;
+  letter-spacing: 0.1em;
+}
+
+.team-info { padding: 22px 24px 24px; }
+.team-info h3 {
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  margin-bottom: 4px;
+}
+.team-specialty { font-size: 13.5px; color: var(--brand-green); margin-bottom: 4px; }
+.team-crm { font-size: 12px; color: var(--text-subtle); margin-bottom: 12px; letter-spacing: 0.02em; }
+.team-bio { font-size: 13.5px; color: var(--text-muted); line-height: 1.6; }
+
+@media (max-width: 900px) {
+  .team-row-medicos { grid-template-columns: 1fr; gap: 20px; }
+  .team-row-consultor .team-card { width: 100%; }
+}
+
 /* ---------- Tag chips ---------- */
 
 .chip-grid {
