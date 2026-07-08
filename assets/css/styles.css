@@ -21,6 +21,18 @@
   --max-width: 1180px;
   --space-section: 96px;
   --header-h: 64px;
+  /* Superficies tonais — deltas sub-10/canal: leem como profundidade, nao cor */
+  --ground-deep: #0a1522;
+  --ground-raised: #101f31;
+  --ground-deepest: #08111c;
+  /* Motion — uma curva "settle" (clinica, sem overshoot) + unidades compartilhadas */
+  --ease-settle: cubic-bezier(0.22, 1, 0.36, 1);
+  --reveal-dist: 20px;
+  --reveal-dur: 640ms;
+  --stagger: 90ms;
+  /* Registro tipografico intermediario (faltava) */
+  --fs-lead: clamp(17px, 1.5vw, 20px);
+  --lead-color: #c6d2df;
 }
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -1594,3 +1606,267 @@ button { font: inherit; cursor: pointer; background: none; border: none; color: 
 }
 /* Marca do hero anima SEMPRE — a pedido, independente de prefers-reduced-motion.
    (as demais animacoes do site continuam respeitando a preferencia) */
+
+/* ============================================================
+   VIDA & RITMO — superficies tonais, kicker numerado, ribbon de
+   stats, motion escalonado, auras/costuras, timeline. Tudo em
+   pseudo-elemento / camada absoluta / transform: NAO mexe no fluxo
+   vertical (o espacamento 96/56 fica intacto).
+   ============================================================ */
+
+/* ---- 1. Superficies tonais (profundidade, nao cor) ---- */
+.ground-raised { background: var(--ground-raised); }
+.ground-deep { background: var(--ground-deep); }
+.site-footer { background: var(--ground-deepest); }
+/* Servicos: painel "prensado" — labio claro em cima, sombra embaixo */
+.section.ground-deep {
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05), inset 0 -1px 0 rgba(0, 0, 0, 0.30);
+}
+
+/* ---- 2. Aura verde (uma receita: radial <= .10, ancorada, clipada) ---- */
+.aura { position: relative; overflow: hidden; }
+.aura > .container { position: relative; z-index: 1; }
+.aura::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+.aura-top::before { background: radial-gradient(58% 120% at 50% 0%, rgba(95, 200, 155, 0.10), transparent 60%); }
+.aura-floor::before { background: radial-gradient(70% 80% at 50% 100%, rgba(95, 200, 155, 0.07), transparent 62%); }
+
+/* Costura de banda: hairline + no verde centrado no topo da secao */
+.seam-top { position: relative; }
+.seam-top::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 5px;
+  z-index: 2;
+  pointer-events: none;
+  background:
+    radial-gradient(3px 3px at 50% 0.5px, var(--brand-green), transparent 70%),
+    linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.09) 20%, rgba(255, 255, 255, 0.09) 80%, transparent) top / 100% 1px no-repeat;
+}
+
+/* Lattice molecular esparso — SO no trough dos diferenciais */
+.lattice { position: relative; overflow: hidden; }
+.lattice > .container { position: relative; z-index: 1; }
+.lattice::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background-image:
+    radial-gradient(rgba(95, 200, 155, 0.05) 1.4px, transparent 1.5px),
+    radial-gradient(rgba(95, 200, 155, 0.05) 1.4px, transparent 1.5px);
+  background-size: 44px 44px, 44px 44px;
+  background-position: 0 0, 22px 22px;
+  -webkit-mask-image: radial-gradient(78% 70% at 50% 42%, #000 38%, transparent 100%);
+  mask-image: radial-gradient(78% 70% at 50% 42%, #000 38%, transparent 100%);
+}
+
+/* Indicacoes ja tem ::before proprio — so aquece e re-ancora + guarda z-index */
+.indications-preview { overflow: hidden; }
+.indications-preview > .container { position: relative; z-index: 1; }
+.indications-preview::before {
+  background: radial-gradient(48% 55% at 55% 30%, rgba(95, 200, 155, 0.08), transparent 62%);
+}
+
+/* ---- 3. Kicker numerado (espinha 01->06; verde sai do eyebrow) ---- */
+main { counter-reset: sect; }
+.kicker {
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+  margin-bottom: 22px;
+}
+.kicker--center { justify-content: center; }
+.kicker::before {
+  counter-increment: sect;
+  content: counter(sect, decimal-leading-zero);
+  color: var(--brand-green);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  font-variant-numeric: tabular-nums;
+}
+.kicker__rule {
+  align-self: center;
+  flex: 0 0 auto;
+  width: 28px;
+  height: 1px;
+  background: linear-gradient(90deg, var(--brand-green), transparent);
+}
+.kicker__label {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+/* enfase de uma palavra no titulo (verde, sem italico) */
+.hl { color: var(--brand-green); }
+/* registro "lead" que faltava */
+.lead {
+  font-size: var(--fs-lead);
+  font-weight: 400;
+  line-height: 1.65;
+  color: var(--lead-color);
+  max-width: 62ch;
+}
+
+/* ---- 4. Stats vira "data ribbon" (sem caixas, dividido, numero clinico) ---- */
+.stats .stats-grid { gap: 0; }
+.stats .stat-card {
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  padding: 6px 36px;
+  overflow: visible;
+}
+.stats .stat-card:first-child { padding-left: 0; }
+.stats .stat-card:hover { transform: none; border-color: transparent; }
+.stats .stat-card + .stat-card { border-left: 1px solid var(--border-hairline); }
+.stats .stat-card--dark { background: transparent; }
+.stats .stat-card--mid { background: transparent; }
+.stats .stat-card--accent { background: transparent; }
+/* aura verde so atras da coluna do +100 */
+.stats .stat-card--accent { position: relative; }
+.stats .stat-card--accent::after {
+  content: "";
+  position: absolute;
+  inset: -20% -10% -20% -10%;
+  z-index: -1;
+  background: radial-gradient(60% 60% at 50% 45%, rgba(95, 200, 155, 0.10), transparent 70%);
+  pointer-events: none;
+}
+.stats .stat-number {
+  font-weight: 700;            /* era 800 — Inter so tem ate 700 (evita faux-bold borrado) */
+  color: var(--brand-cream);
+  letter-spacing: -0.03em;
+  margin-bottom: 0;
+}
+.stats .stat-card--dark .stat-number { color: var(--brand-cream); }
+.stats .stat-label {
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px solid var(--border-hairline);
+}
+@media (max-width: 768px) {
+  .stats .stat-card { padding: 22px 0; }
+  .stats .stat-card:first-child { padding-top: 0; }
+  .stats .stat-card + .stat-card { border-left: none; border-top: 1px solid var(--border-hairline); }
+}
+
+/* ---- 5. Motion escalonado — grids MONTAM em vez de aparecer ---- */
+/* .reveal-stagger neutraliza o fade de bloco; os filhos entram em cascata */
+.reveal-stagger { opacity: 1 !important; transform: none !important; transition: none !important; }
+.reveal-stagger .stat-card,
+.reveal-stagger .card,
+.reveal-stagger [class*="-card"] {
+  opacity: 0;
+  transform: translateY(var(--reveal-dist));
+  transition: opacity var(--reveal-dur) var(--ease-settle), transform var(--reveal-dur) var(--ease-settle);
+}
+.reveal-stagger.is-visible .stat-card,
+.reveal-stagger.is-visible .card,
+.reveal-stagger.is-visible [class*="-card"] { opacity: 1; transform: none; }
+.reveal-stagger .stat-card:nth-child(1), .reveal-stagger .card:nth-child(1), .reveal-stagger [class*="-card"]:nth-child(1) { transition-delay: 0s; }
+.reveal-stagger .stat-card:nth-child(2), .reveal-stagger .card:nth-child(2), .reveal-stagger [class*="-card"]:nth-child(2) { transition-delay: 0.09s; }
+.reveal-stagger .stat-card:nth-child(3), .reveal-stagger .card:nth-child(3), .reveal-stagger [class*="-card"]:nth-child(3) { transition-delay: 0.18s; }
+.reveal-stagger .card:nth-child(4), .reveal-stagger [class*="-card"]:nth-child(4) { transition-delay: 0.27s; }
+.reveal-stagger [class*="-card"]:nth-child(5) { transition-delay: 0.36s; }
+.reveal-stagger [class*="-card"]:nth-child(6) { transition-delay: 0.45s; }
+/* Diferenciais: deslizam da ESQUERDA + o icone se desenha (DNA da logo) */
+.differentials.reveal-stagger .differential-card { transform: translateX(-16px); }
+.differentials.reveal-stagger.is-visible .differential-card { transform: none; }
+.differential-icon svg path { stroke-dasharray: 300; stroke-dashoffset: 300; }
+.differentials.reveal-stagger.is-visible .differential-icon svg path {
+  animation: markDraw 0.9s var(--ease-settle) forwards;
+  animation-delay: 0.5s;
+}
+
+/* ---- 6. Como funciona: timeline numerada (unica secao que E sequencia) ---- */
+.steps-timeline { position: relative; }
+.steps-timeline::before {
+  content: "";
+  position: absolute;
+  top: 32px;
+  left: 8%;
+  right: 8%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(95, 200, 155, 0.35) 12%, rgba(95, 200, 155, 0.35) 88%, transparent);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 1s var(--ease-settle) 0.15s;
+  z-index: 0;
+}
+.reveal.is-visible .steps-timeline::before { transform: scaleX(1); }
+.steps-timeline { counter-reset: step; }
+.steps-timeline .card-step {
+  background: transparent;
+  border: none;
+  padding: 0 12px;
+  text-align: left;
+  position: relative;
+  z-index: 1;
+}
+.steps-timeline .card-step:hover { transform: none; background: transparent; }
+.steps-timeline .step-icon {
+  position: relative;
+  background: var(--brand-navy);
+  border: 1px solid var(--border-hairline);
+  width: 64px;
+  height: 64px;
+}
+.steps-timeline .card-step::before {
+  counter-increment: step;
+  content: counter(step, decimal-leading-zero);
+  position: absolute;
+  top: 4px;
+  right: 12px;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  color: var(--brand-green);
+  font-variant-numeric: tabular-nums;
+}
+@media (max-width: 900px) {
+  .steps-timeline::before { display: none; }
+}
+
+/* ---- 7. Blog: cortina — metades convergem pra costura central ---- */
+.blog-highlight { overflow-x: clip; } /* contem o deslize de entrada, sem scroll horizontal */
+.blog-highlight.reveal .blog-feature-image { transform: translateX(-24px); opacity: 0; transition: opacity var(--reveal-dur) var(--ease-settle), transform var(--reveal-dur) var(--ease-settle); }
+.blog-highlight.reveal .blog-feature-content { transform: translateX(24px); opacity: 0; transition: opacity var(--reveal-dur) var(--ease-settle) 0.08s, transform var(--reveal-dur) var(--ease-settle) 0.08s; }
+.blog-highlight.reveal.is-visible .blog-feature-image,
+.blog-highlight.reveal.is-visible .blog-feature-content { transform: none; opacity: 1; }
+
+/* ---- 8. Equipe: acento base verde (ancora calma, sem firula) ---- */
+.team-preview .team-info { border-top: 2px solid var(--brand-green); }
+
+/* Transforms de entrada nao geram scroll horizontal (clip e sticky-safe) */
+body { overflow-x: clip; }
+
+/* ---- Reduced-motion: mata TODO gesto novo (marca do hero fica isenta) ---- */
+@media (prefers-reduced-motion: reduce) {
+  .reveal-stagger .stat-card,
+  .reveal-stagger .card,
+  .reveal-stagger [class*="-card"],
+  .differentials.reveal-stagger .differential-card,
+  .blog-highlight.reveal .blog-feature-image,
+  .blog-highlight.reveal .blog-feature-content {
+    transition: none !important;
+    transform: none !important;
+    opacity: 1 !important;
+  }
+  .differentials.reveal-stagger.is-visible .differential-icon svg path { animation: none !important; }
+  .differential-icon svg path { stroke-dashoffset: 0 !important; }
+  .steps-timeline::before { transition: none !important; transform: scaleX(1) !important; }
+  .stats .stat-card--accent::after { animation: none !important; }
+}
