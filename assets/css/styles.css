@@ -1880,6 +1880,32 @@ body { overflow-x: clip; }
   .site-header.header-hidden { transform: translateY(-100%); opacity: 0; pointer-events: none; }
 }
 
+/* Numero duotone: corpo creme + prefixo/sufixo (+) verde */
+.stats .stat-affix { color: var(--brand-green); font-weight: 500; }
+
+/* CTA: eco dos nos da marca — a pagina abre e fecha na mesma assinatura */
+.cta-nodes {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 9px;
+  margin-bottom: 22px;
+  position: relative;
+}
+.cta-nodes span {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--brand-green);
+  box-shadow: 0 0 0 4px rgba(95, 200, 155, 0.12);
+  transform-origin: center;
+  animation: markPulse 2.6s ease-in-out infinite;
+}
+.cta-nodes span:last-child { animation-delay: 1.3s; }
+@media (prefers-reduced-motion: reduce) {
+  .cta-nodes span { animation: none; }
+}
+
 /* ---- Reduced-motion: mata TODO gesto novo (marca do hero fica isenta) ---- */
 @media (prefers-reduced-motion: reduce) {
   .reveal-stagger .stat-card,

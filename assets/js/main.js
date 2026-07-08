@@ -71,12 +71,13 @@
   var prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   var numbers = document.querySelectorAll('.stat-number');
   if (numbers.length) {
+    var affix = function (s) { return s ? '<span class="stat-affix">' + s + '</span>' : ''; };
     var animateCounter = function (el) {
       var target = parseInt(el.dataset.target, 10);
       var prefix = el.dataset.prefix || '';
       var suffix = el.dataset.suffix || '';
       if (prefersReducedMotion) {
-        el.textContent = prefix + target + suffix;
+        el.innerHTML = affix(prefix) + target + affix(suffix);
         return;
       }
       var duration = 1400;
@@ -86,7 +87,7 @@
         var progress = Math.min(elapsed / duration, 1);
         var eased = 1 - Math.pow(1 - progress, 3);
         var current = Math.round(target * eased);
-        el.textContent = prefix + current + suffix;
+        el.innerHTML = affix(prefix) + current + affix(suffix);
         if (progress < 1) requestAnimationFrame(tick);
       };
       requestAnimationFrame(tick);
