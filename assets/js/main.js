@@ -18,12 +18,22 @@
     });
   }
 
-  // Header sombra ao scroll
+  // Header: sombra ao scroll + some ao descer no mobile (volta ao subir)
   var header = document.querySelector('.site-header');
   if (header) {
+    var lastY = window.scrollY;
     var onScroll = function () {
-      if (window.scrollY > 20) header.classList.add('scrolled');
+      var y = window.scrollY;
+      if (y > 20) header.classList.add('scrolled');
       else header.classList.remove('scrolled');
+      var isMobile = window.matchMedia('(max-width: 720px)').matches;
+      var menuOpen = nav && nav.classList.contains('open');
+      if (isMobile && !menuOpen && y > 120 && y > lastY + 4) {
+        header.classList.add('header-hidden');       // descendo
+      } else if (!isMobile || y <= 120 || y < lastY - 4 || menuOpen) {
+        header.classList.remove('header-hidden');     // subindo / topo / desktop / menu aberto
+      }
+      lastY = y;
     };
     window.addEventListener('scroll', onScroll, { passive: true });
     onScroll();

@@ -1853,6 +1853,33 @@ main { counter-reset: sect; }
 /* Transforms de entrada nao geram scroll horizontal (clip e sticky-safe) */
 body { overflow-x: clip; }
 
+/* ---- Ajustes pedidos ---- */
+/* Hero mobile: marca centralizada e maior (era flex-start / 150px) */
+@media (max-width: 900px) {
+  .hero-visual { justify-content: center; }
+  .hero-logo-xl { max-width: 210px; }
+}
+/* Stats mobile: fora as linhas divisorias (empilhado = poluia). So respiro. */
+@media (max-width: 768px) {
+  .stats .stat-card + .stat-card { border-top: none; }
+  .stats .stat-label { border-top: none; padding-top: 0; margin-top: 8px; }
+}
+/* Bento (indicacoes): ripple diagonal (row+col) em vez de cascata linear */
+.indications-bento .bento-card:nth-child(1) { transition-delay: 0s; }
+.indications-bento .bento-card:nth-child(2) { transition-delay: 0.08s; }
+.indications-bento .bento-card:nth-child(3) { transition-delay: 0.16s; }
+.indications-bento .bento-card:nth-child(4) { transition-delay: 0.08s; }
+.indications-bento .bento-card:nth-child(5) { transition-delay: 0.16s; }
+.indications-bento .bento-card:nth-child(6) { transition-delay: 0.24s; }
+
+/* Header some ao rolar pra baixo no mobile, volta ao subir (classe via JS) */
+.site-header {
+  transition: border-color 200ms ease, box-shadow 200ms ease, transform 280ms ease, opacity 280ms ease;
+}
+@media (max-width: 720px) {
+  .site-header.header-hidden { transform: translateY(-100%); opacity: 0; pointer-events: none; }
+}
+
 /* ---- Reduced-motion: mata TODO gesto novo (marca do hero fica isenta) ---- */
 @media (prefers-reduced-motion: reduce) {
   .reveal-stagger .stat-card,
