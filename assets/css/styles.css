@@ -169,8 +169,9 @@ button { font: inherit; cursor: pointer; background: none; border: none; color: 
   grid-template-columns: 1.2fr 1fr;
   gap: 64px;
   align-items: center;
-  min-height: 70vh;
-  padding: 96px 0;
+  /* altura dirigida pelo conteudo — sem min-height:70vh, que centralizava
+     texto curto numa caixa alta e criava vazios enormes acima/abaixo */
+  padding: 72px 0 80px;
 }
 .hero-content { max-width: 580px; }
 
