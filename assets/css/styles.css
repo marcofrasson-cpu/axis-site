@@ -1560,3 +1560,40 @@ button { font: inherit; cursor: pointer; background: none; border: none; color: 
   .blog-feature { margin-top: 32px; }
   .cta-journey-card { padding: 44px 28px; }
 }
+
+/* ============================================================
+   HERO MARK — mesma marca, agora animada + maior no hero.
+   Entrada: hexagonos se desenham -> "A" entra -> os 2 nos do eixo
+   pulsam (sinal) -> glow verde respira. Hover realca. Reduced-motion off.
+   ============================================================ */
+.hero-logo-xl { max-width: 360px; filter: none; }
+.axis-mark { display: block; width: 100%; height: auto; overflow: visible; animation: markGlow 4.5s ease-in-out infinite; }
+.axis-mark .hex { stroke-dasharray: 280; stroke-dashoffset: 280; animation: markDraw 1.1s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
+.axis-mark .hex-r { animation-delay: 0.14s; }
+.axis-mark .axis-a { stroke-dasharray: 150; stroke-dashoffset: 150; animation: markDraw 0.7s ease forwards; animation-delay: 0.95s; }
+.axis-mark .axis-node {
+  transform-box: fill-box;
+  transform-origin: center;
+  opacity: 0;
+  animation: markNodeIn 0.4s ease forwards, markPulse 2.6s ease-in-out infinite;
+  animation-delay: 1.25s, 1.55s;
+}
+.axis-mark .n-bot { animation-delay: 1.4s, 2.85s; }
+.hero-logo-xl:hover .axis-mark { filter: drop-shadow(0 0 22px rgba(95, 200, 155, 0.55)); }
+
+@keyframes markDraw { to { stroke-dashoffset: 0; } }
+@keyframes markNodeIn { to { opacity: 1; } }
+@keyframes markPulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.5); } }
+@keyframes markGlow {
+  0%, 100% { filter: drop-shadow(0 0 6px rgba(95, 200, 155, 0.2)); }
+  50%      { filter: drop-shadow(0 0 18px rgba(95, 200, 155, 0.5)); }
+}
+
+@media (max-width: 900px) {
+  .hero-logo-xl { max-width: 150px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .axis-mark, .axis-mark * { animation: none !important; }
+  .axis-mark .hex, .axis-mark .axis-a { stroke-dashoffset: 0; }
+  .axis-mark .axis-node { opacity: 1; }
+}
