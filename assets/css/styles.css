@@ -1,20 +1,22 @@
 /* Axis FitoMed — site institucional. Tokens + componentes core. */
 
 :root {
-  --brand-navy: #0d1b2a;
-  --brand-navy-lighter: #14253a;
-  --brand-green: #5fc89b;
-  --brand-green-hover: #6fd5a8;
-  --brand-cream: #f4f2ec;
-  --bg-card: #1a2a3f;
-  --bg-card-hover: #1f3149;
-  --text-primary: #f1f5f9;
-  --text-muted: #94a3b8;
-  --text-subtle: #64748b;
-  --border-hairline: rgba(255, 255, 255, 0.08);
-  --border-strong: rgba(255, 255, 255, 0.14);
-  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3);
-  --shadow-lg: 0 12px 36px rgba(0, 0, 0, 0.35);
+  /* Direcao Seed CLARO — creme/branco + verde (tema claro) */
+  --brand-navy: #f5f1e7;           /* fundo da pagina — creme (nome legado) */
+  --brand-navy-lighter: #efe9da;
+  --brand-green: #2f7d5c;          /* acento verde medio (pop no creme) */
+  --brand-green-hover: #256a4c;
+  --brand-cream: #123528;          /* legado "cor escura" -> ink verde */
+  --green-deep: #0f3226;           /* botoes + bandas escuras */
+  --bg-card: #ffffff;              /* card branco */
+  --bg-card-hover: #ffffff;
+  --text-primary: #123528;         /* ink verde-escuro */
+  --text-muted: #4f6a5c;
+  --text-subtle: #7c9184;
+  --border-hairline: rgba(18, 53, 40, 0.10);
+  --border-strong: rgba(18, 53, 40, 0.20);
+  --shadow-sm: 0 1px 2px rgba(18, 53, 40, 0.05);
+  --shadow-lg: 0 20px 44px -28px rgba(18, 53, 40, 0.28);
   --radius-sm: 4px;
   --radius-md: 8px;
   --radius-lg: 12px;
@@ -22,9 +24,9 @@
   --space-section: 96px;
   --header-h: 64px;
   /* Superficies tonais — deltas sub-10/canal: leem como profundidade, nao cor */
-  --ground-deep: #0a1522;
-  --ground-raised: #101f31;
-  --ground-deepest: #08111c;
+  --ground-deep: #efe9da;
+  --ground-raised: #fbfaf4;
+  --ground-deepest: #0f3226;
   /* Motion — uma curva "settle" (clinica, sem overshoot) + unidades compartilhadas */
   --ease-settle: cubic-bezier(0.22, 1, 0.36, 1);
   --reveal-dist: 20px;
@@ -32,7 +34,7 @@
   --stagger: 90ms;
   /* Registro tipografico intermediario (faltava) */
   --fs-lead: clamp(17px, 1.5vw, 20px);
-  --lead-color: #c6d2df;
+  --lead-color: #4f6a5c;
 }
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -74,7 +76,7 @@ button { font: inherit; cursor: pointer; background: none; border: none; color: 
   top: 0;
   z-index: 50;
   height: var(--header-h);
-  background: rgba(13, 27, 42, 0.85);
+  background: rgba(15, 50, 38, 0.85);
   backdrop-filter: saturate(140%) blur(10px);
   -webkit-backdrop-filter: saturate(140%) blur(10px);
   border-bottom: 1px solid transparent;
@@ -275,9 +277,9 @@ button { font: inherit; cursor: pointer; background: none; border: none; color: 
   transform: translateY(-4px);
   border-color: rgba(95, 200, 155, 0.4);
 }
-.stat-card--dark   { background: #0a1422; }
-.stat-card--mid    { background: #14253a; }
-.stat-card--accent { background: linear-gradient(135deg, #14253a 0%, #1a3a3a 100%); }
+.stat-card--dark   { background: #0a271d; }
+.stat-card--mid    { background: #163d2e; }
+.stat-card--accent { background: linear-gradient(135deg, #163d2e 0%, #1c4a38 100%); }
 .stat-number {
   font-size: clamp(64px, 8vw, 96px);
   font-weight: 800;
@@ -494,7 +496,7 @@ button { font: inherit; cursor: pointer; background: none; border: none; color: 
 .member-photo {
   width: 100%;
   aspect-ratio: 1 / 1;
-  background: linear-gradient(135deg, #1f3149 0%, #14253a 100%);
+  background: linear-gradient(135deg, #1a4636 0%, #163d2e 100%);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -670,7 +672,7 @@ button { font: inherit; cursor: pointer; background: none; border: none; color: 
 }
 .bento-card {
   padding: 24px 22px;
-  background: linear-gradient(160deg, #14253a 0%, #0f1d2e 100%);
+  background: linear-gradient(160deg, #163d2e 0%, #0c2a1f 100%);
   border: 1px solid var(--border-hairline);
   border-radius: 14px;
   transition: transform 400ms cubic-bezier(0.4, 0, 0.2, 1),
@@ -875,7 +877,7 @@ button { font: inherit; cursor: pointer; background: none; border: none; color: 
 /* ---------- CTA jornada ---------- */
 .cta-journey { padding: 96px 0; }
 .cta-journey-card {
-  background: linear-gradient(135deg, #14253a 0%, #1a3a3a 100%);
+  background: linear-gradient(135deg, #163d2e 0%, #1c4a38 100%);
   border: 1px solid var(--border-hairline);
   border-radius: 16px;
   padding: 72px 56px;
@@ -984,7 +986,7 @@ button { font: inherit; cursor: pointer; background: none; border: none; color: 
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, #1f3149 0%, #14253a 100%);
+  background: linear-gradient(135deg, #1a4636 0%, #163d2e 100%);
   color: var(--text-subtle);
   font-size: 14px;
   letter-spacing: 0.1em;
@@ -1372,7 +1374,7 @@ button { font: inherit; cursor: pointer; background: none; border: none; color: 
   padding: 32px 0 8px;
   position: sticky;
   top: 64px;
-  background: rgba(13, 27, 42, 0.92);
+  background: rgba(15, 50, 38, 0.92);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
   z-index: 10;
@@ -1922,4 +1924,150 @@ body { overflow-x: clip; }
   .differential-icon svg path { stroke-dashoffset: 0 !important; }
   .steps-timeline::before { transition: none !important; transform: scaleX(1) !important; }
   .stats .stat-card--accent::after { animation: none !important; }
+}
+
+/* ============================================================
+   HERO EDUCACIONAL (direcao Seed) — figura do sistema endocanabinoide.
+   Respiro maior figura<->texto (pedido). Reduced-motion desliga.
+   ============================================================ */
+.hero-grid { gap: 88px; }
+.hero-figure-wrap {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  padding: 24px;
+}
+.hero-figure-wrap::before {
+  content: "";
+  position: absolute;
+  width: 76%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(95, 200, 155, 0.16), transparent 65%);
+  pointer-events: none;
+  animation: figBreathe 6s ease-in-out infinite;
+}
+.hero-figure { width: 100%; max-width: 420px; height: auto; overflow: visible; position: relative; }
+.hf-bust { fill: url(#bustgrad); stroke: rgba(127, 227, 180, 0.32); stroke-width: 1.2; }
+.hf-edge { stroke: var(--brand-green); stroke-width: 1.4; fill: none; opacity: 0.5; stroke-linecap: round; stroke-dasharray: 4 7; animation: figFlow 3.4s linear infinite; }
+.hf-node { fill: var(--brand-green-hover); transform-box: fill-box; transform-origin: center; animation: figPulse 2.8s ease-in-out infinite; }
+.hf-node.n2 { animation-delay: 0.5s; }
+.hf-node.n3 { animation-delay: 1s; }
+.hf-node.n4 { animation-delay: 1.5s; }
+.hf-node.n5 { animation-delay: 0.8s; }
+.hf-node.n6 { animation-delay: 1.9s; }
+.hf-hex { fill: none; stroke: var(--brand-green-hover); stroke-width: 2; }
+.hf-hex .hf-a { stroke: var(--brand-cream); stroke-width: 2; }
+@keyframes figPulse { 0%, 100% { transform: scale(1); opacity: 0.9; } 50% { transform: scale(1.5); opacity: 1; } }
+@keyframes figFlow { to { stroke-dashoffset: -22; } }
+@keyframes figBreathe { 0%, 100% { opacity: 0.8; transform: scale(1); } 50% { opacity: 1; transform: scale(1.05); } }
+@media (prefers-reduced-motion: reduce) {
+  .hf-edge, .hf-node, .hero-figure-wrap::before { animation: none; }
+}
+@media (max-width: 900px) {
+  .hero-grid { gap: 18px; }
+  .hero-figure { max-width: 264px; }
+  .hero-figure-wrap { padding: 6px 6px 26px; }
+}
+
+/* ============================================================
+   SEED CLARO — camada de tema claro (creme/branco + verde).
+   Forca o modo claro sobre componentes que assumiam fundo escuro.
+   ============================================================ */
+/* Wordmark: gradiente clip -> ink solido */
+.brand-text{ background:none; -webkit-background-clip:initial; -webkit-text-fill-color: currentColor; color: var(--text-primary); }
+
+/* Header claro translucido */
+.site-header{ background: rgba(245,241,231,.82); border-bottom-color: transparent; }
+.site-header.scrolled{ border-bottom-color: var(--border-hairline); box-shadow: 0 1px 0 rgba(18,53,40,.05); }
+.nav.open .nav-links{ background: var(--brand-navy); border-bottom-color: var(--border-hairline); }
+.nav-links a:hover{ background: rgba(18,53,40,.05); color: var(--text-primary); }
+
+/* Botoes */
+.btn-primary{ background: var(--green-deep); color:#f5f1e7; border-color: var(--green-deep); }
+.btn-primary:hover{ background:#164634; border-color:#164634; }
+.btn-ghost{ background: transparent; border-color: var(--border-strong); color: var(--text-primary); }
+.btn-ghost:hover{ background: rgba(18,53,40,.04); border-color: var(--brand-green); }
+
+/* Cards brancos + sombra suave */
+.card, .differential-card, .indication-card, .team-card, .member-card, .blog-card, .paper-card, .contact-card, .form-card, .faq-item { box-shadow: var(--shadow-sm), var(--shadow-lg); }
+.card:hover, .differential-card:hover, .indication-card:hover, .paper-card:hover, .bento-card:hover { border-color: rgba(47,125,92,.35); }
+.bento-card{ background:#ffffff; box-shadow: var(--shadow-sm), var(--shadow-lg); }
+.differential-icon, .indication-icon, .step-icon, .bento-icon { background: #e6f1ea; }
+.member-photo, .team-photo-placeholder { background: linear-gradient(135deg,#e8efe7,#d6e6dc); color:#7c9184; }
+
+/* Painel "prensado" claro */
+.section.ground-deep{ box-shadow: inset 0 1px 0 rgba(255,255,255,.6), inset 0 -1px 0 rgba(18,53,40,.06); }
+
+/* Costuras -> hairline escura */
+.seam-top::after{ background:
+  radial-gradient(3px 3px at 50% .5px, var(--brand-green), transparent 70%),
+  linear-gradient(90deg, transparent, rgba(18,53,40,.14) 20%, rgba(18,53,40,.14) 80%, transparent) top/100% 1px no-repeat; }
+
+/* Stats ribbon: numeros ink */
+.stats .stat-number, .stats .stat-card--dark .stat-number{ color: var(--text-primary); }
+.stats .stat-affix{ color: var(--brand-green); }
+.stats .stat-card + .stat-card{ border-left-color: var(--border-hairline); }
+.stats .stat-label{ border-top-color: var(--border-hairline); }
+.stats .stat-card--accent::after{ background: radial-gradient(60% 60% at 50% 45%, rgba(47,125,92,.10), transparent 70%); }
+
+/* Auras + lattice mais sutis no claro */
+.aura-top::before{ background: radial-gradient(58% 120% at 50% 0%, rgba(47,125,92,.07), transparent 60%); }
+.aura-floor::before{ background: radial-gradient(70% 80% at 50% 100%, rgba(47,125,92,.06), transparent 62%); }
+.indications-preview::before{ background: radial-gradient(48% 55% at 55% 30%, rgba(47,125,92,.06), transparent 62%); }
+.lattice::before{ background-image:
+  radial-gradient(rgba(47,125,92,.06) 1.4px, transparent 1.5px),
+  radial-gradient(rgba(47,125,92,.06) 1.4px, transparent 1.5px); }
+
+/* Timeline no claro */
+.steps-timeline::before{ background: linear-gradient(90deg, transparent, rgba(47,125,92,.4) 12%, rgba(47,125,92,.4) 88%, transparent); }
+.steps-timeline .step-icon{ background:#ffffff; border-color: var(--border-hairline); }
+
+/* CTA = banda escura (verde profundo) */
+.cta-journey-card{ background: var(--green-deep); border-color: transparent; }
+.cta-journey-card h2{ color:#f5f1e7; }
+.cta-journey-card p{ color:#cdd8cc; }
+.cta-journey-card .btn-primary{ background: #5fc89b; color: var(--green-deep); border-color:#5fc89b; }
+.cta-journey-card .btn-primary:hover{ background:#7fe3b4; }
+.cta-nodes span{ background:#5fc89b; }
+
+/* Footer verde profundo (bookend) */
+.site-footer{ color:#eef4ee; border-top-color: transparent; }
+.site-footer .footer-col h4{ color:#9db8a8; }
+.site-footer .footer-col a, .site-footer .footer-col p, .site-footer .footer-tag{ color:#cdd8cc; }
+.site-footer .footer-col a:hover{ color:#5fc89b; }
+.site-footer .brand-text{ color:#eef4ee; }
+.site-footer .footer-bottom{ color:#8ba699; border-top-color: rgba(255,255,255,.12); }
+
+/* Hero: placa clara atras da figura */
+.hero-figure-wrap{ background: linear-gradient(160deg,#e8efe7,#dbe7dd); border:1px solid rgba(18,53,40,.06); border-radius:26px; padding:28px; aspect-ratio: 1 / 1.02; max-width:460px; margin:0 auto; }
+.hero-figure-wrap::before{ display:none; }
+.hero-figure{ max-width:340px; }
+.hf-bust{ stroke: rgba(24,90,62,.28); }
+.hf-edge{ stroke: var(--brand-green); opacity:.55; }
+.hf-node{ fill: var(--brand-green); }
+.hf-hex{ stroke:#1c6b4a; } .hf-hex .hf-a{ stroke: var(--green-deep); }
+.hero-badge{ background: rgba(47,125,92,.10); color: var(--brand-green); }
+
+/* Forms + contato claros */
+.form-field input, .form-field textarea, .contact-card, .form-card{ background:#ffffff; }
+.form-field input, .form-field textarea{ border-color: var(--border-strong); color: var(--text-primary); }
+.form-field input:focus, .form-field textarea:focus{ border-color: var(--brand-green); box-shadow:0 0 0 3px rgba(47,125,92,.14); }
+.faq-item summary::after{ color: var(--brand-green); }
+
+/* Ciencia: filtros + papers claros */
+.page-hero{ border-bottom-color: var(--border-hairline); }
+.ciencia-filters{ background: rgba(245,241,231,.9); border-bottom-color: var(--border-hairline); }
+.filter-chip{ border-color: var(--border-hairline); color: var(--text-muted); }
+.filter-chip:hover{ border-color: rgba(47,125,92,.4); color: var(--text-primary); }
+.filter-chip.is-active{ background: var(--green-deep); border-color: var(--green-deep); color:#f5f1e7; }
+.paper-type{ background: rgba(47,125,92,.1); color: var(--brand-green); }
+.paper-summary{ color: var(--text-muted); opacity:1; }
+.cta-strip{ background: linear-gradient(135deg,#fbfaf4,#efe9da); }
+
+@media (max-width: 900px){
+  .hero-figure-wrap{ aspect-ratio:auto; max-width:320px; padding:22px; }
+  .hero-figure{ max-width:240px; }
 }
