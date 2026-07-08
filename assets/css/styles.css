@@ -1592,8 +1592,5 @@ button { font: inherit; cursor: pointer; background: none; border: none; color: 
 @media (max-width: 900px) {
   .hero-logo-xl { max-width: 150px; }
 }
-@media (prefers-reduced-motion: reduce) {
-  .axis-mark, .axis-mark * { animation: none !important; }
-  .axis-mark .hex, .axis-mark .axis-a { stroke-dashoffset: 0; }
-  .axis-mark .axis-node { opacity: 1; }
-}
+/* Marca do hero anima SEMPRE — a pedido, independente de prefers-reduced-motion.
+   (as demais animacoes do site continuam respeitando a preferencia) */
