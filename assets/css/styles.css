@@ -1505,3 +1505,57 @@ button { font: inherit; cursor: pointer; background: none; border: none; color: 
   .papers-grid { grid-template-columns: 1fr; }
   .ciencia-filters { position: static; }
 }
+
+/* ============================================================
+   RITMO MOBILE — elimina gaps verticais vazios.
+   Causas: (1) padding do hero duplicado (.hero + .hero-grid),
+   (2) secoes nomeadas ficavam com 96px 0 no mobile (sem override),
+   (3) hero-visual escondido deixava a coluna de texto flutuando
+       num bloco alto e vazio.
+   Bloco no fim do arquivo pra vencer a cascata.
+   ============================================================ */
+
+@media (max-width: 900px) {
+  /* Traz o hexagono de volta como marca do hero, acima do texto,
+     alinhado a esquerda com o titulo. Vira identidade, nao vazio. */
+  .hero-visual {
+    display: flex;
+    order: -1;
+    justify-content: flex-start;
+    margin-bottom: 4px;
+  }
+  .hero-logo-xl {
+    max-width: 104px;
+    filter: drop-shadow(0 0 30px rgba(95, 200, 155, 0.20));
+  }
+  .hero-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+    min-height: auto;
+    padding: 36px 0 44px;
+  }
+  .hero-content { max-width: 100%; }
+}
+
+@media (max-width: 768px) {
+  /* Zera o padding duplicado: o .hero-grid ja cuida do espacamento */
+  .hero { padding: 0; }
+
+  /* Secoes nomeadas herdavam 96px 0 — ritmo mobile mais apertado */
+  .stats,
+  .differentials,
+  .indications,
+  .indications-preview,
+  .team-preview,
+  .blog-highlight,
+  .cta-journey { padding: 56px 0; }
+
+  /* Respiros internos grandes demais pro mobile */
+  .stats-title { margin-bottom: 28px; }
+  .differentials-grid { margin-top: 32px; }
+  .section-intro { margin: 16px 0 32px; }
+  .team-preview .section-title { margin-bottom: 32px; }
+  .team-preview-cta { margin-top: 32px; }
+  .blog-feature { margin-top: 32px; }
+  .cta-journey-card { padding: 44px 28px; }
+}
