@@ -749,8 +749,31 @@ button { font: inherit; cursor: pointer; background: none; border: none; color: 
 }
 
 /* ---------- Differentials (home) ---------- */
-/* Manifesto — respiro editorial (tipo grande + assimetria) */
-.manifesto { padding: clamp(72px, 10vw, 132px) 0; }
+/* Manifesto — respiro editorial (tipo grande + assimetria) sobre campo molecular */
+.manifesto { position: relative; overflow: hidden; padding: clamp(72px, 10vw, 132px) 0 clamp(52px, 6vw, 88px); }
+.manifesto::before {
+  content: ''; position: absolute; inset: 0; z-index: 0; pointer-events: none;
+  background-image: radial-gradient(rgba(95,200,155,.14) 1px, transparent 1.6px);
+  background-size: 30px 30px;
+  -webkit-mask-image: radial-gradient(120% 70% at 40% 108%, #000 0%, rgba(0,0,0,.45) 46%, transparent 74%), radial-gradient(64% 56% at 97% 0%, #000 0%, transparent 64%);
+  mask-image: radial-gradient(120% 70% at 40% 108%, #000 0%, rgba(0,0,0,.45) 46%, transparent 74%), radial-gradient(64% 56% at 97% 0%, #000 0%, transparent 64%);
+}
+.manifesto .container { position: relative; min-height: clamp(380px, 43vh, 440px); }
+.manifesto-text { position: relative; z-index: 2; }
+.manifesto-mol {
+  position: absolute; z-index: 1; left: -40px; bottom: 4px;
+  width: min(72%, 720px); pointer-events: none;
+}
+.manifesto-mol svg { width: 100%; height: auto; display: block; }
+.manifesto-mol [data-draw] { stroke-dasharray: 1; stroke-dashoffset: 1; }
+.manifesto.is-visible .manifesto-mol [data-draw] {
+  animation-name: molDraw; animation-duration: 1.25s;
+  animation-timing-function: cubic-bezier(.6, 0, .2, 1); animation-fill-mode: forwards;
+}
+@keyframes molDraw { to { stroke-dashoffset: 0; } }
+.manifesto-mol .mol-atoms circle { opacity: 0; }
+.manifesto.is-visible .manifesto-mol .mol-atoms circle { animation: molAtom .6s ease forwards .95s; }
+@keyframes molAtom { to { opacity: 1; } }
 .manifesto-kicker {
   margin: 0 0 26px; font-size: 12px; font-weight: 600;
   letter-spacing: 0.22em; text-transform: uppercase; color: var(--brand-green);
@@ -768,6 +791,12 @@ button { font: inherit; cursor: pointer; background: none; border: none; color: 
 }
 @media (max-width: 720px) {
   .manifesto-body { margin-top: 28px; margin-left: 0; }
+  .manifesto-mol { position: relative; z-index: 1; left: auto; bottom: auto; width: 200px; margin: 44px auto 0; }
+  .manifesto::before { -webkit-mask-image: radial-gradient(150% 80% at 50% 100%, #000 0%, transparent 60%); mask-image: radial-gradient(150% 80% at 50% 100%, #000 0%, transparent 60%); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .manifesto-mol [data-draw] { stroke-dashoffset: 0; animation: none !important; }
+  .manifesto-mol .mol-atoms circle { opacity: 1; animation: none !important; }
 }
 
 .differentials { padding: 96px 0; }
