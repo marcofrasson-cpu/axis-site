@@ -33,6 +33,8 @@
   /* Registro tipografico intermediario (faltava) */
   --fs-lead: clamp(17px, 1.5vw, 20px);
   --lead-color: #c6d2df;
+  /* Display face — Fraunces (autoridade editorial/cientifica); Inter fica no corpo/UI */
+  --font-display: 'Spectral', Georgia, 'Times New Roman', serif;
   /* Ambar — o oleo full-spectrum (unica cor quente do site) */
   --oil-hi: #f5c06b;
   --oil: #e8a13c;
@@ -48,6 +50,13 @@ body {
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+/* Titulos usam a display face (Fraunces); corpo/UI/dados seguem Inter */
+h1, h2, .nh-title, .ab-hero h1, .ct-title, .bl-h1, .pf-wordmark span {
+  font-family: var(--font-display);
+  font-weight: 600;
+  letter-spacing: -0.02em;
 }
 
 img { max-width: 100%; display: block; }
