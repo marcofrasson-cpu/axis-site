@@ -2267,3 +2267,22 @@ body { overflow-x: clip; }
   .ct-row .ct-field { margin-bottom: 18px; }
   .ct-form { padding: 26px; }
 }
+
+/* ==================== Servicos — feature cards (estilo Bevel) ==================== */
+.sv-feats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px; margin-top: 8px; }
+.sv-feat {
+  display: flex; flex-direction: column; overflow: hidden;
+  background: linear-gradient(165deg, var(--bg-card), var(--ground-deepest));
+  border: 1px solid var(--border-hairline); border-radius: 18px; padding: 30px 30px 0;
+  transition: transform 400ms var(--ease-settle), border-color 400ms ease, box-shadow 400ms ease;
+}
+.sv-feat:hover { transform: translateY(-5px); border-color: rgba(95, 200, 155, 0.4); box-shadow: var(--shadow-lg); }
+.sv-feat h3 { font-size: 22px; font-weight: 700; letter-spacing: -0.01em; margin-bottom: 12px; }
+.sv-feat p { color: var(--text-muted); font-size: 15px; line-height: 1.65; margin-bottom: 26px; }
+.sv-feat__visual {
+  margin: auto -30px 0; border-top: 1px solid var(--border-hairline);
+  background: radial-gradient(70% 90% at 50% 25%, rgba(95, 200, 155, 0.10), transparent 70%);
+  aspect-ratio: 16 / 9; display: flex; align-items: center; justify-content: center;
+}
+.sv-feat__visual svg { width: 58%; height: auto; }
+@media (max-width: 900px) { .sv-feats { grid-template-columns: 1fr; } }
