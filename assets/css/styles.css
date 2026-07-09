@@ -51,6 +51,13 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
+/* Grão de filme — textura sutil sobre todo o site (profundidade cinematográfica) */
+body::after {
+  content: ""; position: fixed; inset: 0; z-index: 9998; pointer-events: none;
+  opacity: 0.5; mix-blend-mode: soft-light;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.82' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+@media (prefers-reduced-motion: reduce) { body::after { opacity: 0.38; } }
 
 /* Titulos usam a display face (Fraunces); corpo/UI/dados seguem Inter */
 h1, h2, .nh-title, .ab-hero h1, .ct-title, .bl-h1, .pf-wordmark span {
@@ -2369,6 +2376,42 @@ body { overflow-x: clip; }
 .bl-card-excerpt { color: var(--text-muted); font-size: 15px; line-height: 1.65; }
 .bl-card .bl-readmore { margin-top: auto; padding-top: 6px; }
 @media (max-width: 720px) { .bl-grid { grid-template-columns: 1fr; } }
+
+/* ===== A ciência — scrollytelling do sistema endocanabinoide ===== */
+.ecs { position: relative; padding: var(--space-section) 0; }
+.ecs-head { margin-bottom: 40px; }
+.ecs-head h2 { font-size: clamp(28px, 3.2vw, 44px); line-height: 1.12; letter-spacing: -0.02em; max-width: 18ch; }
+.ecs-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 64px; align-items: stretch; }
+.ecs-stage { position: relative; }
+.ecs-sticky { position: sticky; top: 108px; }
+.ecs-svg { width: 100%; max-width: 460px; margin-inline: auto; height: auto; display: block; overflow: visible; fill: none; stroke-linejoin: round; stroke-linecap: round; }
+.ecs-dock, .ecs-m { stroke: #5fc89b; stroke-width: 2; }
+.ecs-terp { stroke: rgba(232, 161, 60, 0.85); }
+.ecs-t { font-family: var(--font-display); font-weight: 600; font-size: 24px; text-anchor: middle; }
+.ecs-t.small { font-size: 15px; letter-spacing: .12em; }
+.ecs-sub { font-size: 11px; letter-spacing: .14em; text-transform: uppercase; text-anchor: middle; }
+.ecs-scene { opacity: 0; transition: opacity .55s ease; }
+.ecs-scene.is-active { opacity: 1; }
+.ecs-dock { opacity: 0; transform: translate(115px, 178px) scale(1.2); transition: transform .7s var(--ease-settle), opacity .5s ease; }
+.ecs-s3.is-active .ecs-dock { opacity: 1; transform: translate(165px, 172px) scale(1.35); }
+.ecs-pocket { opacity: 0; transition: opacity .5s ease .12s; }
+.ecs-s3.is-active .ecs-pocket { opacity: 1; }
+
+.ecs-step { min-height: 60vh; display: flex; flex-direction: column; justify-content: center; opacity: .32; transition: opacity .4s ease; }
+.ecs-step.is-current { opacity: 1; }
+.ecs-step h3 { font-family: var(--font-display); font-weight: 600; font-size: clamp(22px, 2.4vw, 30px); letter-spacing: -0.015em; margin-bottom: 14px; color: var(--text-primary); }
+.ecs-step p { font-size: var(--fs-lead); line-height: 1.6; color: var(--lead-color); max-width: 42ch; }
+.ecs-step b { color: var(--brand-green); font-weight: 600; }
+
+@media (max-width: 900px) {
+  .ecs-grid { grid-template-columns: 1fr; gap: 20px; }
+  .ecs-sticky { top: 76px; }
+  .ecs-svg { max-width: 260px; }
+  .ecs-step { min-height: 46vh; opacity: 1; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ecs-scene, .ecs-dock, .ecs-pocket { transition: none; }
+}
 @media (max-width: 820px) {
   .bl-feature { grid-template-columns: 1fr; }
   .bl-feature-media { min-height: 0; aspect-ratio: 16 / 10; }

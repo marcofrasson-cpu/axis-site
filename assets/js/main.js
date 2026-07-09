@@ -246,4 +246,21 @@
       document.addEventListener('click', function (e) { if (nhActive && !nhActive.contains(e.target)) nhHide(nhActive); });
     }
   }
+
+  // ========== Scrollytelling do sistema endocanabinoide ==========
+  var ecs = document.querySelector('.ecs');
+  if (ecs && 'IntersectionObserver' in window) {
+    var ecsSteps = [].slice.call(ecs.querySelectorAll('.ecs-step'));
+    var ecsScenes = {};
+    [1, 2, 3, 4].forEach(function (n) { ecsScenes[n] = ecs.querySelector('.ecs-s' + n); });
+    var ecsActivate = function (n) {
+      ecsSteps.forEach(function (st) { st.classList.toggle('is-current', st.getAttribute('data-scene') === String(n)); });
+      [1, 2, 3, 4].forEach(function (k) { if (ecsScenes[k]) ecsScenes[k].classList.toggle('is-active', k === Number(n)); });
+    };
+    ecsActivate(1);
+    var ecsIO = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) { if (e.isIntersecting) ecsActivate(e.target.getAttribute('data-scene')); });
+    }, { rootMargin: '-45% 0px -45% 0px', threshold: 0 });
+    ecsSteps.forEach(function (st) { ecsIO.observe(st); });
+  }
 })();

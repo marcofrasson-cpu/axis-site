@@ -134,6 +134,102 @@
   </div>
 </section>
 
+<!-- A ciência: sistema endocanabinoide (scrollytelling) -->
+<section class="ecs reveal" aria-labelledby="ecs-title">
+  <div class="container ecs-grid">
+    <div class="ecs-stage" aria-hidden="true">
+      <div class="ecs-sticky">
+        <svg class="ecs-svg" viewBox="0 0 480 460" role="img" aria-label="Diagrama do sistema endocanabinoide">
+          <defs>
+            <radialGradient id="ecsGlow" cx="50%" cy="46%" r="52%">
+              <stop offset="0" stop-color="rgba(95,200,155,.20)"/><stop offset="1" stop-color="rgba(95,200,155,0)"/>
+            </radialGradient>
+            <g id="cbdMol">
+              <polygon points="30,24 43.9,32 43.9,48 30,56 16.1,48 16.1,32"/>
+              <polygon points="66,24 79.9,32 79.9,48 66,56 52.1,48 52.1,32"/>
+              <line x1="22" y1="36" x2="22" y2="44"/><line x1="58" y1="36" x2="58" y2="44"/>
+              <line x1="43.9" y1="32" x2="52.1" y2="32"/><line x1="43.9" y1="48" x2="52.1" y2="48"/>
+              <path d="M79.9 48 L94 56 L108 48 L122 56"/>
+              <line x1="30" y1="24" x2="30" y2="8"/><line x1="16.1" y1="32" x2="4" y2="24"/>
+            </g>
+          </defs>
+
+          <ellipse class="ecs-halo" cx="240" cy="212" rx="200" ry="200" fill="url(#ecsGlow)"/>
+
+          <!-- Cena 1: um sistema em todo o corpo -->
+          <g class="ecs-scene ecs-s1">
+            <g stroke="rgba(95,200,155,.22)" stroke-width="1.4" fill="none">
+              <path d="M240,212 L110,130 M240,212 L365,135 M240,212 L95,310 M240,212 L385,315 M240,212 L235,360 M240,212 L240,90"/>
+            </g>
+            <g class="ecs-recpt" stroke="#5fc89b" stroke-width="2" fill="rgba(95,200,155,.06)">
+              <polygon points="110,114 123.9,122 123.9,138 110,146 96.1,138 96.1,122"/>
+              <polygon points="365,119 378.9,127 378.9,143 365,151 351.1,143 351.1,127"/>
+              <polygon points="95,294 108.9,302 108.9,318 95,326 81.1,318 81.1,302"/>
+              <polygon points="385,299 398.9,307 398.9,323 385,331 371.1,323 371.1,307"/>
+              <polygon points="235,344 248.9,352 248.9,368 235,376 221.1,368 221.1,352"/>
+              <polygon points="240,74 253.9,82 253.9,98 240,106 226.1,98 226.1,82"/>
+            </g>
+            <polygon points="240,156 288.5,184 288.5,240 240,268 191.5,240 191.5,184" stroke="#5fc89b" stroke-width="2.6" fill="rgba(95,200,155,.10)"/>
+          </g>
+
+          <!-- Cena 2: CB1 e CB2 -->
+          <g class="ecs-scene ecs-s2">
+            <text class="ecs-t" x="150" y="140" fill="#5fc89b">CB1</text>
+            <text class="ecs-sub" x="150" y="160" fill="#94a3b8">sistema nervoso</text>
+            <polygon points="150,171 191.6,195 191.6,243 150,267 108.4,243 108.4,195" stroke="#5fc89b" stroke-width="2.6" fill="rgba(95,200,155,.10)"/>
+            <text class="ecs-t" x="330" y="140" fill="#f5c06b">CB2</text>
+            <text class="ecs-sub" x="330" y="160" fill="#94a3b8">sistema imune</text>
+            <polygon points="330,171 371.6,195 371.6,243 330,267 288.4,243 288.4,195" stroke="#e8a13c" stroke-width="2.6" fill="rgba(232,161,60,.08)"/>
+          </g>
+
+          <!-- Cena 3: encaixe (dock) -->
+          <g class="ecs-scene ecs-s3">
+            <polygon points="250,157 300.2,186 300.2,244 250,273 199.8,244 199.8,186" stroke="#5fc89b" stroke-width="2.6" fill="rgba(95,200,155,.08)"/>
+            <polygon class="ecs-pocket" points="250,192 273,205 273,231 250,244 227,231 227,205" stroke="rgba(95,200,155,.4)" stroke-width="1.4" fill="none"/>
+            <use class="ecs-dock" href="#cbdMol"/>
+            <text class="ecs-t small" x="250" y="315" fill="#5fc89b" text-anchor="middle">CBD · THC</text>
+          </g>
+
+          <!-- Cena 4: efeito entourage -->
+          <g class="ecs-scene ecs-s4">
+            <g stroke="rgba(95,200,155,.28)" stroke-width="1.4" fill="none">
+              <path d="M240,210 L120,120 M240,210 L360,120 M240,210 L120,320 M240,210 L360,320"/>
+            </g>
+            <polygon points="240,160 283.3,185 283.3,235 240,260 196.7,235 196.7,185" stroke="#5fc89b" stroke-width="2.6" fill="rgba(95,200,155,.12)"/>
+            <use class="ecs-m" href="#cbdMol" transform="translate(66,86) scale(.8)"/>
+            <use class="ecs-m" href="#cbdMol" transform="translate(300,86) scale(.8)"/>
+            <use class="ecs-m ecs-terp" href="#cbdMol" transform="translate(66,300) scale(.7)"/>
+            <use class="ecs-m ecs-terp" href="#cbdMol" transform="translate(306,300) scale(.7)"/>
+          </g>
+        </svg>
+      </div>
+    </div>
+
+    <div class="ecs-steps">
+      <div class="ecs-head">
+        <div class="kicker"><span class="kicker__rule"></span><span class="kicker__label">A ciência</span></div>
+        <h2 id="ecs-title">Como a cannabis conversa com o corpo</h2>
+      </div>
+      <article class="ecs-step" data-scene="1">
+        <h3>Um sistema em todo o corpo</h3>
+        <p>O sistema endocanabinoide ajuda a manter o equilíbrio — dor, sono, humor, apetite, imunidade. Ele já está em você, o tempo todo, muito antes de qualquer planta.</p>
+      </article>
+      <article class="ecs-step" data-scene="2">
+        <h3>Dois receptores, dois territórios</h3>
+        <p>Os receptores <b>CB1</b> concentram-se no sistema nervoso; os <b>CB2</b>, nas células de defesa. É por eles que a conversa química acontece.</p>
+      </article>
+      <article class="ecs-step" data-scene="3">
+        <h3>As moléculas se encaixam</h3>
+        <p>Fitocanabinoides como <b>CBD</b> e <b>THC</b> se ligam a esses receptores — como chave na fechadura — modulando sinais que o corpo já usa. Não impõem: ajustam.</p>
+      </article>
+      <article class="ecs-step" data-scene="4">
+        <h3>O efeito entourage</h3>
+        <p>No extrato completo, canabinoides e terpenos agem em conjunto: o todo faz mais que a soma das partes. É esse equilíbrio que buscamos na prescrição.</p>
+      </article>
+    </div>
+  </div>
+</section>
+
 <!-- Em destaque -->
 <section class="stats reveal reveal-stagger ground-raised aura aura-top seam-top" aria-labelledby="stats-title">
   <div class="container">
