@@ -1589,13 +1589,9 @@ button { font: inherit; cursor: pointer; background: none; border: none; color: 
    ============================================================ */
 
 /* ---- 1. Superficies tonais (profundidade, nao cor) ---- */
-.ground-raised { background: var(--ground-raised); }
-.ground-deep { background: var(--ground-deep); }
+.ground-raised { background: linear-gradient(180deg, var(--brand-navy) 0, var(--ground-raised) 88px, var(--ground-raised) calc(100% - 88px), var(--brand-navy) 100%); }
+.ground-deep { background: linear-gradient(180deg, var(--brand-navy) 0, var(--ground-deep) 88px, var(--ground-deep) calc(100% - 88px), var(--brand-navy) 100%); }
 .site-footer { background: var(--ground-deepest); }
-/* Servicos: painel "prensado" — labio claro em cima, sombra embaixo */
-.section.ground-deep {
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05), inset 0 -1px 0 rgba(0, 0, 0, 0.30);
-}
 
 /* ---- 2. Aura verde (uma receita: radial <= .10, ancorada, clipada) ---- */
 .aura { position: relative; overflow: hidden; }
@@ -1618,12 +1614,10 @@ button { font: inherit; cursor: pointer; background: none; border: none; color: 
   top: 0;
   left: 0;
   right: 0;
-  height: 5px;
-  z-index: 2;
+  height: 110px;
+  z-index: 0;
   pointer-events: none;
-  background:
-    radial-gradient(3px 3px at 50% 0.5px, var(--brand-green), transparent 70%),
-    linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.09) 20%, rgba(255, 255, 255, 0.09) 80%, transparent) top / 100% 1px no-repeat;
+  background: radial-gradient(56% 100% at 50% 0%, rgba(95, 200, 155, 0.07), transparent 72%);
 }
 
 /* Lattice molecular esparso — SO no trough dos diferenciais */
@@ -1901,7 +1895,7 @@ body { overflow-x: clip; }
 }
 
 /* ==================== Full-spectrum (extrato completo) ==================== */
-.fs { background: var(--ground-deepest); padding: var(--space-section) 0; position: relative; overflow: hidden; }
+.fs { background: linear-gradient(180deg, var(--brand-navy) 0, var(--ground-deepest) 96px, var(--ground-deepest) calc(100% - 96px), var(--brand-navy) 100%); padding: var(--space-section) 0; position: relative; overflow: hidden; }
 .fs::before {
   content: ""; position: absolute; inset: 0; pointer-events: none;
   background: radial-gradient(60% 50% at 78% 46%, rgba(232, 161, 60, 0.10), transparent 70%);
