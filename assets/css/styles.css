@@ -2297,3 +2297,34 @@ body { overflow-x: clip; }
   .bl-feature-media { min-height: 0; aspect-ratio: 16 / 10; }
   .bl-feature-body { padding: 28px; }
 }
+
+/* ==================== Footer — wordmark gigante (estilo Popcorn) ==================== */
+.pf { position: relative; overflow: hidden; background: var(--ground-deepest); border-top: 1px solid var(--border-hairline); padding: 72px 0 0; margin-top: 96px; }
+.pf-top { display: grid; grid-template-columns: auto 1.3fr 1.3fr 1.3fr; gap: 40px; align-items: start; }
+.pf-mark { width: 46px; height: 46px; }
+.pf-col h4 { font-size: 13px; font-weight: 600; color: var(--text-primary); margin-bottom: 16px; }
+.pf-col ul { list-style: none; display: flex; flex-direction: column; gap: 11px; }
+.pf-col li { color: var(--text-muted); font-size: 14.5px; line-height: 1.5; }
+.pf-col a { color: var(--text-muted); font-size: 14.5px; transition: color 120ms ease; }
+.pf-col a:hover { color: var(--brand-green); }
+.pf-bottom {
+  position: relative; z-index: 1; border-top: 1px solid var(--border-hairline);
+  margin-top: 44px; padding: 22px 0 26px; display: flex; justify-content: space-between;
+  flex-wrap: wrap; gap: 10px; color: var(--text-subtle); font-size: 12.5px;
+}
+.pf-wordmark { width: 100%; text-align: center; line-height: .78; overflow: hidden; pointer-events: none; }
+.pf-wordmark span {
+  display: inline-block; white-space: nowrap; font-weight: 700; letter-spacing: -0.04em;
+  font-size: clamp(64px, 17vw, 260px);
+  background: linear-gradient(90deg, rgba(244, 242, 236, 0.16), rgba(95, 200, 155, 0.2));
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+  transform: translateY(20%);
+}
+@media (max-width: 860px) {
+  .pf-top { grid-template-columns: 1fr 1fr; gap: 32px 24px; }
+  .pf-mark { grid-column: 1 / -1; }
+}
+@media (max-width: 520px) {
+  .pf-top { grid-template-columns: 1fr; }
+  .pf-wordmark span { transform: translateY(14%); }
+}
