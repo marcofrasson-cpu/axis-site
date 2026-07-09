@@ -295,12 +295,14 @@ button { font: inherit; cursor: pointer; background: none; border: none; color: 
   font-size: clamp(64px, 8vw, 96px);
   font-weight: 800;
   line-height: 1;
-  color: var(--brand-green);
+  background: linear-gradient(120deg, var(--brand-green) 0%, var(--oil-hi) 100%);
+  -webkit-background-clip: text; background-clip: text;
+  -webkit-text-fill-color: transparent; color: transparent;
   letter-spacing: -0.02em;
   margin-bottom: 16px;
   font-variant-numeric: tabular-nums;
 }
-.stat-card--dark .stat-number { color: #fff; }
+.stat-card--dark .stat-number { -webkit-text-fill-color: transparent; color: transparent; }
 .stat-label {
   font-size: 15px;
   color: var(--text-muted);
@@ -1667,11 +1669,13 @@ main { counter-reset: sect; }
 }
 .stats .stat-number {
   font-weight: 700;            /* era 800 — Inter so tem ate 700 (evita faux-bold borrado) */
-  color: var(--brand-cream);
+  background: linear-gradient(120deg, var(--brand-green) 0%, var(--oil-hi) 100%);
+  -webkit-background-clip: text; background-clip: text;
+  -webkit-text-fill-color: transparent; color: transparent;
   letter-spacing: -0.03em;
   margin-bottom: 0;
 }
-.stats .stat-card--dark .stat-number { color: var(--brand-cream); }
+.stats .stat-card--dark .stat-number { -webkit-text-fill-color: transparent; color: transparent; }
 .stats .stat-label {
   margin-top: 14px;
   padding-top: 14px;
@@ -1801,7 +1805,7 @@ body { overflow-x: clip; }
 }
 
 /* Numero duotone: corpo creme + prefixo/sufixo (+) verde */
-.stats .stat-affix { color: var(--brand-green); font-weight: 500; }
+.stats .stat-affix { color: var(--oil-hi); -webkit-text-fill-color: var(--oil-hi); font-weight: 500; }
 
 /* CTA: eco dos nos da marca — a pagina abre e fecha na mesma assinatura */
 .cta-nodes {
@@ -2258,8 +2262,13 @@ body { overflow-x: clip; }
 /* ==================== Stats — numeros grandes (estilo minimal) ==================== */
 .sv-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 32px; text-align: center; }
 .sv-stat { padding: 8px 0; }
-.sv-stats .stat-number { font-size: clamp(40px, 5vw, 62px); font-weight: 700; letter-spacing: -0.03em; color: var(--text-primary); line-height: 1; font-variant-numeric: tabular-nums; }
-.sv-stats .stat-affix { color: var(--brand-green); }
+.sv-stats .stat-number {
+  font-size: clamp(40px, 5vw, 62px); font-weight: 700; letter-spacing: -0.03em; line-height: 1; font-variant-numeric: tabular-nums;
+  background: linear-gradient(120deg, var(--brand-green) 0%, var(--oil-hi) 100%);
+  -webkit-background-clip: text; background-clip: text;
+  -webkit-text-fill-color: transparent; color: transparent;
+}
+.sv-stats .stat-affix { color: var(--oil-hi); -webkit-text-fill-color: var(--oil-hi); }
 .sv-lbl { margin-top: 12px; color: var(--text-muted); font-size: 14px; line-height: 1.4; }
 .sv-stat + .sv-stat { border-left: 1px solid var(--border-hairline); }
 @media (max-width: 760px) {
