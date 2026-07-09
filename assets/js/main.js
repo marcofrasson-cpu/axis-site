@@ -160,4 +160,15 @@
         encodeURIComponent(subject) + '&body=' + encodeURIComponent(body);
     });
   }
+
+  // ========== Toggle dos filtros (Ciencia) ==========
+  var filterToggle = document.getElementById('filterToggle');
+  var filtersPanel = document.getElementById('filtersPanel');
+  if (filterToggle && filtersPanel) {
+    filterToggle.addEventListener('click', function () {
+      var closed = filtersPanel.hasAttribute('hidden');
+      if (closed) { filtersPanel.removeAttribute('hidden'); filterToggle.setAttribute('aria-expanded', 'true'); }
+      else { filtersPanel.setAttribute('hidden', ''); filterToggle.setAttribute('aria-expanded', 'false'); }
+    });
+  }
 })();

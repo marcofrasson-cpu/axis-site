@@ -52,6 +52,12 @@
 
 <section class="ciencia-filters">
   <div class="container">
+    <button class="cf-toggle" id="filterToggle" aria-expanded="false" aria-controls="filtersPanel">
+      <span class="cf-lines" aria-hidden="true"><span></span><span></span><span></span></span>
+      <span>Filtrar artigos</span>
+      <span class="cf-caret" aria-hidden="true">▾</span>
+    </button>
+    <div class="ciencia-filters__panel" id="filtersPanel" hidden>
     <div class="filter-group">
       <span class="filter-label">Área:</span>
       <div class="filter-chips" data-filter="area">
@@ -75,6 +81,7 @@
         <button class="filter-chip" data-value="observacional">Observacional</button>
         <button class="filter-chip" data-value="basico">Farmacologia</button>
       </div>
+    </div>
     </div>
   </div>
 </section>
