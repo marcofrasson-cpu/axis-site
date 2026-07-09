@@ -1953,12 +1953,12 @@ body { overflow-x: clip; }
 .fs-title .amber { color: var(--oil); }
 .fs-lead { font-size: var(--fs-lead); color: var(--lead-color); max-width: 46ch; margin-bottom: 28px; }
 .fs-stat {
-  display: inline-flex; align-items: baseline; gap: 12px; flex-wrap: wrap;
+  display: flex; align-items: center; gap: 16px; flex-wrap: nowrap;
   background: rgba(232, 161, 60, 0.07); border: 1px solid rgba(232, 161, 60, 0.28);
   border-radius: 12px; padding: 14px 20px; margin-bottom: 14px;
 }
-.fs-stat b { font-size: clamp(28px, 3vw, 38px); font-weight: 700; color: var(--oil-hi); letter-spacing: -0.02em; font-variant-numeric: tabular-nums; }
-.fs-stat span { font-size: 14px; color: var(--text-muted); }
+.fs-stat b { font-size: clamp(30px, 3vw, 40px); font-weight: 700; color: var(--oil-hi); letter-spacing: -0.02em; line-height: 1; font-variant-numeric: tabular-nums; }
+.fs-stat span { font-size: 13.5px; line-height: 1.3; color: var(--text-muted); max-width: 24ch; }
 .fs-foot { font-size: 12.5px; color: var(--text-subtle); max-width: 42ch; }
 .fs-stage { position: relative; width: 100%; max-width: 520px; margin-inline: auto; }
 .fs-svg { width: 100%; height: auto; display: block; overflow: visible; }
@@ -1993,8 +1993,146 @@ body { overflow-x: clip; }
   .fs-list .fs-t { font-size: 14px; font-weight: 600; color: var(--text-primary); }
   .fs-list .fs-d { font-size: 13px; color: var(--text-muted); }
 }
+/* loop ambiente — vida continua depois de encher (nao esvazia) */
+@keyframes fsBob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
+@keyframes fsRise {
+  0% { transform: translateY(0); opacity: 0; }
+  12% { opacity: .7; }
+  85% { opacity: .45; }
+  100% { transform: translateY(-235px); opacity: 0; }
+}
+@keyframes fsBreath { 0%, 100% { opacity: .72; } 50% { opacity: 1; } }
+.fs-node { animation: fsBob 5.5s ease-in-out infinite; }
+.fs-node:nth-child(2n) { animation-duration: 6.6s; animation-delay: -1.5s; }
+.fs-node:nth-child(3n) { animation-duration: 4.8s; animation-delay: -3s; }
+.fs-node:nth-child(4n) { animation-duration: 7.2s; animation-delay: -2.2s; }
+.fs-bubble { fill: rgba(247, 205, 133, 0.6); animation: fsRise 6.5s ease-in infinite; }
+.fs-glow { animation: fsBreath 6s ease-in-out infinite; }
+.fs-meniscus { animation: fsBreath 4.5s ease-in-out infinite; }
+
 @media (prefers-reduced-motion: reduce) {
   .fs-oil, .fs-pip, .fs-node, .fs-ann { transition: none !important; }
   .fs-oil, .fs-pip { transform: none; }
   .fs-node, .fs-ann { opacity: 1; }
+  .fs-node, .fs-bubble, .fs-glow, .fs-meniscus { animation: none !important; }
+  .fs-bubble { opacity: 0; }
+}
+
+/* ==================== HEADER — pill flutuante glass ==================== */
+.site-header {
+  position: sticky; top: 0; z-index: 50;
+  height: auto;
+  padding: 14px 0;
+  background: transparent;
+  backdrop-filter: none; -webkit-backdrop-filter: none;
+  border-bottom: none;
+  transition: transform 260ms var(--ease-settle);
+}
+.site-header.scrolled { box-shadow: none; border-bottom: none; }
+.site-header.header-hidden { transform: translateY(-140%); }
+.nav {
+  position: relative;
+  height: auto;
+  padding: 8px 8px 8px 22px;
+  border-radius: 999px;
+  background: rgba(16, 31, 49, 0.72);
+  border: 1px solid var(--border-hairline);
+  backdrop-filter: saturate(150%) blur(14px);
+  -webkit-backdrop-filter: saturate(150%) blur(14px);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.28);
+  transition: box-shadow 260ms ease, border-color 260ms ease;
+}
+.site-header.scrolled .nav {
+  box-shadow: 0 16px 44px rgba(0, 0, 0, 0.44);
+  border-color: var(--border-strong);
+}
+.nav-btn { padding: 10px 20px; font-size: 14px; white-space: nowrap; border-radius: 999px; }
+
+@media (max-width: 860px) {
+  .nav-links { display: none; }
+  .nav-toggle { display: inline-flex; }
+  .nav-btn { display: none; }
+  .nav { padding: 8px 8px 8px 18px; }
+  .nav.open .nav-links {
+    display: flex; flex-direction: column;
+    position: absolute; top: calc(100% + 10px); left: 0; right: 0;
+    background: rgba(16, 31, 49, 0.97);
+    backdrop-filter: saturate(150%) blur(16px);
+    -webkit-backdrop-filter: saturate(150%) blur(16px);
+    border: 1px solid var(--border-hairline);
+    border-radius: 18px; padding: 10px; gap: 2px;
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.5);
+  }
+  .nav.open .nav-links a { padding: 13px 14px; border-radius: 10px; font-size: 15px; }
+}
+
+/* ==================== FOOTER — orbe âmbar + reflexo ==================== */
+.site-footer {
+  position: relative; overflow: hidden;
+  border-top: 1px solid var(--border-hairline);
+  background: var(--ground-deepest);
+  padding: 88px 0 30px; margin-top: 96px;
+}
+.fo-orb {
+  position: absolute; z-index: 0; pointer-events: none;
+  right: 6%; top: -120px; width: 260px; height: 260px; border-radius: 50%;
+  background: radial-gradient(circle at 50% 46%,
+     rgba(245, 192, 107, 0.78) 0%, rgba(232, 161, 60, 0.40) 40%, rgba(232, 161, 60, 0) 68%);
+  filter: blur(3px);
+}
+.fo-orb::after {
+  content: ""; position: absolute; left: 50%; transform: translateX(-50%);
+  top: 92%; width: 200px; height: 230px;
+  background:
+    radial-gradient(58% 42% at 50% 0%, rgba(232, 161, 60, 0.24), transparent 74%),
+    repeating-linear-gradient(to bottom, rgba(245, 192, 107, 0.15) 0 2px, transparent 2px 7px);
+  -webkit-mask-image: linear-gradient(to bottom, #000 0%, transparent 78%);
+  mask-image: linear-gradient(to bottom, #000 0%, transparent 78%);
+  filter: blur(2px);
+}
+.fo-top {
+  position: relative; z-index: 1;
+  display: grid; grid-template-columns: 1fr 1.15fr; gap: 48px;
+  padding-bottom: 48px;
+}
+.fo-lockup { gap: 14px; font-size: 26px; font-weight: 700; }
+.fo-lockup .brand-mark { width: 46px; height: 46px; }
+.fo-tag { color: var(--text-muted); font-size: 15px; max-width: 340px; margin: 20px 0 0; }
+.fo-trust {
+  display: flex; align-items: center; gap: 9px;
+  color: var(--text-subtle); font-size: 13px; margin-top: 22px;
+}
+.fo-dot {
+  width: 8px; height: 8px; border-radius: 50%; background: var(--brand-green);
+  box-shadow: 0 0 0 4px rgba(95, 200, 155, 0.16); flex-shrink: 0;
+}
+.fo-nav { display: grid; grid-template-columns: 1.5fr 1fr; gap: 40px; }
+.fo-group h4 {
+  font-size: 12px; font-weight: 600; color: var(--text-muted);
+  letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 18px;
+}
+.fo-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 32px; }
+.fo-group ul { list-style: none; display: flex; flex-direction: column; gap: 12px; }
+.fo-group a { color: var(--text-muted); font-size: 14.5px; transition: color 120ms ease; }
+.fo-group a:hover { color: var(--brand-green); }
+.fo-muted { color: var(--text-subtle); font-size: 14.5px; }
+.fo-bottom {
+  position: relative; z-index: 1;
+  border-top: 1px solid var(--border-hairline); padding-top: 26px;
+  display: flex; justify-content: space-between; flex-wrap: wrap; gap: 12px;
+  color: var(--text-subtle); font-size: 12.5px;
+}
+@media (max-width: 900px) {
+  .fo-top { grid-template-columns: 1fr; gap: 40px; }
+  .fo-orb { right: -40px; top: -50px; width: 220px; height: 220px; }
+}
+@media (max-width: 560px) {
+  .fo-nav { grid-template-columns: 1fr; gap: 32px; }
+  .fo-cols { grid-template-columns: 1fr 1fr; }
+}
+
+/* fix: hover do icone no timeline fica opaco (senao a linha verde aparece atraves) */
+.steps-timeline .card-step:hover .step-icon {
+  background: var(--brand-navy);
+  border-color: rgba(95, 200, 155, 0.45);
 }
