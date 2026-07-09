@@ -1952,12 +1952,36 @@ body { overflow-x: clip; }
 .fs-glow { animation: fsBreath 6s ease-in-out infinite; }
 .fs-meniscus { animation: fsBreath 4.5s ease-in-out infinite; }
 
+/* Conta-gotas: puxa pra fora, dispensa a gota, volta — loop após encher */
+@keyframes fsPull {
+  0%, 10%   { transform: translateY(0); }
+  32%, 58%  { transform: translateY(-215px); }
+  82%, 100% { transform: translateY(0); }
+}
+@keyframes fsSqueeze {
+  0%, 38%, 60%, 100% { transform: scaleY(1); }
+  47% { transform: scaleY(.82); }
+}
+@keyframes fsDrop {
+  0%, 42%   { opacity: 0; transform: translateY(-4px) scale(.35); }
+  47%       { opacity: 1; transform: translateY(0) scale(1); }
+  59%       { opacity: .95; transform: translateY(58px) scale(.95); }
+  66%, 100% { opacity: 0; transform: translateY(66px) scale(.9); }
+}
+.fs-bulb { transform-box: fill-box; transform-origin: center; }
+.fs-drop { transform-box: fill-box; transform-origin: center; opacity: 0; }
+.fs.is-visible .fs-dropper { animation: fsPull 5.4s cubic-bezier(.55, 0, .25, 1) 1.7s infinite; }
+.fs.is-visible .fs-bulb { animation: fsSqueeze 5.4s ease-in-out 1.7s infinite; }
+.fs.is-visible .fs-drop { animation: fsDrop 5.4s ease-in 1.7s infinite; }
+
 @media (prefers-reduced-motion: reduce) {
   .fs-oil, .fs-pip, .fs-node, .fs-ann { transition: none !important; }
   .fs-oil, .fs-pip { transform: none; }
   .fs-node, .fs-ann { opacity: 1; }
   .fs-node, .fs-bubble, .fs-glow, .fs-meniscus { animation: none !important; }
   .fs-bubble { opacity: 0; }
+  .fs-dropper, .fs-bulb, .fs-drop { animation: none !important; transform: none !important; }
+  .fs-drop { opacity: 0; }
 }
 
 /* ==================== HEADER — pill flutuante glass ==================== */
