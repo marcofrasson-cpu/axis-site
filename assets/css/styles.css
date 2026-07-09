@@ -1064,35 +1064,23 @@ button { font: inherit; cursor: pointer; background: none; border: none; color: 
 
 /* ---------- FAQ accordion ---------- */
 
-.faq-list { display: flex; flex-direction: column; gap: 8px; }
-.faq-item {
-  background: var(--bg-card);
-  border: 1px solid var(--border-hairline);
-  border-radius: var(--radius-md);
-  overflow: hidden;
-}
+.faq-list { display: flex; flex-direction: column; }
+.faq-item { border-top: 1px solid var(--border-hairline); }
+.faq-item:last-child { border-bottom: 1px solid var(--border-hairline); }
 .faq-item summary {
-  list-style: none;
-  cursor: pointer;
-  padding: 18px 22px;
-  font-size: 15px;
-  font-weight: 500;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
+  list-style: none; cursor: pointer;
+  padding: 26px 4px; display: flex; align-items: center; justify-content: space-between; gap: 24px;
+  font-size: clamp(18px, 2.1vw, 25px); font-weight: 600; color: var(--text-primary);
 }
 .faq-item summary::-webkit-details-marker { display: none; }
 .faq-item summary::after {
-  content: '+';
-  font-size: 22px;
-  font-weight: 300;
-  color: var(--brand-green);
-  transition: transform 200ms ease;
-  line-height: 1;
+  content: "+"; flex-shrink: 0; width: 36px; height: 36px; border-radius: 50%;
+  border: 1px solid var(--border-hairline); display: grid; place-items: center;
+  font-size: 22px; font-weight: 400; line-height: 1; color: var(--text-muted);
+  transition: background 200ms ease, color 200ms ease, border-color 200ms ease;
 }
-.faq-item[open] summary::after { transform: rotate(45deg); }
-.faq-body { padding: 0 22px 20px; color: var(--text-muted); font-size: 14.5px; line-height: 1.65; }
+.faq-item[open] summary::after { content: "\2212"; background: rgba(95, 200, 155, 0.12); color: var(--brand-green); border-color: rgba(95, 200, 155, 0.3); }
+.faq-body { padding: 0 4px 28px; color: var(--text-muted); font-size: 15.5px; line-height: 1.75; max-width: 68ch; }
 
 /* ---------- Blog list ---------- */
 
@@ -2327,4 +2315,16 @@ body { overflow-x: clip; }
 @media (max-width: 520px) {
   .pf-top { grid-template-columns: 1fr; }
   .pf-wordmark span { transform: translateY(14%); }
+}
+
+/* ==================== Stats — numeros grandes (estilo minimal) ==================== */
+.sv-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 32px; text-align: center; }
+.sv-stat { padding: 8px 0; }
+.sv-stats .stat-number { font-size: clamp(40px, 5vw, 62px); font-weight: 700; letter-spacing: -0.03em; color: var(--text-primary); line-height: 1; font-variant-numeric: tabular-nums; }
+.sv-stats .stat-affix { color: var(--brand-green); }
+.sv-lbl { margin-top: 12px; color: var(--text-muted); font-size: 14px; line-height: 1.4; }
+.sv-stat + .sv-stat { border-left: 1px solid var(--border-hairline); }
+@media (max-width: 760px) {
+  .sv-stats { grid-template-columns: 1fr 1fr; gap: 28px 20px; }
+  .sv-stat + .sv-stat { border-left: none; }
 }
