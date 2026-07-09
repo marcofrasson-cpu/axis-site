@@ -63,9 +63,26 @@
           revealObserver.unobserve(entry.target);
         }
       });
-    }, { threshold: 0.15, rootMargin: '0px 0px -60px 0px' });
+    }, { threshold: 0, rootMargin: '0px 0px -12% 0px' });
     document.querySelectorAll('.reveal').forEach(function (el) { revealObserver.observe(el); });
   }
+
+  // Fallback robusto: garante reveal mesmo se o IntersectionObserver falhar
+  // (ex.: secoes muito mais altas que a viewport no mobile).
+  var revealPending = [].slice.call(document.querySelectorAll('.reveal'));
+  var revealScan = function () {
+    var vh = window.innerHeight || document.documentElement.clientHeight;
+    for (var i = revealPending.length - 1; i >= 0; i--) {
+      var r = revealPending[i].getBoundingClientRect();
+      if (r.top < vh * 0.92 && r.bottom > 0) {
+        revealPending[i].classList.add('is-visible');
+        revealPending.splice(i, 1);
+      }
+    }
+  };
+  window.addEventListener('scroll', revealScan, { passive: true });
+  window.addEventListener('resize', revealScan, { passive: true });
+  revealScan();
 
   // ========== Counter animado ==========
   var prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;

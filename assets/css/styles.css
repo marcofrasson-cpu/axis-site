@@ -1277,7 +1277,7 @@ button { font: inherit; cursor: pointer; background: none; border: none; color: 
   .contact-grid { grid-template-columns: 1fr; }
   .footer-cols { grid-template-columns: 1fr; gap: 28px; }
   .section { padding: 64px 0; }
-  :root { --space-section: 64px; }
+  :root { --space-section: 44px; }
 }
 
 @media (max-width: 720px) {
@@ -2229,11 +2229,13 @@ body { overflow-x: clip; }
   transform: translateY(20%);
 }
 @media (max-width: 860px) {
-  .pf-top { grid-template-columns: 1fr 1fr; gap: 32px 24px; }
-  .pf-mark { grid-column: 1 / -1; }
+  .pf-top { grid-template-columns: 1fr 1fr; gap: 30px 24px; }
+  .pf-top > a { grid-column: 1 / -1; }
+  .pf-col:nth-of-type(1) { grid-column: 1 / -1; }
+  .pf-col:nth-of-type(1) ul { display: grid; grid-template-columns: 1fr 1fr; gap: 12px 20px; }
+  .pf-col a, .pf-col li { overflow-wrap: anywhere; }
 }
 @media (max-width: 520px) {
-  .pf-top { grid-template-columns: 1fr; }
   .pf-wordmark span { transform: translateY(14%); }
 }
 
@@ -2304,3 +2306,19 @@ body { overflow-x: clip; }
 }
 .sv-feat__visual svg { width: 58%; height: auto; }
 @media (max-width: 900px) { .sv-feats { grid-template-columns: 1fr; } }
+
+/* ==================== Mobile: mata gaps exagerados + transicoes ==================== */
+@media (max-width: 768px) {
+  /* 1a secao nao gruda gap gigante embaixo do header flutuante */
+  main > section:first-child { padding-top: 18px; }
+  /* footer mais colado */
+  .pf { padding-top: 40px; }
+  .pf-bottom { margin-top: 28px; }
+  /* heros: cortar respiro extra no mobile */
+  .ab-hero { padding-top: 16px; }
+  .ciencia-hero { padding-top: 16px; }
+  .page-hero { padding: 20px 0 20px; }
+  .bl-top { padding-bottom: 0; }
+  /* secao full-spectrum e stats: menos padding vertical */
+  .fs { padding: 44px 0; }
+}
