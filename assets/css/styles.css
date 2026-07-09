@@ -993,7 +993,23 @@ button { font: inherit; cursor: pointer; background: none; border: none; color: 
 
 /* ---------- Team preview (home) ---------- */
 
-.team-preview { padding: 96px 0; }
+.team-preview { padding: 96px 0; position: relative; overflow: hidden; }
+.team-preview > .container { position: relative; z-index: 1; }
+/* Textura molecular no fundo (canabinoides + terpenos) — suave */
+.tp-molecules { position: absolute; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
+.tp-molecules svg {
+  position: absolute; fill: none; stroke: var(--brand-green);
+  stroke-width: 2.2; stroke-linejoin: round; stroke-linecap: round;
+}
+.tp-cbd   { width: 380px; top: -26px;  right: -34px; opacity: .08; transform: rotate(-6deg); }
+.tp-thc   { width: 340px; bottom: 26px; left: -46px; opacity: .07; transform: rotate(7deg) scaleX(-1); }
+.tp-terp1 { width: 112px; top: 47%;     right: 4%;    opacity: .09; }
+.tp-terp2 { width: 96px;  top: 13%;     left: 3.5%;   opacity: .06; transform: rotate(18deg); }
+@media (max-width: 900px) {
+  .tp-cbd { width: 260px; right: -70px; }
+  .tp-thc { width: 240px; left: -80px; bottom: 8%; }
+  .tp-terp1, .tp-terp2 { display: none; }
+}
 /* Scoped: nao colide com .section-eyebrow global das outras secoes */
 .team-preview .section-eyebrow {
   display: block;
