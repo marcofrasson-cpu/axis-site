@@ -2269,9 +2269,13 @@ body { overflow-x: clip; }
 @media (max-width: 900px) {
   .nh-grid { grid-template-columns: 1fr; text-align: center; gap: 20px; min-height: auto; padding: 32px 20px 8px; }
   .nh-sub { margin-inline: auto; }
-  .nh-ctas { justify-content: center; }
-  .nh-trust { justify-content: center; gap: 8px; }
-  .nh-trust li { font-size: 12px; padding: 7px 12px; }
+  /* CTAs lado a lado (uma linha só), capados p/ não esticar no tablet */
+  .nh-ctas { justify-content: center; gap: 10px; max-width: 400px; margin-inline: auto; }
+  .nh-ctas .btn { flex: 1 1 0; min-width: 0; padding-inline: 14px; }
+  /* Credenciais: linha compacta (sem 3 pílulas empilhadas) */
+  .nh-trust { justify-content: center; gap: 7px 18px; max-width: 480px; margin: 22px auto 0; }
+  .nh-trust li { border: 0; background: none; padding: 0; font-size: 12px; gap: 6px; }
+  .nh-trust svg { width: 15px; height: 15px; }
   .nh-visual { order: -1; max-width: 340px; margin: 0 auto; }
 }
 @media (prefers-reduced-motion: reduce) {
