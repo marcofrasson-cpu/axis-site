@@ -336,13 +336,17 @@ button { font: inherit; cursor: pointer; background: none; border: none; color: 
 /* ---------- Fade-in on scroll ---------- */
 .reveal {
   opacity: 0;
-  transform: translateY(24px);
-  transition: opacity 700ms cubic-bezier(0.4, 0, 0.2, 1),
-              transform 700ms cubic-bezier(0.4, 0, 0.2, 1);
+  transform: translateY(34px) scale(0.985);
+  filter: blur(6px);
+  transition: opacity 900ms cubic-bezier(0.16, 1, 0.3, 1),
+              transform 900ms cubic-bezier(0.16, 1, 0.3, 1),
+              filter 900ms cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: opacity, transform, filter;
 }
 .reveal.is-visible {
   opacity: 1;
-  transform: translateY(0);
+  transform: none;
+  filter: none;
 }
 
 /* ---------- Reduced motion ---------- */
@@ -350,7 +354,7 @@ button { font: inherit; cursor: pointer; background: none; border: none; color: 
   .reveal, .stat-card, .card, .step-icon {
     transition: none;
   }
-  .reveal { opacity: 1; transform: none; }
+  .reveal { opacity: 1; transform: none; filter: none; }
   .node-pulse { animation: none; }
 }
 
@@ -1757,7 +1761,7 @@ main { counter-reset: sect; }
 
 /* ---- 5. Motion escalonado — grids MONTAM em vez de aparecer ---- */
 /* .reveal-stagger neutraliza o fade de bloco; os filhos entram em cascata */
-.reveal-stagger { opacity: 1 !important; transform: none !important; transition: none !important; }
+.reveal-stagger { opacity: 1 !important; transform: none !important; transition: none !important; filter: none !important; }
 .reveal-stagger .stat-card,
 .reveal-stagger .card,
 .reveal-stagger [class*="-card"] {
