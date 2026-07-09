@@ -1667,7 +1667,6 @@ button { font: inherit; cursor: pointer; background: none; border: none; color: 
 }
 
 /* ---- 3. Kicker numerado (espinha 01->06; verde sai do eyebrow) ---- */
-main { counter-reset: sect; }
 .kicker {
   display: flex;
   align-items: baseline;
@@ -1675,15 +1674,6 @@ main { counter-reset: sect; }
   margin-bottom: 22px;
 }
 .kicker--center { justify-content: center; }
-.kicker::before {
-  counter-increment: sect;
-  content: counter(sect, decimal-leading-zero);
-  color: var(--brand-green);
-  font-size: 12px;
-  font-weight: 600;
-  letter-spacing: 0.02em;
-  font-variant-numeric: tabular-nums;
-}
 .kicker__rule {
   align-self: center;
   flex: 0 0 auto;
@@ -2257,6 +2247,54 @@ body { overflow-x: clip; }
 .nh-node:nth-child(2n) { animation-duration: 5.2s; animation-delay: -1.4s; }
 .nh-node:nth-child(3n) { animation-duration: 3.4s; animation-delay: -2.2s; }
 .nh-node:nth-child(4n) { animation-duration: 6s; animation-delay: -0.8s; }
+
+/* ---- Mapa endocanabinoide interativo ---- */
+.nh-hit { fill: transparent; }
+.nh-node { cursor: pointer; pointer-events: all; }
+.nh-node:focus { outline: none; }
+.nh-dot {
+  transform-box: fill-box; transform-origin: center;
+  transition: transform .22s var(--ease-settle), filter .22s ease;
+}
+.nh-node:hover .nh-dot,
+.nh-node:focus-visible .nh-dot,
+.nh-node.is-active .nh-dot {
+  transform: scale(2.2);
+  fill: #a8f0cd;
+  filter: drop-shadow(0 0 7px rgba(95, 200, 155, 0.95));
+}
+.nh-node:focus-visible .nh-dot { stroke: #eafff5; stroke-width: 1.4; }
+.nh-connector { opacity: 0; pointer-events: none; transition: opacity .22s ease; }
+.nh-connector.is-on { opacity: .5; }
+
+.nh-tip {
+  position: absolute; left: 0; top: 0; z-index: 6; pointer-events: none;
+  transform: translate(-50%, calc(-100% - 14px));
+  min-width: 116px; max-width: 210px;
+  padding: 10px 14px; border-radius: 12px;
+  background: linear-gradient(180deg, rgba(18, 34, 52, 0.97), rgba(10, 21, 34, 0.97));
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 16px 38px rgba(0, 0, 0, 0.5);
+  -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px);
+  opacity: 0; transition: opacity .16s ease, transform .16s ease;
+}
+.nh-tip.below { transform: translate(-50%, 14px); }
+.nh-tip.is-on { opacity: 1; }
+.nh-tip-t { display: block; font-family: var(--font-display); font-weight: 600; font-size: 17px; letter-spacing: -0.01em; color: var(--text-primary); }
+.nh-tip-d { display: block; margin-top: 3px; font-size: 12.5px; line-height: 1.42; color: var(--text-muted); }
+
+.nh-hint {
+  position: absolute; left: 50%; bottom: -2px; transform: translateX(-50%);
+  margin: 0; font-size: 12px; letter-spacing: .04em; color: var(--text-subtle);
+  pointer-events: none; white-space: nowrap; animation: nhHintPulse 2.8s ease-in-out infinite;
+  transition: opacity .3s ease;
+}
+.nh-hint.is-hidden { opacity: 0 !important; animation: none; }
+@keyframes nhHintPulse { 0%, 100% { opacity: .45; } 50% { opacity: .85; } }
+@media (prefers-reduced-motion: reduce) {
+  .nh-dot { transition: none; }
+  .nh-hint { animation: none; opacity: .6; }
+}
 .nh-mol { transform-box: fill-box; transform-origin: center; animation: nhFloat 6.5s ease-in-out infinite; }
 .nh-mol:nth-of-type(2) { animation-duration: 5.5s; animation-delay: -2s; }
 .nh-pulse { transform-box: fill-box; transform-origin: center; animation: nhPulse 3.4s ease-out infinite; }

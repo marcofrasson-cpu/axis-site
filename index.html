@@ -77,8 +77,8 @@
       </ul>
     </div>
 
-    <div class="nh-visual" aria-hidden="true">
-      <svg viewBox="0 0 480 480" role="img" aria-label="Sistema endocanabinoide">
+    <div class="nh-visual">
+      <svg viewBox="0 0 480 480" aria-label="Mapa do sistema endocanabinoide — passe o mouse ou toque nos pontos para ver o que a cannabis pode modular">
         <defs>
           <radialGradient id="nhg" cx="50%" cy="48%" r="55%">
             <stop offset="0" stop-color="rgba(95,200,155,.16)"/>
@@ -91,17 +91,29 @@
           <path d="M92,118 L188,86 L250,150 M250,150 L360,104 L416,178 M250,150 L240,238 M240,238 L128,300 L104,392 M240,238 L360,300 L410,392 M240,238 L214,346 L300,410 M128,300 L92,214"/>
         </g>
 
-        <g fill="#5fc89b">
-          <circle class="nh-node" cx="92" cy="118" r="4"/>
-          <circle class="nh-node" cx="416" cy="178" r="4.5"/>
-          <circle class="nh-node" cx="104" cy="392" r="4"/>
-          <circle class="nh-node" cx="410" cy="392" r="4"/>
-          <circle class="nh-node" cx="92" cy="214" r="3.5"/>
-          <circle class="nh-node" cx="128" cy="300" r="5"/>
-          <circle class="nh-node" cx="360" cy="300" r="4.5"/>
-          <circle class="nh-node" cx="214" cy="346" r="4"/>
-          <circle class="nh-node" cx="300" cy="410" r="3.5"/>
-          <circle class="nh-node" cx="360" cy="104" r="3.5"/>
+        <line class="nh-connector" x1="240" y1="238" x2="240" y2="238" stroke="#5fc89b" stroke-width="1.6"/>
+
+        <g class="nh-nodes" fill="#5fc89b">
+          <g class="nh-node" tabindex="0" role="button" data-cx="92" data-cy="118" data-mod="Dor" data-desc="O sistema endocanabinoide regula a percepção da dor." aria-label="Dor: o sistema endocanabinoide regula a percepção da dor.">
+            <circle class="nh-hit" cx="92" cy="118" r="20"/><circle class="nh-dot" cx="92" cy="118" r="4"/></g>
+          <g class="nh-node" tabindex="0" role="button" data-cx="416" data-cy="178" data-mod="Sono" data-desc="Modula o ciclo sono–vigília." aria-label="Sono: modula o ciclo sono–vigília.">
+            <circle class="nh-hit" cx="416" cy="178" r="20"/><circle class="nh-dot" cx="416" cy="178" r="4.5"/></g>
+          <g class="nh-node" tabindex="0" role="button" data-cx="104" data-cy="392" data-mod="Apetite" data-desc="Regula fome e saciedade." aria-label="Apetite: regula fome e saciedade.">
+            <circle class="nh-hit" cx="104" cy="392" r="20"/><circle class="nh-dot" cx="104" cy="392" r="4"/></g>
+          <g class="nh-node" tabindex="0" role="button" data-cx="410" data-cy="392" data-mod="Humor" data-desc="Participa da regulação do humor." aria-label="Humor: participa da regulação do humor.">
+            <circle class="nh-hit" cx="410" cy="392" r="20"/><circle class="nh-dot" cx="410" cy="392" r="4"/></g>
+          <g class="nh-node" tabindex="0" role="button" data-cx="92" data-cy="214" data-mod="Ansiedade" data-desc="Influencia a resposta ao estresse e à ansiedade." aria-label="Ansiedade: influencia a resposta ao estresse e à ansiedade.">
+            <circle class="nh-hit" cx="92" cy="214" r="20"/><circle class="nh-dot" cx="92" cy="214" r="3.5"/></g>
+          <g class="nh-node" tabindex="0" role="button" data-cx="128" data-cy="300" data-mod="Inflamação" data-desc="Ajuda a modular a resposta inflamatória." aria-label="Inflamação: ajuda a modular a resposta inflamatória.">
+            <circle class="nh-hit" cx="128" cy="300" r="20"/><circle class="nh-dot" cx="128" cy="300" r="5"/></g>
+          <g class="nh-node" tabindex="0" role="button" data-cx="360" data-cy="300" data-mod="Náusea" data-desc="Atua no controle de náusea e vômito." aria-label="Náusea: atua no controle de náusea e vômito.">
+            <circle class="nh-hit" cx="360" cy="300" r="20"/><circle class="nh-dot" cx="360" cy="300" r="4.5"/></g>
+          <g class="nh-node" tabindex="0" role="button" data-cx="214" data-cy="346" data-mod="Espasticidade" data-desc="Contribui para reduzir espasmos musculares." aria-label="Espasticidade: contribui para reduzir espasmos musculares.">
+            <circle class="nh-hit" cx="214" cy="346" r="20"/><circle class="nh-dot" cx="214" cy="346" r="4"/></g>
+          <g class="nh-node" tabindex="0" role="button" data-cx="300" data-cy="410" data-mod="Memória" data-desc="Participa da memória e do aprendizado." aria-label="Memória: participa da memória e do aprendizado.">
+            <circle class="nh-hit" cx="300" cy="410" r="20"/><circle class="nh-dot" cx="300" cy="410" r="3.5"/></g>
+          <g class="nh-node" tabindex="0" role="button" data-cx="360" data-cy="104" data-mod="Imunidade" data-desc="Modula a resposta imune." aria-label="Imunidade: modula a resposta imune.">
+            <circle class="nh-hit" cx="360" cy="104" r="20"/><circle class="nh-dot" cx="360" cy="104" r="3.5"/></g>
         </g>
 
         <polygon class="nh-mol" points="188,72 202,80 202,96 188,104 174,96 174,80" fill="none" stroke="#e8a13c" stroke-width="2"/>
@@ -116,6 +128,8 @@
           <path class="axis-a" transform="translate(240,238) scale(0.62) translate(-139.6,-88)" d="M 126.6 116 L 139.6 58 L 152.6 116 M 131.1 95 L 148.1 95" stroke="#5fc89b" stroke-width="6" stroke-linecap="butt" fill="none"/>
         </g>
       </svg>
+      <div class="nh-tip" role="status" aria-live="polite"><span class="nh-tip-t"></span><span class="nh-tip-d"></span></div>
+      <p class="nh-hint" aria-hidden="true"><span>Passe o mouse pelos pontos</span></p>
     </div>
   </div>
 </section>

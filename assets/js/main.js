@@ -188,4 +188,62 @@
       else { filtersPanel.setAttribute('hidden', ''); filterToggle.setAttribute('aria-expanded', 'false'); }
     });
   }
+
+  // ========== Mapa endocanabinoide interativo (hero) ==========
+  var nhVisual = document.querySelector('.nh-visual');
+  if (nhVisual) {
+    var nhTip = nhVisual.querySelector('.nh-tip');
+    var nhTipT = nhTip && nhTip.querySelector('.nh-tip-t');
+    var nhTipD = nhTip && nhTip.querySelector('.nh-tip-d');
+    var nhConn = nhVisual.querySelector('.nh-connector');
+    var nhHint = nhVisual.querySelector('.nh-hint');
+    var nhNodes = [].slice.call(nhVisual.querySelectorAll('.nh-node'));
+    if (nhTip && nhConn && nhNodes.length) {
+      var nhTouch = window.matchMedia && window.matchMedia('(hover: none)').matches;
+      if (nhHint) { var hs = nhHint.querySelector('span'); if (hs) hs.textContent = nhTouch ? 'Toque nos pontos' : 'Passe o mouse pelos pontos'; }
+      var nhActive = null;
+
+      var nhPlace = function (node) {
+        var vr = nhVisual.getBoundingClientRect();
+        var nr = node.getBoundingClientRect();
+        var cx = nr.left + nr.width / 2 - vr.left;
+        var cy = nr.top + nr.height / 2 - vr.top;
+        var tw = nhTip.offsetWidth || 180;
+        cx = Math.max(tw / 2 + 6, Math.min(cx, vr.width - tw / 2 - 6));
+        nhTip.style.left = cx + 'px';
+        nhTip.style.top = cy + 'px';
+        nhTip.classList.toggle('below', cy < vr.height * 0.26);
+      };
+      var nhShow = function (node) {
+        if (nhActive && nhActive !== node) nhActive.classList.remove('is-active');
+        nhActive = node;
+        node.classList.add('is-active');
+        nhTipT.textContent = node.getAttribute('data-mod') || '';
+        nhTipD.textContent = node.getAttribute('data-desc') || '';
+        nhPlace(node);
+        nhTip.classList.add('is-on');
+        nhConn.setAttribute('x2', node.getAttribute('data-cx'));
+        nhConn.setAttribute('y2', node.getAttribute('data-cy'));
+        nhConn.classList.add('is-on');
+        if (nhHint) nhHint.classList.add('is-hidden');
+      };
+      var nhHide = function (node) {
+        if (node) node.classList.remove('is-active');
+        if (nhActive === node || !node) nhActive = null;
+        nhTip.classList.remove('is-on');
+        nhConn.classList.remove('is-on');
+      };
+      nhNodes.forEach(function (node) {
+        node.addEventListener('pointerenter', function (e) { if (e.pointerType !== 'touch') nhShow(node); });
+        node.addEventListener('pointerleave', function (e) { if (e.pointerType !== 'touch') nhHide(node); });
+        node.addEventListener('focus', function () { nhShow(node); });
+        node.addEventListener('blur', function () { nhHide(node); });
+        node.addEventListener('click', function (e) { e.preventDefault(); if (nhActive === node) nhHide(node); else nhShow(node); });
+        node.addEventListener('keydown', function (e) {
+          if (e.key === 'Enter' || e.key === ' ' || e.key === 'Spacebar') { e.preventDefault(); if (nhActive === node) nhHide(node); else nhShow(node); }
+        });
+      });
+      document.addEventListener('click', function (e) { if (nhActive && !nhActive.contains(e.target)) nhHide(nhActive); });
+    }
+  }
 })();
