@@ -136,4 +136,28 @@
       });
     });
   }
+
+  // ========== Formulario de contato (monta mailto) ==========
+  var contatoForm = document.getElementById('contatoForm');
+  if (contatoForm) {
+    contatoForm.addEventListener('submit', function (e) {
+      e.preventDefault();
+      if (!contatoForm.checkValidity()) { contatoForm.reportValidity(); return; }
+      var g = function (id) { var el = document.getElementById(id); return el ? el.value.trim() : ''; };
+      var assunto = g('assunto') || 'Contato';
+      var subject = 'Contato site — ' + assunto + ' — ' + g('nome') + ' ' + g('sobrenome');
+      var body = [
+        'Nome: ' + g('nome') + ' ' + g('sobrenome'),
+        'E-mail: ' + g('email'),
+        'WhatsApp/Telefone: ' + g('telefone'),
+        'Cidade: ' + g('cidade'),
+        'Assunto: ' + assunto,
+        '',
+        'Mensagem:',
+        g('mensagem')
+      ].join('\n');
+      window.location.href = 'mailto:contato@axisfitomed.com.br?subject=' +
+        encodeURIComponent(subject) + '&body=' + encodeURIComponent(body);
+    });
+  }
 })();

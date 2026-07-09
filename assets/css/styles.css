@@ -2230,3 +2230,40 @@ body { overflow-x: clip; }
   .sv-stats { grid-template-columns: 1fr 1fr; gap: 28px 20px; }
   .sv-stat + .sv-stat { border-left: none; }
 }
+
+/* ==================== Contato — formulario (estilo Until) ==================== */
+.ct-wrap { max-width: 780px; margin: 0 auto; }
+.ct-head { text-align: center; margin-bottom: 36px; }
+.ct-head .ab-eyebrow { justify-content: center; }
+.ct-title { font-size: clamp(32px, 4vw, 52px); font-weight: 700; letter-spacing: -0.03em; margin: 16px 0 14px; line-height: 1.06; }
+.ct-intro { color: var(--lead-color); font-size: var(--fs-lead); max-width: 52ch; margin: 0 auto; }
+.ct-form { background: linear-gradient(160deg, #12233a, #0e1b2c); border: 1px solid var(--border-hairline); border-radius: 20px; padding: 40px; box-shadow: var(--shadow-lg); }
+.ct-row { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-bottom: 18px; }
+.ct-field { display: flex; flex-direction: column; gap: 8px; margin-bottom: 18px; }
+.ct-row .ct-field { margin-bottom: 0; }
+.ct-field label { font-size: 13px; color: var(--text-muted); font-weight: 500; }
+.ct-field input, .ct-field select, .ct-field textarea {
+  font: inherit; font-size: 15px; color: var(--text-primary); background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--border-hairline); border-radius: 10px; padding: 12px 14px; width: 100%;
+  transition: border-color 150ms ease, background 150ms ease;
+}
+.ct-field input:focus, .ct-field select:focus, .ct-field textarea:focus {
+  outline: none; border-color: var(--brand-green); background: rgba(95, 200, 155, 0.05);
+}
+.ct-field textarea { resize: vertical; min-height: 112px; }
+.ct-field select {
+  appearance: none; -webkit-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8' fill='none' stroke='%2394a3b8' stroke-width='1.6'%3E%3Cpath d='M1 1.5L6 6.5L11 1.5'/%3E%3C/svg%3E");
+  background-repeat: no-repeat; background-position: right 14px center; padding-right: 36px;
+}
+.ct-consent { display: flex; gap: 10px; align-items: flex-start; font-size: 13px; color: var(--text-muted); margin: 8px 0 22px; line-height: 1.5; cursor: pointer; }
+.ct-consent input { margin-top: 3px; accent-color: var(--brand-green); flex-shrink: 0; width: 16px; height: 16px; }
+.ct-submit { width: 100%; }
+.ct-note { font-size: 12px; color: var(--text-subtle); text-align: center; margin-top: 12px; }
+.ct-channels { display: flex; justify-content: center; gap: 24px; flex-wrap: wrap; margin-top: 28px; font-size: 14px; color: var(--text-muted); }
+.ct-channels a { color: var(--brand-green); }
+@media (max-width: 640px) {
+  .ct-row { grid-template-columns: 1fr; gap: 0; }
+  .ct-row .ct-field { margin-bottom: 18px; }
+  .ct-form { padding: 26px; }
+}

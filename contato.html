@@ -42,56 +42,44 @@
 
 <main>
 
-<section class="page-hero">
-  <div class="container">
-    <h1>Entre em contato</h1>
-    <p>Tire dúvidas sobre o atendimento, agende uma avaliação ou solicite mais informações sobre cannabis medicinal.</p>
-  </div>
-</section>
+<section class="section ct-section reveal">
+  <div class="container ct-wrap">
+    <div class="ct-head">
+      <span class="ab-eyebrow">Contato</span>
+      <h1 class="ct-title">Fale com a equipe</h1>
+      <p class="ct-intro">Agende uma avaliação, tire dúvidas ou solicite mais informações. Respondemos em até um dia útil.</p>
+    </div>
 
-<section class="section">
-  <div class="container">
-    <div class="contact-grid">
-      <div class="contact-cards">
-        <div class="contact-card">
-          <div class="label">WhatsApp</div>
-          <div class="value">A definir</div>
-        </div>
-        <div class="contact-card">
-          <div class="label">E-mail</div>
-          <div class="value">contato@axisfitomed.com.br</div>
-        </div>
-        <div class="contact-card">
-          <div class="label">Endereço</div>
-          <div class="value">A definir</div>
-        </div>
-        <div class="contact-card">
-          <div class="label">Horário</div>
-          <div class="value">Seg–Sex, 8h às 18h</div>
+    <form class="ct-form" id="contatoForm" novalidate>
+      <div class="ct-row">
+        <div class="ct-field"><label for="nome">Nome *</label><input type="text" id="nome" name="nome" required autocomplete="given-name"></div>
+        <div class="ct-field"><label for="sobrenome">Sobrenome *</label><input type="text" id="sobrenome" name="sobrenome" required autocomplete="family-name"></div>
+      </div>
+      <div class="ct-row">
+        <div class="ct-field"><label for="email">E-mail *</label><input type="email" id="email" name="email" required autocomplete="email"></div>
+        <div class="ct-field"><label for="telefone">WhatsApp / Telefone</label><input type="tel" id="telefone" name="telefone" autocomplete="tel"></div>
+      </div>
+      <div class="ct-row">
+        <div class="ct-field"><label for="cidade">Cidade</label><input type="text" id="cidade" name="cidade" autocomplete="address-level2"></div>
+        <div class="ct-field"><label for="assunto">Assunto</label>
+          <select id="assunto" name="assunto">
+            <option>Agendar avaliação</option>
+            <option>Dúvida sobre tratamento</option>
+            <option>Renovação de receita</option>
+            <option>Outro</option>
+          </select>
         </div>
       </div>
-      <form class="form-card" action="mailto:contato@axisfitomed.com.br" method="post" enctype="text/plain">
-        <div class="form-field">
-          <label for="nome">Nome</label>
-          <input type="text" id="nome" name="nome" required autocomplete="name">
-        </div>
-        <div class="form-field">
-          <label for="email">E-mail</label>
-          <input type="email" id="email" name="email" required autocomplete="email">
-        </div>
-        <div class="form-field">
-          <label for="telefone">Telefone (opcional)</label>
-          <input type="tel" id="telefone" name="telefone" autocomplete="tel">
-        </div>
-        <div class="form-field">
-          <label for="mensagem">Mensagem</label>
-          <textarea id="mensagem" name="mensagem" required></textarea>
-        </div>
-        <button type="submit" class="btn btn-primary" style="width:100%;">Enviar mensagem</button>
-        <p style="font-size:12px;color:var(--text-subtle);margin-top:10px;text-align:center;">
-          O envio abre seu cliente de e-mail. Em breve teremos formulário direto.
-        </p>
-      </form>
+      <div class="ct-field"><label for="mensagem">Mensagem *</label><textarea id="mensagem" name="mensagem" rows="4" required></textarea></div>
+      <label class="ct-consent"><input type="checkbox" id="consent" required> Concordo em ser contatado pela Axis FitoMed sobre a minha solicitação.</label>
+      <button type="submit" class="btn btn-primary ct-submit">Enviar</button>
+      <p class="ct-note">O envio abre seu app de e-mail com a mensagem já preenchida.</p>
+    </form>
+
+    <div class="ct-channels">
+      <a href="mailto:contato@axisfitomed.com.br">contato@axisfitomed.com.br</a>
+      <span>WhatsApp em breve</span>
+      <span>Seg–Sex, 8h–18h</span>
     </div>
   </div>
 </section>
