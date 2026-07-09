@@ -1889,16 +1889,17 @@ body { overflow-x: clip; }
 .fs-list { display: none; list-style: none; }
 
 @media (max-width: 900px) {
-  .fs-panel { grid-template-columns: 1fr; gap: 8px; padding: 40px 28px; }
-  .fs-anno-svg { display: none; }
-  .fs-stage { max-width: 300px; margin-top: 8px; }
-  .fs-list { display: block; margin-top: 32px; }
-  .fs-list li { display: flex; gap: 12px; padding: 14px 0; border-top: 1px solid var(--border-hairline); }
-  .fs-list li:first-child { border-top: none; }
-  .fs-mk { flex: 0 0 8px; width: 8px; height: 8px; border-radius: 50%; margin-top: 7px; background: var(--brand-green); }
-  .fs-mk.amber { background: var(--oil); }
-  .fs-list .fs-t { font-size: 14px; font-weight: 600; color: var(--text-primary); }
-  .fs-list .fs-d { font-size: 13px; color: var(--text-muted); }
+  .fs-panel { grid-template-columns: 1fr; gap: 8px; padding: 40px 20px; }
+  .fs-list { display: none; }
+  .fs-anno-svg { display: block; }
+  .fs-stage { max-width: 460px; margin: 10px auto 0; }
+  .fs-annobox .fs-t { font-size: 19px; letter-spacing: 0; }
+  .fs-annobox .fs-d { display: none; }
+  .fs-leader { stroke-width: 1.8; }
+  .fs-dot { r: 4; }
+}
+@media (max-width: 360px) {
+  .fs-annobox .fs-t { font-size: 21px; }
 }
 /* loop ambiente — vida continua depois de encher (nao esvazia) */
 @keyframes fsBob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
