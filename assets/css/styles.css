@@ -2357,6 +2357,18 @@ body { overflow-x: clip; }
 .bl-feature-excerpt { color: var(--text-muted); font-size: 15.5px; line-height: 1.7; }
 .bl-readmore { margin-top: auto; padding-top: 8px; color: var(--brand-green); font-weight: 600; font-size: 14.5px; }
 .bl-more { margin-top: 28px; color: var(--text-subtle); font-size: 14px; }
+.bl-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 22px; margin-top: 26px; }
+.bl-card {
+  display: flex; flex-direction: column; gap: 12px; padding: 30px;
+  background: var(--bg-card); border: 1px solid var(--border-hairline); border-radius: var(--radius-md);
+  transition: border-color 200ms ease, transform 200ms ease, box-shadow 200ms ease;
+}
+.bl-card:hover { border-color: var(--border-strong); transform: translateY(-4px); box-shadow: var(--shadow-lg); }
+.bl-card-title { font-family: var(--font-display); font-weight: 600; font-size: clamp(19px, 2vw, 23px); line-height: 1.24; letter-spacing: -0.015em; color: var(--text-primary); }
+.bl-byline { font-size: 13px; color: var(--text-subtle); }
+.bl-card-excerpt { color: var(--text-muted); font-size: 15px; line-height: 1.65; }
+.bl-card .bl-readmore { margin-top: auto; padding-top: 6px; }
+@media (max-width: 720px) { .bl-grid { grid-template-columns: 1fr; } }
 @media (max-width: 820px) {
   .bl-feature { grid-template-columns: 1fr; }
   .bl-feature-media { min-height: 0; aspect-ratio: 16 / 10; }
