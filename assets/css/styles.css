@@ -2404,10 +2404,18 @@ body { overflow-x: clip; }
 .ecs-step b { color: var(--brand-green); font-weight: 600; }
 
 @media (max-width: 900px) {
-  .ecs-grid { grid-template-columns: 1fr; gap: 20px; }
-  .ecs-sticky { top: 76px; }
-  .ecs-svg { max-width: 260px; }
-  .ecs-step { min-height: 46vh; opacity: 1; }
+  .ecs-head { margin-bottom: 18px; }
+  .ecs-grid { display: block; }
+  .ecs-stage {
+    position: sticky; top: 100px; z-index: 3;
+    display: flex; align-items: center; justify-content: center;
+    padding: 4px 0 22px;
+    background: linear-gradient(to bottom, var(--brand-navy) 0%, var(--brand-navy) 56%, rgba(13, 27, 42, 0) 100%);
+  }
+  .ecs-sticky { position: static; top: auto; }
+  .ecs-svg { max-width: 196px; }
+  .ecs-steps { margin-top: 2px; }
+  .ecs-step { min-height: 64vh; }
 }
 @media (prefers-reduced-motion: reduce) {
   .ecs-scene, .ecs-dock, .ecs-pocket { transition: none; }
