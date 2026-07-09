@@ -758,11 +758,11 @@ button { font: inherit; cursor: pointer; background: none; border: none; color: 
   -webkit-mask-image: radial-gradient(120% 70% at 40% 108%, #000 0%, rgba(0,0,0,.45) 46%, transparent 74%), radial-gradient(64% 56% at 97% 0%, #000 0%, transparent 64%);
   mask-image: radial-gradient(120% 70% at 40% 108%, #000 0%, rgba(0,0,0,.45) 46%, transparent 74%), radial-gradient(64% 56% at 97% 0%, #000 0%, transparent 64%);
 }
-.manifesto .container { position: relative; min-height: clamp(380px, 43vh, 440px); }
+.manifesto .container { position: relative; min-height: clamp(440px, 50vh, 500px); }
 .manifesto-text { position: relative; z-index: 2; }
 .manifesto-mol {
-  position: absolute; z-index: 1; left: -40px; bottom: 4px;
-  width: min(72%, 720px); pointer-events: none;
+  position: absolute; z-index: 1; left: -16px; bottom: 8px;
+  width: min(46%, 440px); pointer-events: none;
 }
 .manifesto-mol svg { width: 100%; height: auto; display: block; }
 .manifesto-mol [data-draw] { stroke-dasharray: 1; stroke-dashoffset: 1; }
@@ -786,8 +786,10 @@ button { font: inherit; cursor: pointer; background: none; border: none; color: 
 }
 .manifesto-lead .hl { color: var(--oil-hi); }
 .manifesto-body {
-  margin: 40px 0 0 auto; max-width: 40ch;
-  font-size: clamp(17px, 1.6vw, 20px); line-height: 1.62; color: var(--text-muted);
+  margin: 44px 0 0 auto; max-width: 32ch;
+  font-family: var(--font-display); font-weight: 500;
+  font-size: clamp(19px, 1.7vw, 23px); line-height: 1.5; letter-spacing: -0.01em;
+  color: var(--lead-color);
 }
 @media (max-width: 720px) {
   .manifesto-body { margin-top: 28px; margin-left: 0; }
