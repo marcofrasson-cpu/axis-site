@@ -2253,35 +2253,60 @@ body { overflow-x: clip; }
   font-size: 13.5px; color: var(--text-muted); background: var(--bg-card);
 }
 
-/* ===== Sobre — narrativa editorial ===== */
+/* ===== Sobre — narrativa editorial (gaps + hierarquia) ===== */
 .hl-serif { color: var(--oil-hi); font-style: italic; }
 
-/* História / SEC: editorial em coluna única centrada (sem coluna morta) */
-.story-grid { max-width: 780px; margin-inline: auto; }
-.story-head { margin-bottom: 26px; }
+/* Coluna editorial única — desarma qualquer .story-grid de 2 colunas herdado (coluna morta = gap) */
+.story-grid {
+  display: block;
+  grid-template-columns: none;
+  max-width: 66ch;
+  margin-inline: auto;
+}
+
+.story-head { margin-bottom: 28px; }
+
+.kicker { display: flex; align-items: center; gap: 12px; margin-bottom: 18px; }
+.kicker--center { justify-content: center; }
+.kicker__rule { width: 32px; height: 1px; background: var(--brand-green); flex: none; }
+.kicker__label {
+  font-family: 'Hanken Grotesk', -apple-system, system-ui, sans-serif;
+  font-size: 12px; font-weight: 600; letter-spacing: 0.16em;
+  text-transform: uppercase; color: var(--brand-green);
+}
+
 .story-head h2 {
   font-family: var(--font-display); font-weight: 600;
-  font-size: clamp(27px, 3.2vw, 40px); line-height: 1.12; letter-spacing: -0.02em;
-  margin-top: 16px; color: var(--text-primary); text-wrap: balance;
+  font-size: clamp(28px, 3.4vw, 42px); line-height: 1.1; letter-spacing: -0.02em;
+  color: var(--text-primary); text-wrap: balance; margin: 0;
 }
+
+/* Corpo em sans — o contraste com o título serif É a hierarquia editorial */
 .story-body p {
-  font-family: var(--font-display); font-weight: 400;
-  font-size: clamp(17px, 1.35vw, 20px); line-height: 1.72; color: var(--lead-color);
+  font-family: 'Hanken Grotesk', -apple-system, system-ui, sans-serif;
+  font-weight: 400; font-size: clamp(16px, 1.15vw, 18px);
+  line-height: 1.75; color: var(--lead-color); max-width: 66ch;
 }
-.story-body p + p { margin-top: 20px; }
+.story-body p + p { margin-top: 18px; }
+.story-body p:first-of-type {
+  font-size: clamp(17px, 1.3vw, 20px); line-height: 1.7; color: var(--text-primary);
+}
 .story-body strong { color: var(--text-primary); font-weight: 600; }
 
-/* Método (mesma coluna editorial) */
-.section-heading--left { text-align: left; max-width: 780px; margin-inline: auto; margin-bottom: 0; }
+/* Método — mesma linguagem editorial */
+.section-heading--left {
+  text-align: left; max-width: 66ch; margin-inline: auto; margin-bottom: 0;
+}
 .section-heading--left h2 {
   font-family: var(--font-display); font-weight: 600;
-  font-size: clamp(27px, 3.2vw, 40px); line-height: 1.12; letter-spacing: -0.02em;
-  margin-top: 16px; color: var(--text-primary); text-wrap: balance;
+  font-size: clamp(28px, 3.4vw, 42px); line-height: 1.1; letter-spacing: -0.02em;
+  color: var(--text-primary); text-wrap: balance; margin: 16px 0 0;
 }
-.method-body { max-width: 780px; margin: 26px auto 0; }
+.method-body { max-width: 66ch; margin: 28px auto 0; }
 .method-body p {
-  font-family: var(--font-display); font-weight: 400;
-  font-size: clamp(17px, 1.35vw, 20px); line-height: 1.72; color: var(--lead-color);
+  font-family: 'Hanken Grotesk', -apple-system, system-ui, sans-serif;
+  font-weight: 400; font-size: clamp(16px, 1.15vw, 18px);
+  line-height: 1.75; color: var(--lead-color);
 }
 .method-body p + p { margin-top: 18px; }
 .method-body strong { color: var(--text-primary); font-weight: 600; }
