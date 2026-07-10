@@ -705,6 +705,10 @@ button { font: inherit; cursor: pointer; background: none; border: none; color: 
 .bm-marker.is-on::after { display: none; }
 .bm-marker:focus-visible .bm-marker-dot { box-shadow: 0 0 0 3px var(--brand-navy), 0 0 0 6px var(--brand-green); }
 @keyframes bmPulse { 0% { transform: scale(1); opacity: .6; } 100% { transform: scale(3.2); opacity: 0; } }
+.bm-body { animation: bmBreathe 5.5s ease-in-out infinite; }
+.bm-flow { opacity: .85; stroke-dasharray: 11 89; animation: bmFlow 2.8s linear infinite; filter: drop-shadow(0 0 3px rgba(95, 200, 155, .7)); }
+@keyframes bmBreathe { 0%, 100% { opacity: .14; } 50% { opacity: .2; } }
+@keyframes bmFlow { from { stroke-dashoffset: 100; } to { stroke-dashoffset: 0; } }
 
 .bm-panel { position: relative; min-height: 210px; }
 .bm-cat[hidden] { display: none; }
@@ -734,7 +738,8 @@ button { font: inherit; cursor: pointer; background: none; border: none; color: 
 }
 @media (prefers-reduced-motion: reduce) {
   .bm-marker::after { animation: none; opacity: 0; }
-  .bm-cat { animation: none; }
+  .bm-cat, .bm-body { animation: none; }
+  .bm-flow { animation: none; opacity: 0; }
 }
 
 /* ---------- Indications preview (home) — editorial split + bento ---------- */
