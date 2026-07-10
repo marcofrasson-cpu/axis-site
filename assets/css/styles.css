@@ -2861,7 +2861,25 @@ body { overflow-x: clip; }
   background: radial-gradient(70% 90% at 50% 25%, rgba(95, 200, 155, 0.10), transparent 70%);
   aspect-ratio: 16 / 9; display: flex; align-items: center; justify-content: center;
 }
-.sv-feat__visual svg { width: 58%; height: auto; }
+.sv-feat__visual svg { width: 58%; height: auto; overflow: visible; }
+
+/* Ilustracoes vivas dos cards de processo */
+.tg-r1, .tg-r2, .tg-dot, .dp-drop, .dp-dot, .ob-ring, .ob-node { transform-box: fill-box; transform-origin: center; }
+.tg-r1 { animation: tgPulse 3s ease-in-out infinite; }         /* alvo: anéis de foco */
+.tg-r2 { animation: tgPulse 3s ease-in-out infinite .5s; }
+.tg-dot { animation: svfDot 2.6s ease-in-out infinite; }
+.dp-drop { animation: dpBob 3.4s ease-in-out infinite; }        /* prescrição: gota + dose */
+.dp-dot { animation: svfDot 2.6s ease-in-out infinite .3s; }
+.ob-ring { animation: obSpin 22s linear infinite; }             /* acompanhamento: ciclo */
+.ob-node { animation: svfDot 2.6s ease-in-out infinite; }
+@keyframes tgPulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.12); } }
+@keyframes svfDot { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.32); } }
+@keyframes dpBob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(3px); } }
+@keyframes obSpin { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) {
+  .tg-r1, .tg-r2, .tg-dot, .dp-drop, .dp-dot, .ob-ring, .ob-node { animation: none !important; }
+}
+
 @media (max-width: 900px) { .sv-feats { grid-template-columns: 1fr; } }
 
 /* ==================== Mobile: mata gaps exagerados + transicoes ==================== */
