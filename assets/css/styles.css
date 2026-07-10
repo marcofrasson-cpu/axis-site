@@ -2063,7 +2063,9 @@ body { overflow-x: clip; }
 
 /* ==================== HEADER — pill flutuante glass ==================== */
 .site-header {
-  position: sticky; top: 0; z-index: 50;
+  /* z acima do grain (body::after, z 9998): sem isso o mix-blend-mode do grão
+     compõe sobre o pill e o backdrop-filter "some" no repaint (bug do Safari) */
+  position: sticky; top: 0; z-index: 9999;
   height: auto;
   padding: 18px 0;
   background: transparent;
@@ -2082,6 +2084,9 @@ body { overflow-x: clip; }
   border: 1px solid rgba(255, 255, 255, 0.16);
   backdrop-filter: saturate(135%) blur(26px);
   -webkit-backdrop-filter: saturate(135%) blur(26px);
+  /* camada própria: mantém o backdrop-filter estável entre repaints no Safari */
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
   box-shadow:
     0 14px 38px rgba(0, 0, 0, 0.30),
     inset 0 1px 0 rgba(255, 255, 255, 0.24),
