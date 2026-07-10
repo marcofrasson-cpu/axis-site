@@ -670,6 +670,73 @@ button { font: inherit; cursor: pointer; background: none; border: none; color: 
   .indications { padding: 64px 0; }
 }
 
+/* ===== Mapa do corpo (indicações interativas) ===== */
+.bodymap { padding: var(--space-section) 0; }
+.bm-stage {
+  display: grid; grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
+  gap: clamp(32px, 5vw, 80px); align-items: center; margin-top: clamp(32px, 4vw, 56px);
+}
+.bm-figure { position: relative; aspect-ratio: 200 / 480; height: clamp(400px, 56vh, 540px); margin-inline: auto; }
+.bm-svg { width: 100%; height: 100%; display: block; overflow: visible; }
+
+.bm-marker {
+  position: absolute; transform: translate(-50%, -50%);
+  width: 44px; height: 44px; padding: 0; border: 0; background: transparent;
+  cursor: pointer; display: grid; place-items: center; -webkit-tap-highlight-color: transparent; z-index: 2;
+}
+.bm-marker-dot {
+  position: relative; width: 13px; height: 13px; border-radius: 50%;
+  background: var(--brand-green); box-shadow: 0 0 0 4px rgba(95, 200, 155, 0.14);
+  transition: transform .22s ease, box-shadow .22s ease;
+}
+.bm-marker::after {
+  content: ""; position: absolute; width: 13px; height: 13px; border-radius: 50%;
+  border: 1.5px solid var(--brand-green); animation: bmPulse 2.6s ease-out infinite;
+}
+.bm-marker:nth-of-type(2)::after { animation-delay: .4s; }
+.bm-marker:nth-of-type(3)::after { animation-delay: .9s; }
+.bm-marker:nth-of-type(4)::after { animation-delay: 1.3s; }
+.bm-marker:nth-of-type(5)::after { animation-delay: .6s; }
+.bm-marker:nth-of-type(6)::after { animation-delay: 1.7s; }
+.bm-marker:hover .bm-marker-dot { transform: scale(1.22); }
+.bm-marker.is-on .bm-marker-dot {
+  transform: scale(1.42); box-shadow: 0 0 0 6px rgba(95, 200, 155, 0.2), 0 0 20px rgba(95, 200, 155, 0.55);
+}
+.bm-marker.is-on::after { display: none; }
+.bm-marker:focus-visible .bm-marker-dot { box-shadow: 0 0 0 3px var(--brand-navy), 0 0 0 6px var(--brand-green); }
+@keyframes bmPulse { 0% { transform: scale(1); opacity: .6; } 100% { transform: scale(3.2); opacity: 0; } }
+
+.bm-panel { position: relative; min-height: 210px; }
+.bm-cat[hidden] { display: none; }
+.bm-cat { animation: bmFade .35s ease; }
+.bm-cat-region {
+  display: inline-block; font-family: 'Hanken Grotesk', sans-serif; font-size: 12px; font-weight: 600;
+  letter-spacing: 0.14em; text-transform: uppercase; color: var(--brand-green); margin-bottom: 14px;
+}
+.bm-cat h3 {
+  font-family: var(--font-display); font-weight: 600; font-size: clamp(24px, 2.6vw, 34px);
+  line-height: 1.1; letter-spacing: -0.02em; color: var(--text-primary); margin: 0 0 18px;
+}
+.bm-cat ul { list-style: none; display: grid; gap: 0; }
+.bm-cat li {
+  display: flex; align-items: center; gap: 13px; padding: 12px 2px;
+  border-bottom: 1px solid var(--border-hairline);
+  font-family: 'Hanken Grotesk', sans-serif; font-size: 15.5px; color: var(--lead-color);
+}
+.bm-cat li:first-child { border-top: 1px solid var(--border-hairline); }
+.bm-cat li::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--brand-green); flex: none; }
+@keyframes bmFade { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+
+@media (max-width: 760px) {
+  .bm-stage { grid-template-columns: 1fr; gap: 16px; }
+  .bm-figure { width: min(58vw, 208px); height: auto; }
+  .bm-panel { min-height: 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .bm-marker::after { animation: none; opacity: 0; }
+  .bm-cat { animation: none; }
+}
+
 /* ---------- Indications preview (home) — editorial split + bento ---------- */
 .indications-preview {
   padding: var(--space-section) 0;

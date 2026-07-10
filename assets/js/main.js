@@ -273,4 +273,29 @@
     }, { rootMargin: '-45% 0px -45% 0px', threshold: 0 });
     ecsSteps.forEach(function (st) { ecsIO.observe(st); });
   }
+
+  // ========== Mapa do corpo (indicações interativas) ==========
+  var bmStage = document.querySelector('.bm-stage');
+  if (bmStage) {
+    var bmMarkers = [].slice.call(bmStage.querySelectorAll('.bm-marker'));
+    var bmCats = [].slice.call(bmStage.querySelectorAll('.bm-cat'));
+    var bmHover = window.matchMedia && window.matchMedia('(hover: hover)').matches;
+    var bmActivate = function (cat) {
+      bmMarkers.forEach(function (m) {
+        var on = m.getAttribute('data-cat') === cat;
+        m.classList.toggle('is-on', on);
+        m.setAttribute('aria-pressed', on ? 'true' : 'false');
+      });
+      bmCats.forEach(function (c) {
+        var on = c.getAttribute('data-cat') === cat;
+        c.classList.toggle('is-active', on);
+        if (on) { c.removeAttribute('hidden'); } else { c.setAttribute('hidden', ''); }
+      });
+    };
+    bmMarkers.forEach(function (m) {
+      var cat = m.getAttribute('data-cat');
+      m.addEventListener('click', function () { bmActivate(cat); });
+      m.addEventListener('mouseenter', function () { if (bmHover) bmActivate(cat); });
+    });
+  }
 })();
