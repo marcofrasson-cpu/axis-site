@@ -684,6 +684,7 @@ button { font: inherit; cursor: pointer; background: none; border: none; color: 
   width: 44px; height: 44px; padding: 0; border: 0; background: transparent;
   cursor: pointer; display: grid; place-items: center; -webkit-tap-highlight-color: transparent; z-index: 2;
 }
+.bm-marker--head { width: 26px; height: 26px; }
 .bm-marker-dot {
   position: relative; width: 10px; height: 10px; border-radius: 50%;
   background: rgba(95, 200, 155, 0.5); box-shadow: 0 0 0 3px rgba(95, 200, 155, 0.07);

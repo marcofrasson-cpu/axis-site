@@ -27,7 +27,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Spectral:wght@400;500;600;700&family=Hanken+Grotesk:wght@400;500;600;700;800&display=swap">
 <link rel="icon" type="image/svg+xml" href="assets/img/logo.svg">
-<link rel="stylesheet" href="assets/css/styles.css?v=28">
+<link rel="stylesheet" href="assets/css/styles.css?v=29">
 </head>
 <body>
 
@@ -93,8 +93,8 @@
           <ellipse cx="100" cy="220" rx="118" ry="228" fill="url(#bmGlow)"/>
           <!-- Zona da região ativa acende (amarra corpo ao conteúdo) -->
           <g class="bm-zones">
-            <ellipse class="bm-zone" data-cat="neuro" cx="100" cy="40" rx="34" ry="34" fill="url(#bmZone)"/>
-            <ellipse class="bm-zone" data-cat="mental" cx="100" cy="44" rx="32" ry="32" fill="url(#bmZone)"/>
+            <ellipse class="bm-zone" data-cat="neuro" cx="89" cy="39" rx="28" ry="30" fill="url(#bmZone)"/>
+            <ellipse class="bm-zone" data-cat="mental" cx="111" cy="39" rx="28" ry="30" fill="url(#bmZone)"/>
             <ellipse class="bm-zone is-on" data-cat="dor" cx="128" cy="120" rx="42" ry="48" fill="url(#bmZone)"/>
             <ellipse class="bm-zone" data-cat="onco" cx="100" cy="155" rx="56" ry="66" fill="url(#bmZone)"/>
             <ellipse class="bm-zone" data-cat="gastro" cx="100" cy="196" rx="40" ry="40" fill="url(#bmZone)"/>
@@ -139,16 +139,16 @@
           <path class="bm-flow f4" pathLength="100" d="M100,256 L112,330 L112,432"/>
           <!-- Condutores tap-pulse (espinha -> marcador) -->
           <g class="bm-conduits" fill="none" stroke="#bff0d4" stroke-width="2" stroke-linecap="round">
-            <path class="bm-conduit" data-cat="neuro" pathLength="100" d="M100,88 L100,34"/>
-            <path class="bm-conduit" data-cat="mental" pathLength="100" d="M100,88 C94,66 85,52 80,44"/>
+            <path class="bm-conduit" data-cat="neuro" pathLength="100" d="M100,88 C97,62 92,46 89,38"/>
+            <path class="bm-conduit" data-cat="mental" pathLength="100" d="M100,88 C103,62 108,46 111,38"/>
             <path class="bm-conduit" data-cat="dor" pathLength="100" d="M100,108 L128,116"/>
             <path class="bm-conduit" data-cat="onco" pathLength="100" d="M100,88 L100,150"/>
             <path class="bm-conduit" data-cat="gastro" pathLength="100" d="M100,88 L100,196"/>
             <path class="bm-conduit" data-cat="mulher" pathLength="100" d="M100,88 L100,256"/>
           </g>
         </svg>
-        <button class="bm-marker" type="button" data-cat="neuro" style="left:50%;top:7.1%" aria-pressed="false" aria-label="Neurologia — ver condições"><span class="bm-marker-dot"></span></button>
-        <button class="bm-marker" type="button" data-cat="mental" style="left:40%;top:9.2%" aria-pressed="false" aria-label="Saúde mental — ver condições"><span class="bm-marker-dot"></span></button>
+        <button class="bm-marker bm-marker--head" type="button" data-cat="neuro" style="left:44.5%;top:7.9%" aria-pressed="false" aria-label="Neurologia — ver condições"><span class="bm-marker-dot"></span></button>
+        <button class="bm-marker bm-marker--head" type="button" data-cat="mental" style="left:55.5%;top:7.9%" aria-pressed="false" aria-label="Saúde mental — ver condições"><span class="bm-marker-dot"></span></button>
         <button class="bm-marker is-on" type="button" data-cat="dor" style="left:64%;top:24.2%" aria-pressed="true" aria-label="Dor e inflamação — ver condições"><span class="bm-marker-dot"></span></button>
         <button class="bm-marker" type="button" data-cat="onco" style="left:50%;top:31.3%" aria-pressed="false" aria-label="Oncologia — ver condições"><span class="bm-marker-dot"></span></button>
         <button class="bm-marker" type="button" data-cat="gastro" style="left:50%;top:40.8%" aria-pressed="false" aria-label="Gastroenterologia — ver condições"><span class="bm-marker-dot"></span></button>
@@ -345,6 +345,6 @@
   <div class="pf-wordmark" aria-hidden="true"><span>Axis FitoMed</span></div>
 </footer>
 
-<script src="assets/js/main.js?v=28"></script>
+<script src="assets/js/main.js?v=29"></script>
 </body>
 </html>
