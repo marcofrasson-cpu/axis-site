@@ -291,6 +291,8 @@
         c.classList.toggle('is-active', on);
         if (on) { c.removeAttribute('hidden'); } else { c.setAttribute('hidden', ''); }
       });
+      var conduit = bmStage.querySelector('.bm-conduit[data-cat="' + cat + '"]');
+      if (conduit) { conduit.classList.remove('fire'); void conduit.getBoundingClientRect(); conduit.classList.add('fire'); }
     };
     bmMarkers.forEach(function (m) {
       var cat = m.getAttribute('data-cat');
