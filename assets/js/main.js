@@ -254,10 +254,20 @@
     var ecsScene = function (n) { return ecs.querySelector('.ecs-s' + n); };
     var ecsMobile = window.matchMedia && window.matchMedia('(max-width: 900px)').matches;
     if (ecsMobile) {
-      // Mobile: cada passo mostra sua própria figura inline (robusto, sem sticky)
+      // Mobile: cada passo mostra sua própria figura inline (robusto, sem sticky).
+      // viewBox cravado por cena (determinístico — sem getBBox, que falhava off-screen
+      // e deixava o vazio da tela cheia = gaps). Cada figura anima ao entrar em tela.
       ecs.classList.add('ecs-inline');
+      var ecsFigVB = {
+        '1': '67 60 346 330',
+        '2': '72 100 326 181',
+        '3': '156 143 188 193',
+        '4': '55 78 357 275'
+      };
+      var ecsFigs = [];
       ecsSteps.forEach(function (step) {
-        var scene = ecsScene(step.getAttribute('data-scene'));
+        var n = step.getAttribute('data-scene');
+        var scene = ecsScene(n);
         if (!scene) return;
         var clone = scene.cloneNode(true);
         clone.removeAttribute('class');
@@ -267,20 +277,25 @@
         var pocket = clone.querySelector('.ecs-pocket');
         if (pocket) pocket.style.opacity = '1';
         var svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-        svg.setAttribute('viewBox', '0 0 480 460');
+        svg.setAttribute('viewBox', ecsFigVB[n] || '0 0 480 460');
         svg.setAttribute('class', 'ecs-fig');
         svg.setAttribute('aria-hidden', 'true');
         svg.appendChild(clone);
         step.insertBefore(svg, step.firstChild);
-        // Auto-crop: viewBox cinge o conteúdo da cena (mata o vazio ao redor = sem gaps)
-        try {
-          var bb = clone.getBBox();
-          if (bb && bb.width > 4 && bb.height > 4) {
-            var pad = 14;
-            svg.setAttribute('viewBox', (bb.x - pad) + ' ' + (bb.y - pad) + ' ' + (bb.width + pad * 2) + ' ' + (bb.height + pad * 2));
-          }
-        } catch (e) {}
+        ecsFigs.push(svg);
       });
+      // Anima cada figura ao entrar na viewport (respeita reduce-motion)
+      var ecsReduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (ecsReduce || !('IntersectionObserver' in window)) {
+        ecsFigs.forEach(function (f) { f.classList.add('is-in'); });
+      } else {
+        var figIO = new IntersectionObserver(function (entries) {
+          entries.forEach(function (e) {
+            if (e.isIntersecting) { e.target.classList.add('is-in'); figIO.unobserve(e.target); }
+          });
+        }, { rootMargin: '0px 0px -12% 0px', threshold: 0.2 });
+        ecsFigs.forEach(function (f) { figIO.observe(f); });
+      }
     } else if ('IntersectionObserver' in window) {
       // Desktop: visual sticky + troca de cena por scroll
       var ecsScenes = {};

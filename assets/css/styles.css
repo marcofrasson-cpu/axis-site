@@ -2213,11 +2213,9 @@ body { overflow-x: clip; }
 }
 
 @media (max-width: 860px) {
-  .ab-block { grid-template-columns: 1fr; gap: 16px; padding: 30px 0; justify-items: start; }
-  /* motif vira acento compacto centrado ao texto — sem painel vazio gigante */
-  .ab-block--rev .ab-block__media { order: 0; }
-  .ab-block__media { width: 100%; display: flex; justify-content: flex-start; }
-  .ab-block__media svg { width: 118px; height: auto; opacity: 0.9; }
+  .ab-block { grid-template-columns: 1fr; gap: 0; padding: 26px 0; }
+  /* motif decorativo (aria-hidden) sai no mobile: some o painel vazio e reduz moléculas */
+  .ab-block__media { display: none; }
   .ab-values { grid-template-columns: 1fr; }
 }
 
@@ -2416,19 +2414,28 @@ body { overflow-x: clip; }
 .ecs-step p { font-size: var(--fs-lead); line-height: 1.6; color: var(--lead-color); max-width: 42ch; }
 .ecs-step b { color: var(--brand-green); font-weight: 600; }
 
-/* Figura inline por passo (mobile) — cada passo com seu próprio diagrama */
+/* Figura inline por passo — cada passo com seu próprio diagrama.
+   Layout mobile ancorado em .ecs-inline (classe posta pelo JS direto no DOM),
+   NÃO só em @media: blinda contra o min-height:60vh do desktop vazar no celular
+   (era a causa dos gaps gigantes). Especificidade .ecs.ecs-inline vence .ecs-step. */
 .ecs-fig { display: none; }
-@media (max-width: 900px) {
-  .ecs-head { margin-bottom: 20px; }
-  .ecs-grid { display: block; }
-  .ecs.ecs-inline .ecs-stage { display: none; }
-  .ecs-step { min-height: 0; justify-content: flex-start; opacity: 1; padding: 30px 0; text-align: center; }
-  .ecs-step:first-child { padding-top: 6px; }
-  .ecs-step p { max-width: none; margin-inline: auto; }
-  .ecs-fig {
-    display: block; width: 100%; max-width: 190px; height: auto; margin: 0 auto 16px;
-    overflow: visible; fill: none; stroke-linejoin: round; stroke-linecap: round;
-  }
+.ecs.ecs-inline .ecs-grid { display: block; }
+.ecs.ecs-inline .ecs-stage { display: none; }
+.ecs.ecs-inline .ecs-head { margin-bottom: 20px; }
+.ecs.ecs-inline .ecs-step {
+  min-height: 0; justify-content: flex-start; opacity: 1; padding: 30px 0; text-align: center;
+}
+.ecs.ecs-inline .ecs-step:first-child { padding-top: 6px; }
+.ecs.ecs-inline .ecs-step p { max-width: none; margin-inline: auto; }
+.ecs.ecs-inline .ecs-fig {
+  display: block; width: 100%; max-width: 190px; height: auto; margin: 0 auto 16px;
+  overflow: visible; fill: none; stroke-linejoin: round; stroke-linecap: round;
+  opacity: 0; transform: translateY(16px) scale(0.96);
+  transition: opacity 0.7s ease, transform 0.8s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+.ecs.ecs-inline .ecs-fig.is-in { opacity: 1; transform: none; }
+@media (prefers-reduced-motion: reduce) {
+  .ecs.ecs-inline .ecs-fig { opacity: 1 !important; transform: none !important; transition: none; }
 }
 @media (prefers-reduced-motion: reduce) {
   .ecs-scene, .ecs-dock, .ecs-pocket { transition: none; }
