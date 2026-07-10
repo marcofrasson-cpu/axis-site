@@ -27,7 +27,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Spectral:wght@400;500;600;700&family=Hanken+Grotesk:wght@400;500;600;700;800&display=swap">
 <link rel="icon" type="image/svg+xml" href="assets/img/logo.svg">
-<link rel="stylesheet" href="assets/css/styles.css?v=11">
+<link rel="stylesheet" href="assets/css/styles.css?v=12">
 </head>
 <body>
 
@@ -224,23 +224,61 @@
       <p class="manifesto-body">Cada conduta nasce de estudo e acompanhamento — não de modismo nem de promessa fácil.</p>
     </div>
     <div class="manifesto-mol" aria-hidden="true">
-      <svg viewBox="0 96 420 150" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <g class="mol-lines" stroke="rgba(95,200,155,.23)" stroke-width="2" stroke-linejoin="round" stroke-linecap="round">
-          <polygon data-draw pathLength="1" style="animation-delay:0s" points="120,148 156.4,169 156.4,211 120,232 83.6,211 83.6,169"/>
-          <polygon data-draw pathLength="1" style="animation-delay:.12s" points="250,148 286.4,169 286.4,211 250,232 213.6,211 213.6,169"/>
-          <line data-draw pathLength="1" style="animation-delay:.20s" x1="98" y1="177" x2="98" y2="203"/>
-          <line data-draw pathLength="1" style="animation-delay:.32s" x1="228" y1="177" x2="228" y2="203"/>
-          <line data-draw pathLength="1" style="animation-delay:.26s" x1="156.4" y1="169" x2="213.6" y2="169"/>
-          <line data-draw pathLength="1" style="animation-delay:.30s" x1="156.4" y1="211" x2="213.6" y2="211"/>
-          <path data-draw pathLength="1" style="animation-delay:.42s" d="M286.4 211 L316 229 L344 213 L374 231 L400 217"/>
-          <line data-draw pathLength="1" style="animation-delay:.52s" x1="120" y1="148" x2="120" y2="110"/>
-          <line data-draw pathLength="1" style="animation-delay:.58s" x1="83.6" y1="169" x2="52" y2="150"/>
-          <line data-draw pathLength="1" style="animation-delay:.62s" x1="250" y1="148" x2="250" y2="110"/>
-        </g>
-        <g class="mol-atoms">
-          <circle cx="120" cy="110" r="6" fill="rgba(245,192,107,.5)"/>
-          <circle cx="52" cy="150" r="6" fill="rgba(245,192,107,.5)"/>
-          <circle cx="250" cy="110" r="5" fill="rgba(95,200,155,.5)"/>
+      <svg viewBox="0 0 440 320" fill="none" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+        <defs>
+          <radialGradient id="mmGlow" cx="50%" cy="50%" r="50%">
+            <stop offset="0" stop-color="rgba(95,200,155,.24)"/>
+            <stop offset="1" stop-color="rgba(95,200,155,0)"/>
+          </radialGradient>
+          <radialGradient id="mmMint" cx="34%" cy="28%" r="78%">
+            <stop offset="0" stop-color="#d3f7e4"/><stop offset="46%" stop-color="#5fc89b"/><stop offset="100%" stop-color="#2b7357"/>
+          </radialGradient>
+          <radialGradient id="mmAmber" cx="34%" cy="28%" r="78%">
+            <stop offset="0" stop-color="#ffe4b3"/><stop offset="46%" stop-color="#f5c06b"/><stop offset="100%" stop-color="#a86f22"/>
+          </radialGradient>
+        </defs>
+
+        <ellipse class="mol-glow" cx="220" cy="168" rx="176" ry="122" fill="url(#mmGlow)"/>
+
+        <g class="mm-float">
+          <!-- órbitas atômicas com elétrons viajando -->
+          <g transform="rotate(-16 220 168)">
+            <path id="mmOrb1" class="orbit-ring" d="M55 168 a165 54 0 1 0 330 0 a165 54 0 1 0 -330 0"/>
+            <circle class="electron e-mint" r="4.6">
+              <animateMotion dur="15s" repeatCount="indefinite"><mpath xlink:href="#mmOrb1"/></animateMotion>
+            </circle>
+          </g>
+          <g transform="rotate(23 220 168)">
+            <path id="mmOrb2" class="orbit-ring orbit-ring--faint" d="M70 168 a150 62 0 1 0 300 0 a150 62 0 1 0 -300 0"/>
+            <circle class="electron e-amber" r="4">
+              <animateMotion dur="22s" begin="-7s" repeatCount="indefinite"><mpath xlink:href="#mmOrb2"/></animateMotion>
+            </circle>
+          </g>
+
+          <!-- esqueleto do canabinoide (desenha na entrada) -->
+          <g class="mol-lines" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round">
+            <polygon data-draw pathLength="1" style="animation-delay:0s" points="160,147 184.25,161 184.25,189 160,203 135.75,189 135.75,161"/>
+            <polygon data-draw pathLength="1" style="animation-delay:.1s" points="250,147 274.25,161 274.25,189 250,203 225.75,189 225.75,161"/>
+            <line data-draw pathLength="1" style="animation-delay:.24s" x1="184.25" y1="161" x2="225.75" y2="161"/>
+            <line data-draw pathLength="1" style="animation-delay:.28s" x1="184.25" y1="189" x2="225.75" y2="189"/>
+            <line data-draw pathLength="1" style="animation-delay:.2s" x1="142" y1="165" x2="142" y2="185"/>
+            <line data-draw pathLength="1" style="animation-delay:.22s" x1="268.25" y1="165" x2="268.25" y2="185"/>
+            <line data-draw pathLength="1" style="animation-delay:.4s" x1="160" y1="147" x2="160" y2="126"/>
+            <line data-draw pathLength="1" style="animation-delay:.46s" x1="135.75" y1="161" x2="117" y2="150"/>
+            <line data-draw pathLength="1" style="animation-delay:.5s" x1="250" y1="147" x2="250" y2="126"/>
+            <path data-draw pathLength="1" style="animation-delay:.56s" d="M274.25 189 L298 202 L321 189 L344 202 L366 190"/>
+          </g>
+
+          <g class="mol-nodes">
+            <circle cx="184.25" cy="161" r="3"/><circle cx="184.25" cy="189" r="3"/>
+            <circle cx="225.75" cy="161" r="3"/><circle cx="225.75" cy="189" r="3"/>
+          </g>
+
+          <g class="mol-atoms">
+            <circle class="atom" cx="160" cy="120" r="7.6" fill="url(#mmAmber)"/>
+            <circle class="atom" cx="112" cy="148" r="7.6" fill="url(#mmAmber)"/>
+            <circle class="atom" cx="250" cy="120" r="6.6" fill="url(#mmMint)"/>
+          </g>
         </g>
       </svg>
     </div>
@@ -611,6 +649,6 @@
   <div class="pf-wordmark" aria-hidden="true"><span>Axis FitoMed</span></div>
 </footer>
 
-<script src="assets/js/main.js?v=11"></script>
+<script src="assets/js/main.js?v=12"></script>
 </body>
 </html>

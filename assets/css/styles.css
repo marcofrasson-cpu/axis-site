@@ -784,16 +784,33 @@ button { font: inherit; cursor: pointer; background: none; border: none; color: 
   position: relative; z-index: 1;
   width: min(34vw, 400px); justify-self: end; pointer-events: none;
 }
-.manifesto-mol svg { width: 100%; height: auto; display: block; }
+.manifesto-mol svg { width: 100%; height: auto; display: block; overflow: visible; }
+.manifesto-mol .mol-lines { stroke: rgba(95, 200, 155, 0.42); }
+.manifesto-mol .mol-nodes circle { fill: rgba(95, 200, 155, 0.55); }
 .manifesto-mol [data-draw] { stroke-dasharray: 1; stroke-dashoffset: 1; }
 .manifesto.is-visible .manifesto-mol [data-draw] {
   animation-name: molDraw; animation-duration: 1.25s;
   animation-timing-function: cubic-bezier(.6, 0, .2, 1); animation-fill-mode: forwards;
 }
 @keyframes molDraw { to { stroke-dashoffset: 0; } }
-.manifesto-mol .mol-atoms circle { opacity: 0; }
-.manifesto.is-visible .manifesto-mol .mol-atoms circle { animation: molAtom .6s ease forwards .95s; }
+.manifesto-mol .mol-atoms circle,
+.manifesto-mol .mol-nodes circle { opacity: 0; }
+.manifesto.is-visible .manifesto-mol .mol-nodes circle { animation: molAtom .5s ease forwards .8s; }
+.manifesto.is-visible .manifesto-mol .mol-atoms circle { animation: molAtom .6s ease forwards .95s, atomPulse 3.6s ease-in-out 1.6s infinite; }
 @keyframes molAtom { to { opacity: 1; } }
+@keyframes atomPulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.12); } }
+.manifesto-mol .mol-atoms circle { transform-box: fill-box; transform-origin: center; }
+
+/* Molécula viva: flutua + glow pulsa + elétrons orbitam */
+.mm-float { animation: molFloat 7.5s ease-in-out infinite; transform-box: view-box; transform-origin: 220px 168px; }
+@keyframes molFloat { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+.mol-glow { transform-box: view-box; transform-origin: 220px 168px; animation: molGlow 6s ease-in-out infinite; }
+@keyframes molGlow { 0%, 100% { opacity: .55; transform: scale(1); } 50% { opacity: .95; transform: scale(1.06); } }
+.orbit-ring { fill: none; stroke: rgba(95, 200, 155, 0.2); stroke-width: 1; }
+.orbit-ring--faint { stroke: rgba(232, 161, 60, 0.16); }
+.electron { filter: drop-shadow(0 0 5px rgba(95, 200, 155, 0.9)); }
+.electron.e-mint { fill: #a8f0cd; }
+.electron.e-amber { fill: #f5c06b; filter: drop-shadow(0 0 5px rgba(245, 192, 107, 0.9)); }
 .manifesto-kicker {
   margin: 0 0 26px; font-size: 12px; font-weight: 600;
   letter-spacing: 0.22em; text-transform: uppercase; color: var(--brand-green);
@@ -821,7 +838,10 @@ button { font: inherit; cursor: pointer; background: none; border: none; color: 
 }
 @media (prefers-reduced-motion: reduce) {
   .manifesto-mol [data-draw] { stroke-dashoffset: 0; animation: none !important; }
-  .manifesto-mol .mol-atoms circle { opacity: 1; animation: none !important; }
+  .manifesto-mol .mol-atoms circle,
+  .manifesto-mol .mol-nodes circle { opacity: 1; animation: none !important; }
+  .mm-float, .mol-glow, .electron { animation: none !important; }
+  .electron { display: none; }
 }
 
 .differentials { padding: var(--space-section) 0; }
