@@ -291,6 +291,9 @@
         c.classList.toggle('is-active', on);
         if (on) { c.removeAttribute('hidden'); } else { c.setAttribute('hidden', ''); }
       });
+      bmStage.querySelectorAll('.bm-zone').forEach(function (z) {
+        z.classList.toggle('is-on', z.getAttribute('data-cat') === cat);
+      });
       var conduit = bmStage.querySelector('.bm-conduit[data-cat="' + cat + '"]');
       if (conduit) { conduit.classList.remove('fire'); void conduit.getBoundingClientRect(); conduit.classList.add('fire'); }
     };

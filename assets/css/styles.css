@@ -709,6 +709,8 @@ button { font: inherit; cursor: pointer; background: none; border: none; color: 
 .bm-flow { fill: none; stroke: #a8ecca; stroke-width: 1.8; stroke-linecap: round; opacity: .9; stroke-dasharray: 10 90; animation: bmFlow 3s linear infinite; filter: drop-shadow(0 0 3px rgba(95, 200, 155, .75)); }
 .bm-flow.f2 { animation-delay: .5s; }
 .bm-flow.f4 { animation-delay: 1.4s; }
+.bm-zone { opacity: 0; transition: opacity .5s ease; }
+.bm-zone.is-on { opacity: 1; }
 .bm-conduit { stroke-dasharray: 16 84; stroke-dashoffset: 16; opacity: 0; stroke-linecap: round; filter: drop-shadow(0 0 4px rgba(95, 200, 155, .9)); }
 .bm-conduit.fire { animation: bmConduit .8s ease-out; }
 @keyframes bmBreathe { 0%, 100% { opacity: .5; } 50% { opacity: .64; } }

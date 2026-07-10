@@ -27,7 +27,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Spectral:wght@400;500;600;700&family=Hanken+Grotesk:wght@400;500;600;700;800&display=swap">
 <link rel="icon" type="image/svg+xml" href="assets/img/logo.svg">
-<link rel="stylesheet" href="assets/css/styles.css?v=26">
+<link rel="stylesheet" href="assets/css/styles.css?v=27">
 </head>
 <body>
 
@@ -86,8 +86,20 @@
             <radialGradient id="bmGround" cx="50%" cy="50%" r="50%">
               <stop offset="0" stop-color="rgba(95,200,155,.22)"/><stop offset="1" stop-color="rgba(95,200,155,0)"/>
             </radialGradient>
+            <radialGradient id="bmZone" cx="50%" cy="50%" r="50%">
+              <stop offset="0" stop-color="rgba(140,230,190,.4)"/><stop offset="55%" stop-color="rgba(95,200,155,.15)"/><stop offset="100%" stop-color="rgba(95,200,155,0)"/>
+            </radialGradient>
           </defs>
           <ellipse cx="100" cy="220" rx="118" ry="228" fill="url(#bmGlow)"/>
+          <!-- Zona da região ativa acende (amarra corpo ao conteúdo) -->
+          <g class="bm-zones">
+            <ellipse class="bm-zone" data-cat="neuro" cx="100" cy="40" rx="34" ry="34" fill="url(#bmZone)"/>
+            <ellipse class="bm-zone" data-cat="mental" cx="100" cy="44" rx="32" ry="32" fill="url(#bmZone)"/>
+            <ellipse class="bm-zone is-on" data-cat="dor" cx="128" cy="120" rx="42" ry="48" fill="url(#bmZone)"/>
+            <ellipse class="bm-zone" data-cat="onco" cx="100" cy="155" rx="56" ry="66" fill="url(#bmZone)"/>
+            <ellipse class="bm-zone" data-cat="gastro" cx="100" cy="196" rx="40" ry="40" fill="url(#bmZone)"/>
+            <ellipse class="bm-zone" data-cat="mulher" cx="100" cy="256" rx="42" ry="40" fill="url(#bmZone)"/>
+          </g>
           <ellipse cx="100" cy="446" rx="52" ry="7" fill="url(#bmGround)"/>
           <!-- Volume (preenchimento suave atrás do contorno) -->
           <g class="bm-fill" fill="url(#bmBodyFill)" stroke="none">
@@ -333,6 +345,6 @@
   <div class="pf-wordmark" aria-hidden="true"><span>Axis FitoMed</span></div>
 </footer>
 
-<script src="assets/js/main.js?v=26"></script>
+<script src="assets/js/main.js?v=27"></script>
 </body>
 </html>
