@@ -1265,6 +1265,30 @@ button { font: inherit; cursor: pointer; background: none; border: none; color: 
 }
 .article-cta p { margin-bottom: 16px; }
 
+/* Continue lendo (relacionados no fim do artigo) */
+.post-related { margin-top: 56px; padding-top: 36px; border-top: 1px solid var(--border-hairline); }
+.post-related-title {
+  font-family: 'Hanken Grotesk', sans-serif; font-weight: 600; font-size: 12px;
+  letter-spacing: 0.16em; text-transform: uppercase; color: var(--brand-green); margin-bottom: 20px;
+}
+.post-related-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.post-related-card {
+  display: flex; flex-direction: column; gap: 9px; padding: 22px; text-decoration: none;
+  background: var(--bg-card); border: 1px solid var(--border-hairline); border-radius: var(--radius-md);
+  transition: border-color 160ms ease, background 160ms ease, transform 160ms ease;
+}
+.post-related-card:hover { border-color: var(--brand-green); background: var(--bg-card-hover); transform: translateY(-2px); }
+.post-related-tag {
+  font-family: 'Hanken Grotesk', sans-serif; font-size: 11px; font-weight: 600;
+  letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-muted);
+}
+.post-related-headline {
+  font-family: var(--font-display); font-weight: 600; font-size: 17px; line-height: 1.25;
+  letter-spacing: -0.01em; color: var(--text-primary);
+}
+.post-related-more { margin-top: auto; color: var(--brand-green); font-size: 13px; font-weight: 500; }
+@media (max-width: 620px) { .post-related-grid { grid-template-columns: 1fr; } }
+
 /* ---------- Contact ---------- */
 
 .contact-grid {
