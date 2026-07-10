@@ -19,7 +19,7 @@
   --radius-md: 8px;
   --radius-lg: 12px;
   --max-width: 1180px;
-  --space-section: 72px;
+  --space-section: 68px;
   --header-h: 64px;
   /* Superficies tonais — deltas sub-10/canal: leem como profundidade, nao cor */
   --ground-deep: #0a1522;
@@ -44,7 +44,7 @@
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 html { scroll-behavior: smooth; }
 body {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+  font-family: 'Hanken Grotesk', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
   background: var(--brand-navy);
   color: var(--text-primary);
   line-height: 1.6;
@@ -270,7 +270,7 @@ button { font: inherit; cursor: pointer; background: none; border: none; color: 
 }
 
 /* ---------- Stats (Em destaque) ---------- */
-.stats { padding: 96px 0; }
+.stats { padding: var(--space-section) 0; }
 .stats-title {
   font-size: clamp(28px, 3vw, 40px);
   font-weight: 700;
@@ -545,7 +545,7 @@ button { font: inherit; cursor: pointer; background: none; border: none; color: 
 .member-bio { font-size: 13.5px; color: var(--text-muted); line-height: 1.6; }
 
 /* ---------- Indications (servicos) ---------- */
-.indications { padding: 96px 0; }
+.indications { padding: var(--space-section) 0; }
 .indications .section-eyebrow {
   display: block;
   color: var(--brand-green);
@@ -649,7 +649,7 @@ button { font: inherit; cursor: pointer; background: none; border: none; color: 
 
 /* ---------- Indications preview (home) — editorial split + bento ---------- */
 .indications-preview {
-  padding: 96px 0;
+  padding: var(--space-section) 0;
   position: relative;
 }
 .indications-preview::before {
@@ -816,7 +816,7 @@ button { font: inherit; cursor: pointer; background: none; border: none; color: 
   .manifesto-mol .mol-atoms circle { opacity: 1; animation: none !important; }
 }
 
-.differentials { padding: 96px 0; }
+.differentials { padding: var(--space-section) 0; }
 .differentials .section-eyebrow {
   display: block;
   color: var(--brand-green);
@@ -884,7 +884,7 @@ button { font: inherit; cursor: pointer; background: none; border: none; color: 
 }
 
 /* ---------- Blog highlight (editorial 50/50) ---------- */
-.blog-highlight { padding: 96px 0; }
+.blog-highlight { padding: var(--space-section) 0; }
 .blog-highlight .section-eyebrow {
   display: block;
   color: var(--brand-green);
@@ -963,7 +963,7 @@ button { font: inherit; cursor: pointer; background: none; border: none; color: 
 }
 
 /* ---------- CTA jornada ---------- */
-.cta-journey { padding: 96px 0; }
+.cta-journey { padding: var(--space-section) 0; }
 .cta-journey-card {
   background: linear-gradient(135deg, #14253a 0%, #1a3a3a 100%);
   border: 1px solid var(--border-hairline);
@@ -1008,7 +1008,7 @@ button { font: inherit; cursor: pointer; background: none; border: none; color: 
 
 /* ---------- Team preview (home) ---------- */
 
-.team-preview { padding: 96px 0; position: relative; overflow: hidden; }
+.team-preview { padding: var(--space-section) 0; position: relative; overflow: hidden; }
 .team-preview > .container { position: relative; z-index: 1; }
 /* Fundo premium: aura ambiente suave (sem formas espalhadas). A foto e a
    tipografia carregam a seção — respiro luminoso atrás do título. */
@@ -2225,11 +2225,78 @@ body { overflow-x: clip; }
   font-size: 13.5px; color: var(--text-muted); background: var(--bg-card);
 }
 
+/* ===== Sobre — narrativa editorial ===== */
+.hl-serif { color: var(--oil-hi); font-style: italic; }
+
+/* História / SEC: editorial 2 colunas (cabeça | prosa) */
+.story-grid {
+  display: grid; grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
+  gap: clamp(32px, 6vw, 84px); align-items: start;
+}
+.story-head h2 {
+  font-family: var(--font-display); font-weight: 600;
+  font-size: clamp(26px, 3vw, 37px); line-height: 1.14; letter-spacing: -0.02em;
+  margin-top: 18px; color: var(--text-primary); text-wrap: balance;
+}
+.story-body p {
+  font-size: clamp(16px, 1.1vw, 18px); line-height: 1.75; color: var(--lead-color); max-width: 62ch;
+}
+.story-body p + p { margin-top: 20px; }
+.story-body strong { color: var(--text-primary); font-weight: 600; }
+
+/* Método */
+.section-heading--left { text-align: left; max-width: 780px; margin-bottom: 0; }
+.section-heading--left h2 {
+  font-family: var(--font-display); font-weight: 600;
+  font-size: clamp(26px, 3vw, 37px); line-height: 1.14; letter-spacing: -0.02em;
+  margin-top: 16px; color: var(--text-primary); text-wrap: balance;
+}
+.method-body { max-width: 780px; margin-top: 26px; }
+.method-body p { font-size: clamp(16px, 1.1vw, 18px); line-height: 1.75; color: var(--lead-color); }
+.method-body p + p { margin-top: 18px; }
+.method-body strong { color: var(--text-primary); font-weight: 600; }
+
+/* Princípios */
+.about-principles {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px; margin-top: 48px;
+}
+.principle {
+  border: 1px solid var(--border-hairline); border-radius: 14px; padding: 24px 22px; background: var(--bg-card);
+}
+.principle-n {
+  display: block; font-family: var(--font-display); font-weight: 600;
+  font-size: 15px; color: var(--brand-green); letter-spacing: 0.05em; margin-bottom: 14px;
+}
+.principle h3 { font-size: 17px; font-weight: 600; letter-spacing: -0.01em; margin-bottom: 8px; color: var(--text-primary); }
+.principle p { font-size: 14.5px; line-height: 1.62; color: var(--text-muted); }
+
+/* Faixa de credibilidade */
+.creds-strip .container { text-align: center; }
+.creds-label {
+  display: block; font-size: 11.5px; font-weight: 600; letter-spacing: 0.14em;
+  text-transform: uppercase; color: var(--text-subtle); margin-bottom: 22px;
+}
+.creds-list {
+  list-style: none; display: flex; flex-wrap: wrap; justify-content: center; gap: 10px 12px;
+  max-width: 940px; margin: 0 auto;
+}
+.creds-list li {
+  border: 1px solid var(--border-hairline); border-radius: 999px; padding: 9px 18px;
+  font-size: 13.5px; color: var(--lead-color); background: var(--bg-card);
+  display: inline-flex; align-items: center; gap: 9px;
+}
+.creds-list li::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: var(--brand-green); flex: none; }
+
 @media (max-width: 860px) {
   .ab-block { grid-template-columns: 1fr; gap: 0; padding: 26px 0; }
   /* motif decorativo (aria-hidden) sai no mobile: some o painel vazio e reduz moléculas */
   .ab-block__media { display: none; }
   .ab-values { grid-template-columns: 1fr; }
+  .story-grid { grid-template-columns: 1fr; gap: 18px; }
+  .about-principles { grid-template-columns: 1fr 1fr; gap: 14px; }
+}
+@media (max-width: 560px) {
+  .about-principles { grid-template-columns: 1fr; }
 }
 
 /* ==================== Hero — sistema endocanabinoide vivo ==================== */
