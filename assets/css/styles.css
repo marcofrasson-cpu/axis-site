@@ -552,105 +552,6 @@ button { font: inherit; cursor: pointer; background: none; border: none; color: 
 .member-crm { font-size: 12px; color: var(--text-subtle); margin-bottom: 12px; letter-spacing: 0.02em; }
 .member-bio { font-size: 13.5px; color: var(--text-muted); line-height: 1.6; }
 
-/* ---------- Indications (servicos) ---------- */
-.indications { padding: var(--space-section) 0; }
-.indications .section-eyebrow {
-  display: block;
-  color: var(--brand-green);
-  font-size: 13px;
-  font-weight: 600;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-  margin-bottom: 16px;
-}
-.indications .section-title {
-  font-size: clamp(28px, 3vw, 40px);
-  font-weight: 700;
-  color: var(--text-primary);
-  line-height: 1.2;
-  letter-spacing: -0.015em;
-  max-width: 720px;
-  margin-bottom: 0;
-}
-.section-intro {
-  font-size: 17px;
-  color: var(--text-muted);
-  line-height: 1.6;
-  max-width: 680px;
-  margin: 20px 0 56px;
-}
-.indications-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 20px;
-}
-.indication-card {
-  padding: 32px 28px;
-  background: var(--bg-card);
-  border: 1px solid var(--border-hairline);
-  border-radius: 12px;
-  transition: transform 400ms cubic-bezier(0.4, 0, 0.2, 1),
-              border-color 400ms cubic-bezier(0.4, 0, 0.2, 1);
-}
-.indication-card:hover {
-  transform: translateY(-4px);
-  border-color: rgba(95, 200, 155, 0.4);
-}
-.indication-icon {
-  width: 52px;
-  height: 52px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: rgba(95, 200, 155, 0.08);
-  border-radius: 12px;
-  margin-bottom: 20px;
-}
-.indication-icon svg { width: 28px; height: 28px; }
-/* Icones das indicacoes: respiro vivo, escalonado por card */
-.indication-icon, .indication-icon svg { animation-duration: 4.2s; animation-timing-function: ease-in-out; animation-iteration-count: infinite; }
-.indication-icon { animation-name: indGlow; }
-.indication-icon svg { animation-name: indBreathe; transform-origin: center; }
-.indication-card:nth-child(2) .indication-icon, .indication-card:nth-child(2) .indication-icon svg { animation-delay: .7s; }
-.indication-card:nth-child(3) .indication-icon, .indication-card:nth-child(3) .indication-icon svg { animation-delay: 1.4s; }
-.indication-card:nth-child(4) .indication-icon, .indication-card:nth-child(4) .indication-icon svg { animation-delay: .35s; }
-.indication-card:nth-child(5) .indication-icon, .indication-card:nth-child(5) .indication-icon svg { animation-delay: 1.05s; }
-.indication-card:nth-child(6) .indication-icon, .indication-card:nth-child(6) .indication-icon svg { animation-delay: 1.75s; }
-@keyframes indBreathe { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.1); } }
-@keyframes indGlow {
-  0%, 100% { background: rgba(95, 200, 155, 0.08); box-shadow: 0 0 0 0 rgba(95, 200, 155, 0); }
-  50% { background: rgba(95, 200, 155, 0.15); box-shadow: 0 0 18px rgba(95, 200, 155, 0.16); }
-}
-@media (prefers-reduced-motion: reduce) { .indication-icon, .indication-icon svg { animation: none !important; } }
-.indication-card h3 {
-  font-size: 18px;
-  font-weight: 700;
-  margin-bottom: 16px;
-  color: var(--text-primary);
-}
-.indication-card ul {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
-.indication-card li {
-  font-size: 14px;
-  color: var(--text-muted);
-  line-height: 1.5;
-  padding: 6px 0 6px 18px;
-  position: relative;
-}
-.indication-card li::before {
-  content: '';
-  position: absolute;
-  left: 0;
-  top: 14px;
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: var(--brand-green);
-  opacity: 0.7;
-}
 .indications-disclaimer {
   margin-top: 48px;
   padding: 20px 24px;
@@ -661,13 +562,6 @@ button { font: inherit; cursor: pointer; background: none; border: none; color: 
   border-left: 2px solid var(--brand-green);
   border-radius: 6px;
   font-style: italic;
-}
-@media (max-width: 1024px) {
-  .indications-grid { grid-template-columns: repeat(2, 1fr); }
-}
-@media (max-width: 640px) {
-  .indications-grid { grid-template-columns: 1fr; }
-  .indications { padding: 64px 0; }
 }
 
 /* ===== Mapa do corpo (indicações interativas) ===== */
