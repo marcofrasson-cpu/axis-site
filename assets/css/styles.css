@@ -2666,7 +2666,7 @@ body { overflow-x: clip; }
 }
 
 /* ==================== Blog — "Latest" editorial ==================== */
-.bl-top { padding-bottom: 8px; }
+.bl-top { padding-bottom: 22px; }
 .bl-h1 { font-size: clamp(32px, 4.2vw, 54px); line-height: 1.05; letter-spacing: -0.03em; font-weight: 700; margin-top: 16px; }
 .bl-intro { margin-top: 18px; font-size: var(--fs-lead); color: var(--lead-color); max-width: 56ch; }
 .bl-feature {
@@ -2875,7 +2875,7 @@ body { overflow-x: clip; }
   .ab-hero { padding-top: 16px; }
   .ciencia-hero { padding-top: 16px; }
   .page-hero { padding: 20px 0 20px; }
-  .bl-top { padding-bottom: 0; }
+  .bl-top { padding-bottom: 22px; }
   /* secao full-spectrum e stats: menos padding vertical */
   .fs { padding: 44px 0; }
 }
