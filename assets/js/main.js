@@ -280,6 +280,21 @@
     var bmMarkers = [].slice.call(bmStage.querySelectorAll('.bm-marker'));
     var bmCats = [].slice.call(bmStage.querySelectorAll('.bm-cat'));
     var bmHover = window.matchMedia && window.matchMedia('(hover: hover)').matches;
+    // Cross-fade: paineis empilhados (absolutos). Remove hidden e trava a altura
+    // do painel pela maior categoria, p/ nao pular ao trocar.
+    var bmPanel = bmStage.querySelector('.bm-panel');
+    var bmSize = function () {
+      var mx = 0;
+      bmCats.forEach(function (c) { if (c.offsetHeight > mx) mx = c.offsetHeight; });
+      if (bmPanel && mx) bmPanel.style.minHeight = mx + 'px';
+    };
+    bmCats.forEach(function (c) {
+      c.removeAttribute('hidden');
+      c.setAttribute('aria-hidden', c.classList.contains('is-active') ? 'false' : 'true');
+    });
+    bmSize();
+    window.addEventListener('resize', bmSize);
+    window.addEventListener('load', bmSize);
     var bmActivate = function (cat) {
       bmMarkers.forEach(function (m) {
         var on = m.getAttribute('data-cat') === cat;
@@ -289,7 +304,7 @@
       bmCats.forEach(function (c) {
         var on = c.getAttribute('data-cat') === cat;
         c.classList.toggle('is-active', on);
-        if (on) { c.removeAttribute('hidden'); } else { c.setAttribute('hidden', ''); }
+        c.setAttribute('aria-hidden', on ? 'false' : 'true');
       });
       bmStage.querySelectorAll('.bm-zone').forEach(function (z) {
         z.classList.toggle('is-on', z.getAttribute('data-cat') === cat);
