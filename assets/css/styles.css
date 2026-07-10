@@ -607,6 +607,21 @@ button { font: inherit; cursor: pointer; background: none; border: none; color: 
   margin-bottom: 20px;
 }
 .indication-icon svg { width: 28px; height: 28px; }
+/* Icones das indicacoes: respiro vivo, escalonado por card */
+.indication-icon, .indication-icon svg { animation-duration: 4.2s; animation-timing-function: ease-in-out; animation-iteration-count: infinite; }
+.indication-icon { animation-name: indGlow; }
+.indication-icon svg { animation-name: indBreathe; transform-origin: center; }
+.indication-card:nth-child(2) .indication-icon, .indication-card:nth-child(2) .indication-icon svg { animation-delay: .7s; }
+.indication-card:nth-child(3) .indication-icon, .indication-card:nth-child(3) .indication-icon svg { animation-delay: 1.4s; }
+.indication-card:nth-child(4) .indication-icon, .indication-card:nth-child(4) .indication-icon svg { animation-delay: .35s; }
+.indication-card:nth-child(5) .indication-icon, .indication-card:nth-child(5) .indication-icon svg { animation-delay: 1.05s; }
+.indication-card:nth-child(6) .indication-icon, .indication-card:nth-child(6) .indication-icon svg { animation-delay: 1.75s; }
+@keyframes indBreathe { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.1); } }
+@keyframes indGlow {
+  0%, 100% { background: rgba(95, 200, 155, 0.08); box-shadow: 0 0 0 0 rgba(95, 200, 155, 0); }
+  50% { background: rgba(95, 200, 155, 0.15); box-shadow: 0 0 18px rgba(95, 200, 155, 0.16); }
+}
+@media (prefers-reduced-motion: reduce) { .indication-icon, .indication-icon svg { animation: none !important; } }
 .indication-card h3 {
   font-size: 18px;
   font-weight: 700;
@@ -833,7 +848,7 @@ button { font: inherit; cursor: pointer; background: none; border: none; color: 
   /* mobile empilha (desfaz o grid 2-col do desktop) */
   .manifesto .container { display: block; min-height: 0; }
   .manifesto-body { margin-top: 24px; margin-left: 0; max-width: none; }
-  .manifesto-mol { position: relative; z-index: 1; left: auto; bottom: auto; width: 190px; margin: 30px auto 0; justify-self: auto; }
+  .manifesto-mol { position: relative; z-index: 1; left: auto; bottom: auto; width: 230px; margin: 30px auto 0; justify-self: auto; }
   .manifesto::before { -webkit-mask-image: radial-gradient(150% 80% at 50% 100%, #000 0%, transparent 60%); mask-image: radial-gradient(150% 80% at 50% 100%, #000 0%, transparent 60%); }
 }
 @media (prefers-reduced-motion: reduce) {
