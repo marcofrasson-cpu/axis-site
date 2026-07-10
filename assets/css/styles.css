@@ -757,7 +757,7 @@ button { font: inherit; cursor: pointer; background: none; border: none; color: 
 
 /* ---------- Differentials (home) ---------- */
 /* Manifesto — respiro editorial (tipo grande + assimetria) sobre campo molecular */
-.manifesto { position: relative; overflow: hidden; padding: clamp(72px, 10vw, 132px) 0 clamp(52px, 6vw, 88px); }
+.manifesto { position: relative; overflow: hidden; padding: clamp(64px, 7vw, 100px) 0; }
 .manifesto::before {
   content: ''; position: absolute; inset: 0; z-index: 0; pointer-events: none;
   background-image: radial-gradient(rgba(95,200,155,.14) 1px, transparent 1.6px);
@@ -765,11 +765,16 @@ button { font: inherit; cursor: pointer; background: none; border: none; color: 
   -webkit-mask-image: radial-gradient(120% 70% at 40% 108%, #000 0%, rgba(0,0,0,.45) 46%, transparent 74%), radial-gradient(64% 56% at 97% 0%, #000 0%, transparent 64%);
   mask-image: radial-gradient(120% 70% at 40% 108%, #000 0%, rgba(0,0,0,.45) 46%, transparent 74%), radial-gradient(64% 56% at 97% 0%, #000 0%, transparent 64%);
 }
-.manifesto .container { position: relative; min-height: clamp(440px, 50vh, 500px); }
+/* 2 colunas: texto à esquerda, molécula à direita (preenche o vazio do topo-direita) */
+.manifesto .container {
+  position: relative;
+  display: grid; grid-template-columns: minmax(0, 1fr) auto;
+  gap: clamp(32px, 5vw, 80px); align-items: center;
+}
 .manifesto-text { position: relative; z-index: 2; }
 .manifesto-mol {
-  position: absolute; z-index: 1; left: -16px; bottom: 8px;
-  width: min(46%, 440px); pointer-events: none;
+  position: relative; z-index: 1;
+  width: min(34vw, 400px); justify-self: end; pointer-events: none;
 }
 .manifesto-mol svg { width: 100%; height: auto; display: block; }
 .manifesto-mol [data-draw] { stroke-dasharray: 1; stroke-dashoffset: 1; }
@@ -793,17 +798,17 @@ button { font: inherit; cursor: pointer; background: none; border: none; color: 
 }
 .manifesto-lead .hl { color: var(--oil-hi); }
 .manifesto-body {
-  margin: 44px 0 0 auto; max-width: 32ch;
+  margin: 32px 0 0; max-width: 38ch;
   font-family: var(--font-display); font-weight: 500;
   font-size: clamp(19px, 1.7vw, 23px); line-height: 1.5; letter-spacing: -0.01em;
   color: var(--lead-color);
 }
 @media (max-width: 720px) {
   .manifesto { padding: 52px 0; }
-  /* molécula agora em fluxo — some com o min-height de desktop que virava gap fantasma */
-  .manifesto .container { min-height: 0; }
-  .manifesto-body { margin-top: 24px; margin-left: 0; }
-  .manifesto-mol { position: relative; z-index: 1; left: auto; bottom: auto; width: 190px; margin: 30px auto 0; }
+  /* mobile empilha (desfaz o grid 2-col do desktop) */
+  .manifesto .container { display: block; min-height: 0; }
+  .manifesto-body { margin-top: 24px; margin-left: 0; max-width: none; }
+  .manifesto-mol { position: relative; z-index: 1; left: auto; bottom: auto; width: 190px; margin: 30px auto 0; justify-self: auto; }
   .manifesto::before { -webkit-mask-image: radial-gradient(150% 80% at 50% 100%, #000 0%, transparent 60%); mask-image: radial-gradient(150% 80% at 50% 100%, #000 0%, transparent 60%); }
 }
 @media (prefers-reduced-motion: reduce) {
@@ -1822,13 +1827,17 @@ button { font: inherit; cursor: pointer; background: none; border: none; color: 
   counter-increment: step;
   content: counter(step, decimal-leading-zero);
   position: absolute;
-  top: 4px;
-  right: 12px;
-  font-size: 13px;
-  font-weight: 600;
-  letter-spacing: 0.08em;
+  top: 18px;            /* centralizado na altura do ícone de 64px */
+  left: 84px;           /* colado à direita do ícone — número junto do ícone */
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
   color: var(--brand-green);
   font-variant-numeric: tabular-nums;
+  background: var(--brand-navy);   /* chip: esconde a linha por trás do número */
+  padding: 2px 8px;
+  border-radius: 6px;
+  line-height: 1;
 }
 @media (max-width: 900px) {
   .steps-timeline::before { display: none; }
@@ -2418,28 +2427,29 @@ body { overflow-x: clip; }
 .ecs-step p { font-size: var(--fs-lead); line-height: 1.6; color: var(--lead-color); max-width: 42ch; }
 .ecs-step b { color: var(--brand-green); font-weight: 600; }
 
-/* Figura inline por passo — cada passo com seu próprio diagrama.
-   Layout mobile ancorado em .ecs-inline (classe posta pelo JS direto no DOM),
-   NÃO só em @media: blinda contra o min-height:60vh do desktop vazar no celular
-   (era a causa dos gaps gigantes). Especificidade .ecs.ecs-inline vence .ecs-step. */
-.ecs-fig { display: none; }
-.ecs.ecs-inline .ecs-grid { display: block; }
-.ecs.ecs-inline .ecs-stage { display: none; }
-.ecs.ecs-inline .ecs-head { margin-bottom: 20px; }
-.ecs.ecs-inline .ecs-step {
-  min-height: 0; justify-content: flex-start; opacity: 1; padding: 30px 0; text-align: center;
-}
-.ecs.ecs-inline .ecs-step:first-child { padding-top: 6px; }
-.ecs.ecs-inline .ecs-step p { max-width: none; margin-inline: auto; }
-.ecs.ecs-inline .ecs-fig {
-  display: block; width: 100%; max-width: 190px; height: auto; margin: 0 auto 16px;
-  overflow: visible; fill: none; stroke-linejoin: round; stroke-linecap: round;
-  opacity: 0; transform: translateY(16px) scale(0.96);
-  transition: opacity 0.7s ease, transform 0.8s cubic-bezier(0.2, 0.7, 0.2, 1);
-}
-.ecs.ecs-inline .ecs-fig.is-in { opacity: 1; transform: none; }
-@media (prefers-reduced-motion: reduce) {
-  .ecs.ecs-inline .ecs-fig { opacity: 1 !important; transform: none !important; transition: none; }
+/* Mobile: MESMO scrollytelling do desktop — diagrama fixo no topo que
+   transforma pelas cenas conforme o passo entra em tela. O diagrama (.ecs-stage)
+   vira o elemento sticky; como .ecs-grid contém stage + steps empilhados, ele
+   fica alto e o sticky permanece preso enquanto os passos rolam por baixo. */
+@media (max-width: 900px) {
+  .ecs-head { margin-bottom: 18px; }
+  .ecs-grid { display: block; }
+  .ecs-stage {
+    position: sticky; top: 58px; z-index: 2;
+    height: 37vh; min-height: 224px;
+    display: flex; align-items: center; justify-content: center;
+    /* máscara: o texto que passa por trás some sob o diagrama */
+    background: linear-gradient(180deg, var(--brand-navy) 0, var(--brand-navy) 68%, rgba(13, 27, 42, 0.85) 86%, transparent 100%);
+  }
+  .ecs-sticky { position: static; top: auto; width: 100%; }
+  .ecs-svg { max-width: 202px; }
+  .ecs-steps { position: relative; z-index: 1; }
+  .ecs-step {
+    min-height: 60vh; justify-content: center; text-align: center;
+  }
+  .ecs-step:first-child { min-height: 48vh; }
+  .ecs-step:last-child { min-height: 50vh; }
+  .ecs-step p { max-width: none; margin-inline: auto; }
 }
 @media (prefers-reduced-motion: reduce) {
   .ecs-scene, .ecs-dock, .ecs-pocket { transition: none; }
