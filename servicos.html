@@ -80,13 +80,27 @@
             <radialGradient id="bmGlow" cx="50%" cy="38%" r="58%">
               <stop offset="0" stop-color="rgba(95,200,155,.12)"/><stop offset="1" stop-color="rgba(95,200,155,0)"/>
             </radialGradient>
+            <linearGradient id="bmBodyFill" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0" stop-color="rgba(120,220,175,.16)"/><stop offset="0.5" stop-color="rgba(95,200,155,.07)"/><stop offset="1" stop-color="rgba(95,200,155,.02)"/>
+            </linearGradient>
+            <radialGradient id="bmGround" cx="50%" cy="50%" r="50%">
+              <stop offset="0" stop-color="rgba(95,200,155,.22)"/><stop offset="1" stop-color="rgba(95,200,155,0)"/>
+            </radialGradient>
           </defs>
           <ellipse cx="100" cy="220" rx="118" ry="228" fill="url(#bmGlow)"/>
+          <ellipse cx="100" cy="446" rx="52" ry="7" fill="url(#bmGround)"/>
+          <!-- Volume (preenchimento suave atrás do contorno) -->
+          <g class="bm-fill" fill="url(#bmBodyFill)" stroke="none">
+            <path d="M100,16 C112,16 121,26 121,40 C121,52 114,62 100,64 C86,62 79,52 79,40 C79,26 88,16 100,16 Z"/>
+            <path d="M92,87 C87,96 74,102 66,111 C60,148 56,192 57,232 C56,238 64,240 67,234 C71,192 76,155 79,121 C79,150 79,176 80,200 C81,226 82,243 85,257 C79,296 80,348 84,432 C84,438 91,438 93,433 C96,348 99,300 99,262 C99,259 99,264 100,264 C101,264 101,259 101,262 C101,300 104,348 107,433 C109,438 116,438 116,432 C120,348 121,296 115,257 C118,243 119,226 120,200 C121,176 121,150 121,121 C124,155 129,192 133,234 C136,240 144,238 143,232 C144,192 140,148 134,111 C126,102 113,96 108,87 C104,84 96,84 92,87 Z"/>
+            <ellipse cx="88" cy="437" rx="7.5" ry="4"/><ellipse cx="112" cy="437" rx="7.5" ry="4"/>
+          </g>
           <!-- Corpo em contorno único (ilustração médica) -->
-          <g class="bm-body" fill="none" stroke="#7fd6ab" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
+          <g class="bm-body" fill="none" stroke="#8fe0bb" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
             <path d="M100,16 C112,16 121,26 121,40 C121,52 114,62 100,64 C86,62 79,52 79,40 C79,26 88,16 100,16 Z"/>
             <path d="M94,63 C93,72 92,80 92,87 M106,63 C107,72 108,80 108,87"/>
-            <path d="M92,87 C87,96 74,102 66,111 C60,148 56,192 57,232 C56,238 64,240 67,234 C71,192 76,155 79,121 C79,150 79,176 80,200 C81,226 82,243 85,257 C84,325 83,390 84,447 C84,453 91,453 93,448 C95,390 97,322 98,264 C98,261 99,266 100,266 C101,266 102,261 102,264 C103,322 105,390 107,448 C109,453 116,453 116,447 C117,390 116,325 115,257 C118,243 119,226 120,200 C121,176 121,150 121,121 C124,155 129,192 133,234 C136,240 144,238 143,232 C144,192 140,148 134,111 C126,102 113,96 108,87 C104,84 96,84 92,87 Z"/>
+            <path d="M92,87 C87,96 74,102 66,111 C60,148 56,192 57,232 C56,238 64,240 67,234 C71,192 76,155 79,121 C79,150 79,176 80,200 C81,226 82,243 85,257 C79,296 80,348 84,432 C84,438 91,438 93,433 C96,348 99,300 99,262 C99,259 99,264 100,264 C101,264 101,259 101,262 C101,300 104,348 107,433 C109,438 116,438 116,432 C120,348 121,296 115,257 C118,243 119,226 120,200 C121,176 121,150 121,121 C124,155 129,192 133,234 C136,240 144,238 143,232 C144,192 140,148 134,111 C126,102 113,96 108,87 C104,84 96,84 92,87 Z"/>
+            <ellipse cx="88" cy="437" rx="7.5" ry="4"/><ellipse cx="112" cy="437" rx="7.5" ry="4"/>
           </g>
           <!-- Rede do sistema endocanabinoide (espinha + membros) -->
           <g class="bm-net" fill="none" stroke="#5fc89b" stroke-width="1" stroke-linecap="round" opacity=".5">
