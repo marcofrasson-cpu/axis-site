@@ -249,18 +249,51 @@
 
   // ========== Scrollytelling do sistema endocanabinoide ==========
   var ecs = document.querySelector('.ecs');
-  if (ecs && 'IntersectionObserver' in window) {
+  if (ecs) {
     var ecsSteps = [].slice.call(ecs.querySelectorAll('.ecs-step'));
-    var ecsScenes = {};
-    [1, 2, 3, 4].forEach(function (n) { ecsScenes[n] = ecs.querySelector('.ecs-s' + n); });
-    var ecsActivate = function (n) {
-      ecsSteps.forEach(function (st) { st.classList.toggle('is-current', st.getAttribute('data-scene') === String(n)); });
-      [1, 2, 3, 4].forEach(function (k) { if (ecsScenes[k]) ecsScenes[k].classList.toggle('is-active', k === Number(n)); });
-    };
-    ecsActivate(1);
-    var ecsIO = new IntersectionObserver(function (entries) {
-      entries.forEach(function (e) { if (e.isIntersecting) ecsActivate(e.target.getAttribute('data-scene')); });
-    }, { rootMargin: '-45% 0px -45% 0px', threshold: 0 });
-    ecsSteps.forEach(function (st) { ecsIO.observe(st); });
+    var ecsScene = function (n) { return ecs.querySelector('.ecs-s' + n); };
+    var ecsMobile = window.matchMedia && window.matchMedia('(max-width: 900px)').matches;
+    if (ecsMobile) {
+      // Mobile: cada passo mostra sua própria figura inline (robusto, sem sticky)
+      ecs.classList.add('ecs-inline');
+      ecsSteps.forEach(function (step) {
+        var scene = ecsScene(step.getAttribute('data-scene'));
+        if (!scene) return;
+        var clone = scene.cloneNode(true);
+        clone.removeAttribute('class');
+        clone.style.opacity = '1';
+        var dock = clone.querySelector('.ecs-dock');
+        if (dock) { dock.style.opacity = '1'; dock.style.transform = 'translate(165px,172px) scale(1.35)'; }
+        var pocket = clone.querySelector('.ecs-pocket');
+        if (pocket) pocket.style.opacity = '1';
+        var svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+        svg.setAttribute('viewBox', '0 0 480 460');
+        svg.setAttribute('class', 'ecs-fig');
+        svg.setAttribute('aria-hidden', 'true');
+        svg.appendChild(clone);
+        step.insertBefore(svg, step.firstChild);
+        // Auto-crop: viewBox cinge o conteúdo da cena (mata o vazio ao redor = sem gaps)
+        try {
+          var bb = clone.getBBox();
+          if (bb && bb.width > 4 && bb.height > 4) {
+            var pad = 14;
+            svg.setAttribute('viewBox', (bb.x - pad) + ' ' + (bb.y - pad) + ' ' + (bb.width + pad * 2) + ' ' + (bb.height + pad * 2));
+          }
+        } catch (e) {}
+      });
+    } else if ('IntersectionObserver' in window) {
+      // Desktop: visual sticky + troca de cena por scroll
+      var ecsScenes = {};
+      [1, 2, 3, 4].forEach(function (n) { ecsScenes[n] = ecsScene(n); });
+      var ecsActivate = function (n) {
+        ecsSteps.forEach(function (st) { st.classList.toggle('is-current', st.getAttribute('data-scene') === String(n)); });
+        [1, 2, 3, 4].forEach(function (k) { if (ecsScenes[k]) ecsScenes[k].classList.toggle('is-active', k === Number(n)); });
+      };
+      ecsActivate(1);
+      var ecsIO = new IntersectionObserver(function (entries) {
+        entries.forEach(function (e) { if (e.isIntersecting) ecsActivate(e.target.getAttribute('data-scene')); });
+      }, { rootMargin: '-45% 0px -45% 0px', threshold: 0 });
+      ecsSteps.forEach(function (st) { ecsIO.observe(st); });
+    }
   }
 })();
