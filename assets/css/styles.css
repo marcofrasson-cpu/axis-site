@@ -685,30 +685,26 @@ button { font: inherit; cursor: pointer; background: none; border: none; color: 
   cursor: pointer; display: grid; place-items: center; -webkit-tap-highlight-color: transparent; z-index: 2;
 }
 .bm-marker-dot {
-  position: relative; width: 13px; height: 13px; border-radius: 50%;
-  background: var(--brand-green); box-shadow: 0 0 0 4px rgba(95, 200, 155, 0.14);
-  transition: transform .22s ease, box-shadow .22s ease;
+  position: relative; width: 10px; height: 10px; border-radius: 50%;
+  background: rgba(95, 200, 155, 0.5); box-shadow: 0 0 0 3px rgba(95, 200, 155, 0.07);
+  transition: transform .25s ease, box-shadow .25s ease, background .25s ease;
 }
-.bm-marker::after {
-  content: ""; position: absolute; width: 13px; height: 13px; border-radius: 50%;
-  border: 1.5px solid var(--brand-green); animation: bmPulse 2.6s ease-out infinite;
-}
-.bm-marker:nth-of-type(2)::after { animation-delay: .4s; }
-.bm-marker:nth-of-type(3)::after { animation-delay: .9s; }
-.bm-marker:nth-of-type(4)::after { animation-delay: 1.3s; }
-.bm-marker:nth-of-type(5)::after { animation-delay: .6s; }
-.bm-marker:nth-of-type(6)::after { animation-delay: 1.7s; }
-.bm-marker:hover .bm-marker-dot { transform: scale(1.22); }
+.bm-marker:hover .bm-marker-dot { background: rgba(95, 200, 155, 0.85); transform: scale(1.18); }
 .bm-marker.is-on .bm-marker-dot {
-  transform: scale(1.42); box-shadow: 0 0 0 6px rgba(95, 200, 155, 0.2), 0 0 20px rgba(95, 200, 155, 0.55);
+  background: var(--brand-green); transform: scale(1.5);
+  box-shadow: 0 0 0 5px rgba(95, 200, 155, 0.18), 0 0 22px rgba(95, 200, 155, 0.6);
 }
-.bm-marker.is-on::after { display: none; }
+/* pulso só no marcador ATIVO — foco claro */
+.bm-marker.is-on::after {
+  content: ""; position: absolute; width: 10px; height: 10px; border-radius: 50%;
+  border: 1.5px solid var(--brand-green); animation: bmPulse 2.8s ease-out infinite;
+}
 .bm-marker:focus-visible .bm-marker-dot { box-shadow: 0 0 0 3px var(--brand-navy), 0 0 0 6px var(--brand-green); }
-@keyframes bmPulse { 0% { transform: scale(1); opacity: .6; } 100% { transform: scale(3.2); opacity: 0; } }
+@keyframes bmPulse { 0% { transform: scale(1); opacity: .5; } 100% { transform: scale(3); opacity: 0; } }
 .bm-body { opacity: .55; animation: bmBreathe 5.5s ease-in-out infinite; }
-.bm-flow { fill: none; stroke: #a8ecca; stroke-width: 1.8; stroke-linecap: round; opacity: .9; stroke-dasharray: 10 90; animation: bmFlow 3s linear infinite; filter: drop-shadow(0 0 3px rgba(95, 200, 155, .75)); }
-.bm-flow.f2 { animation-delay: .5s; }
-.bm-flow.f4 { animation-delay: 1.4s; }
+.bm-flow { fill: none; stroke: #8fe0bb; stroke-width: 1.2; stroke-linecap: round; opacity: .42; stroke-dasharray: 7 93; animation: bmFlow 5s linear infinite; filter: drop-shadow(0 0 2px rgba(95, 200, 155, .45)); }
+.bm-flow.f2 { animation-delay: 1.2s; }
+.bm-flow.f4 { animation-delay: 2.4s; }
 .bm-zone { opacity: 0; transition: opacity .5s ease; }
 .bm-zone.is-on { opacity: 1; }
 .bm-conduit { stroke-dasharray: 16 84; stroke-dashoffset: 16; opacity: 0; stroke-linecap: round; filter: drop-shadow(0 0 4px rgba(95, 200, 155, .9)); }
@@ -744,7 +740,7 @@ button { font: inherit; cursor: pointer; background: none; border: none; color: 
   .bm-panel { min-height: 0; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .bm-marker::after { animation: none; opacity: 0; }
+  .bm-marker.is-on::after { animation: none; display: none; }
   .bm-cat, .bm-body { animation: none; }
   .bm-flow, .bm-conduit { animation: none; opacity: 0; }
 }
