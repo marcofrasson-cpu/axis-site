@@ -59,11 +59,19 @@ body::after {
 }
 @media (prefers-reduced-motion: reduce) { body::after { opacity: 0.38; } }
 
-/* Titulos usam a display face (Fraunces); corpo/UI/dados seguem Inter */
+/* Titulos usam a display face (Spectral); UI/dados/labels seguem Hanken Grotesk */
 h1, h2, .nh-title, .ab-hero h1, .ct-title, .bl-h1, .pf-wordmark span {
   font-family: var(--font-display);
   font-weight: 600;
   letter-spacing: -0.02em;
+}
+/* Prosa de leitura em serif (editorial) — leads, textos de seção e artigos.
+   UI, labels, botões, dados e cards menores permanecem em Hanken (sans). */
+.ab-lead, .page-hero p, .nh-sub, .section-intro,
+.section-heading p, .article p, .article li,
+.manifesto-body, .ct-lead {
+  font-family: var(--font-display);
+  font-weight: 400;
 }
 
 img { max-width: 100%; display: block; }
@@ -2228,33 +2236,36 @@ body { overflow-x: clip; }
 /* ===== Sobre — narrativa editorial ===== */
 .hl-serif { color: var(--oil-hi); font-style: italic; }
 
-/* História / SEC: editorial 2 colunas (cabeça | prosa) */
-.story-grid {
-  display: grid; grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
-  gap: clamp(32px, 6vw, 84px); align-items: start;
-}
+/* História / SEC: editorial em coluna única centrada (sem coluna morta) */
+.story-grid { max-width: 780px; margin-inline: auto; }
+.story-head { margin-bottom: 26px; }
 .story-head h2 {
   font-family: var(--font-display); font-weight: 600;
-  font-size: clamp(26px, 3vw, 37px); line-height: 1.14; letter-spacing: -0.02em;
-  margin-top: 18px; color: var(--text-primary); text-wrap: balance;
+  font-size: clamp(27px, 3.2vw, 40px); line-height: 1.12; letter-spacing: -0.02em;
+  margin-top: 16px; color: var(--text-primary); text-wrap: balance;
 }
 .story-body p {
-  font-size: clamp(16px, 1.1vw, 18px); line-height: 1.75; color: var(--lead-color); max-width: 62ch;
+  font-family: var(--font-display); font-weight: 400;
+  font-size: clamp(17px, 1.35vw, 20px); line-height: 1.72; color: var(--lead-color);
 }
 .story-body p + p { margin-top: 20px; }
 .story-body strong { color: var(--text-primary); font-weight: 600; }
 
-/* Método */
-.section-heading--left { text-align: left; max-width: 780px; margin-bottom: 0; }
+/* Método (mesma coluna editorial) */
+.section-heading--left { text-align: left; max-width: 780px; margin-inline: auto; margin-bottom: 0; }
 .section-heading--left h2 {
   font-family: var(--font-display); font-weight: 600;
-  font-size: clamp(26px, 3vw, 37px); line-height: 1.14; letter-spacing: -0.02em;
+  font-size: clamp(27px, 3.2vw, 40px); line-height: 1.12; letter-spacing: -0.02em;
   margin-top: 16px; color: var(--text-primary); text-wrap: balance;
 }
-.method-body { max-width: 780px; margin-top: 26px; }
-.method-body p { font-size: clamp(16px, 1.1vw, 18px); line-height: 1.75; color: var(--lead-color); }
+.method-body { max-width: 780px; margin: 26px auto 0; }
+.method-body p {
+  font-family: var(--font-display); font-weight: 400;
+  font-size: clamp(17px, 1.35vw, 20px); line-height: 1.72; color: var(--lead-color);
+}
 .method-body p + p { margin-top: 18px; }
 .method-body strong { color: var(--text-primary); font-weight: 600; }
+.about-principles { max-width: 1080px; margin-inline: auto; }
 
 /* Princípios */
 .about-principles {
