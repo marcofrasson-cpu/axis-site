@@ -203,16 +203,23 @@
       if (nhHint) { var hs = nhHint.querySelector('span'); if (hs) hs.textContent = nhTouch ? 'Toque nos pontos' : 'Passe o mouse pelos pontos'; }
       var nhActive = null;
 
+      var nhHero = nhVisual.closest('.nh-hero') || nhVisual;
       var nhPlace = function (node) {
         var vr = nhVisual.getBoundingClientRect();
+        var hr = nhHero.getBoundingClientRect();
         var nr = node.getBoundingClientRect();
         var cx = nr.left + nr.width / 2 - vr.left;
         var cy = nr.top + nr.height / 2 - vr.top;
         var tw = nhTip.offsetWidth || 180;
+        var th = nhTip.offsetHeight || 60;
         cx = Math.max(tw / 2 + 6, Math.min(cx, vr.width - tw / 2 - 6));
         nhTip.style.left = cx + 'px';
         nhTip.style.top = cy + 'px';
-        nhTip.classList.toggle('below', cy < vr.height * 0.26);
+        // Acima por padrão; vira pra baixo quando não cabe acima dentro do hero
+        // (o hero tem overflow:hidden — sem isso o tooltip é cortado no topo).
+        var nodeCenterY = nr.top + nr.height / 2;
+        var below = (nodeCenterY - (th + 22)) < hr.top;
+        nhTip.classList.toggle('below', below);
       };
       var nhShow = function (node) {
         if (nhActive && nhActive !== node) nhActive.classList.remove('is-active');

@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="256" height="256">
+  <g transform="translate(128,128) scale(1.42) translate(-99.8,-90)" fill="none" stroke-linejoin="miter">
+    <polygon points="60,46 99.8,68 99.8,112 60,134 20.2,112 20.2,68" stroke="#3a4a52" stroke-width="5"/>
+    <polygon points="99.8,68 139.6,46 179.4,68 179.4,112 139.6,134 99.8,112" stroke="#5fc89b" stroke-width="5"/>
+    <path d="M 126.6 116 L 139.6 58 L 152.6 116 M 131.1 95 L 148.1 95" stroke="#5fc89b" stroke-width="5" stroke-linecap="butt"/>
+    <circle cx="99.8" cy="68" r="6" fill="#5fc89b" stroke="none"/>
+    <circle cx="99.8" cy="112" r="6" fill="#5fc89b" stroke="none"/>
+  </g>
+</svg>
