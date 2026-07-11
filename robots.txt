@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://axisfitomed.com.br/sitemap.xml
