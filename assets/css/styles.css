@@ -632,6 +632,16 @@ button { font: inherit; cursor: pointer; background: none; border: none; color: 
 }
 .bm-cat li:first-child { border-top: 1px solid var(--border-hairline); }
 .bm-cat li::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--brand-green); flex: none; }
+.bm-cat li { justify-content: space-between; }
+.bm-cond { flex: 1; }
+.bm-ev {
+  flex: none; font-family: 'Hanken Grotesk', sans-serif; font-size: 10px; font-weight: 700;
+  letter-spacing: 0.05em; text-transform: uppercase; padding: 3px 9px; border-radius: 999px; white-space: nowrap;
+}
+.bm-ev--forte { color: #a8ecca; background: rgba(95, 200, 155, 0.16); }
+.bm-ev--media { color: #7fd6ab; background: rgba(95, 200, 155, 0.09); }
+.bm-ev--prelim { color: var(--oil-hi); background: rgba(245, 192, 107, 0.12); }
+.bm-legend { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 18px; font-family: 'Hanken Grotesk', sans-serif; font-size: 12px; color: var(--text-muted); }
 
 @media (max-width: 760px) {
   .bm-stage { grid-template-columns: 1fr; gap: 16px; }
