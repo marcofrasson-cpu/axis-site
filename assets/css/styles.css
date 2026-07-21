@@ -3080,6 +3080,10 @@ body { overflow-x: clip; }
   padding: clamp(78px, 9vw, 124px) 0 clamp(92px, 10vw, 136px);
   background: var(--brand-navy); /* fallback se a imagem falhar */
 }
+/* Sobre: o sujeito (caneta+caderno) vive no terço inferior — baixa o
+   enquadramento e sobe o glow, para a caneta não sair de quadro sob o texto. */
+.finale--sobre .fin-bg { object-position: 46% 72%; }
+.finale--sobre .fin-glow { background: radial-gradient(42% 46% at 46% 66%, rgba(245,192,107,.22), transparent 74%); }
 /* camadas: imagem (-3) → glow (-2) → véu (-1) → conteúdo (1).
    O véu é a última camada antes do texto: é ele quem governa o contraste. */
 .fin-bg {
