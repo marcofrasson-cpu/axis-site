@@ -28,7 +28,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Spectral:wght@400;500;600;700&family=Hanken+Grotesk:wght@400;500;600;700;800&display=swap">
 <link rel="icon" type="image/svg+xml" href="assets/img/logo.svg">
-<link rel="stylesheet" href="assets/css/styles.css?v=43">
+<link rel="stylesheet" href="assets/css/styles.css?v=44">
 <noscript><style>.reveal,.reveal-stagger [class*="-card"],.blog-highlight.reveal .blog-feature-image,.blog-highlight.reveal .blog-feature-content{opacity:1!important;transform:none!important;filter:none!important}</style></noscript>
 <script type="application/ld+json">
 {"@context":"https://schema.org","@type":"MedicalClinic","name":"Axis FitoMed","url":"https://axisfitomed.com.br/","description":"Associação médica de cannabis medicinal com rigor científico, em Curitiba, Paraná.","email":"contato@axisfitomed.com.br","medicalSpecialty":"Cannabis medicinal e medicina endocanabinoide","areaServed":{"@type":"City","name":"Curitiba"},"address":{"@type":"PostalAddress","addressLocality":"Curitiba","addressRegion":"PR","addressCountry":"BR"},"logo":"https://axisfitomed.com.br/assets/img/logo.svg"}
@@ -279,7 +279,11 @@
 
 <!-- Qualidade e rastreabilidade -->
 <section class="qa reveal" aria-labelledby="qa-title">
-  <img class="qa-bg" src="assets/img/resina-macro.jpg" alt="" loading="lazy" decoding="async" width="2400" height="1339">
+  <picture>
+    <!-- mobile: recorte quadrado da resina densa (a landscape mostrava o topo morto) -->
+    <source media="(max-width: 820px)" srcset="assets/img/resina-macro-m.jpg">
+    <img class="qa-bg" src="assets/img/resina-macro.jpg" alt="" loading="lazy" decoding="async" width="2400" height="1339">
+  </picture>
   <div class="qa-veil" aria-hidden="true"></div>
   <div class="container qa-inner">
     <div class="qa-copy">
@@ -485,6 +489,6 @@
   <div class="pf-wordmark" aria-hidden="true"><span>Axis FitoMed</span></div>
 </footer>
 
-<script src="assets/js/main.js?v=43"></script>
+<script src="assets/js/main.js?v=44"></script>
 </body>
 </html>
