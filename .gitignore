@@ -6,3 +6,6 @@ node_modules/
 
 .vercel
 .env*
+
+# Preview local (nao publicar)
+_preview/
