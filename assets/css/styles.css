@@ -763,58 +763,36 @@ button { font: inherit; cursor: pointer; background: none; border: none; color: 
 }
 
 /* ---------- Differentials (home) ---------- */
-/* Manifesto — respiro editorial (tipo grande + assimetria) sobre campo molecular */
-.manifesto { position: relative; overflow: hidden; padding: clamp(64px, 7vw, 100px) 0; }
+/* Manifesto — cena cheia: a fotografia autoral ocupa a seção, o tipo grande assenta sobre ela.
+   Antes era uma foto de 400px num card ao lado do texto — lia como imagem colada. */
+/* bloco, não grid: com display:grid o .container (margin-inline:auto) perde o stretch
+   e encolhe para fit-content. A altura da cena vem do padding. */
+.manifesto {
+  position: relative; overflow: hidden; isolation: isolate;
+  padding: clamp(84px, 12vw, 168px) 0;
+}
+.mf-bg {
+  position: absolute; inset: 0; z-index: -2;
+  width: 100%; height: 100%; object-fit: cover; object-position: 74% 48%;
+}
+/* Véu diagonal: segura o texto à esquerda e deixa a gota respirar à direita.
+   Difere do .qa (linear puro) para as duas bandas da mesma página não se repetirem. */
+.mf-veil {
+  position: absolute; inset: 0; z-index: -1;
+  background:
+    linear-gradient(90deg, rgba(8,17,28,.97) 0%, rgba(8,17,28,.94) 38%, rgba(8,17,28,.46) 62%, rgba(8,17,28,.06) 100%),
+    radial-gradient(120% 130% at 108% 42%, rgba(8,17,28,0) 34%, rgba(8,17,28,.6) 100%);
+}
 .manifesto::before {
   content: ''; position: absolute; inset: 0; z-index: 0; pointer-events: none;
   background-image: radial-gradient(rgba(95,200,155,.14) 1px, transparent 1.6px);
   background-size: 30px 30px;
-  -webkit-mask-image: radial-gradient(120% 70% at 40% 108%, #000 0%, rgba(0,0,0,.45) 46%, transparent 74%), radial-gradient(64% 56% at 97% 0%, #000 0%, transparent 64%);
-  mask-image: radial-gradient(120% 70% at 40% 108%, #000 0%, rgba(0,0,0,.45) 46%, transparent 74%), radial-gradient(64% 56% at 97% 0%, #000 0%, transparent 64%);
+  -webkit-mask-image: radial-gradient(110% 70% at 22% 104%, #000 0%, rgba(0,0,0,.4) 44%, transparent 72%);
+  mask-image: radial-gradient(110% 70% at 22% 104%, #000 0%, rgba(0,0,0,.4) 44%, transparent 72%);
 }
-/* 2 colunas: texto à esquerda, molécula à direita (preenche o vazio do topo-direita) */
-.manifesto .container {
-  position: relative;
-  display: grid; grid-template-columns: minmax(0, 1fr) auto;
-  gap: clamp(32px, 5vw, 80px); align-items: center;
-}
-.manifesto-text { position: relative; z-index: 2; }
-.manifesto-mol {
-  position: relative; z-index: 1;
-  width: min(34vw, 400px); justify-self: end; pointer-events: none;
-}
-.manifesto-mol svg { width: 100%; height: auto; display: block; overflow: visible; }
-.manifesto-mol img {
-  width: 100%; height: auto; display: block; border-radius: 14px;
-  border: 1px solid var(--border-hairline);
-  box-shadow: 0 26px 64px rgba(0, 0, 0, .48);
-}
-.manifesto-mol .mol-lines { stroke: rgba(95, 200, 155, 0.42); }
-.manifesto-mol .mol-nodes circle { fill: rgba(95, 200, 155, 0.55); }
-.manifesto-mol [data-draw] { stroke-dasharray: 1; stroke-dashoffset: 1; }
-.manifesto.is-visible .manifesto-mol [data-draw] {
-  animation-name: molDraw; animation-duration: 1.25s;
-  animation-timing-function: cubic-bezier(.6, 0, .2, 1); animation-fill-mode: forwards;
-}
-@keyframes molDraw { to { stroke-dashoffset: 0; } }
-.manifesto-mol .mol-atoms circle,
-.manifesto-mol .mol-nodes circle { opacity: 0; }
-.manifesto.is-visible .manifesto-mol .mol-nodes circle { animation: molAtom .5s ease forwards .8s; }
-.manifesto.is-visible .manifesto-mol .mol-atoms circle { animation: molAtom .6s ease forwards .95s, atomPulse 3.6s ease-in-out 1.6s infinite; }
-@keyframes molAtom { to { opacity: 1; } }
-@keyframes atomPulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.12); } }
-.manifesto-mol .mol-atoms circle { transform-box: fill-box; transform-origin: center; }
-
-/* Molécula viva: flutua + glow pulsa + elétrons orbitam */
-.mm-float { animation: molFloat 7.5s ease-in-out infinite; transform-box: view-box; transform-origin: 220px 168px; }
-@keyframes molFloat { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
-.mol-glow { transform-box: view-box; transform-origin: 220px 168px; animation: molGlow 6s ease-in-out infinite; }
-@keyframes molGlow { 0%, 100% { opacity: .55; transform: scale(1); } 50% { opacity: .95; transform: scale(1.06); } }
-.orbit-ring { fill: none; stroke: rgba(95, 200, 155, 0.2); stroke-width: 1; }
-.orbit-ring--faint { stroke: rgba(232, 161, 60, 0.16); }
-.electron { filter: drop-shadow(0 0 5px rgba(95, 200, 155, 0.9)); }
-.electron.e-mint { fill: #a8f0cd; }
-.electron.e-amber { fill: #f5c06b; filter: drop-shadow(0 0 5px rgba(245, 192, 107, 0.9)); }
+.manifesto .container { position: relative; }
+/* px, não ch: ch aqui resolveria contra os 16px herdados e espremeria o lead de 68px */
+.manifesto-text { position: relative; z-index: 2; max-width: min(760px, 62%); }
 .manifesto-kicker {
   margin: 0 0 26px; font-size: 12px; font-weight: 600;
   letter-spacing: 0.22em; text-transform: uppercase; color: var(--brand-green);
@@ -822,8 +800,9 @@ button { font: inherit; cursor: pointer; background: none; border: none; color: 
 .manifesto-lead {
   margin: 0; max-width: 15ch;
   font-family: var(--font-display); font-weight: 600;
-  font-size: clamp(34px, 6vw, 68px); line-height: 1.03; letter-spacing: -0.02em;
+  font-size: clamp(36px, 6.2vw, 74px); line-height: 1.03; letter-spacing: -0.02em;
   color: var(--text-primary);
+  text-shadow: 0 1px 26px rgba(8, 17, 28, .5);
 }
 .manifesto-lead .hl { color: var(--oil-hi); }
 .manifesto-body {
@@ -831,21 +810,21 @@ button { font: inherit; cursor: pointer; background: none; border: none; color: 
   font-family: var(--font-display); font-weight: 500;
   font-size: clamp(19px, 1.7vw, 23px); line-height: 1.5; letter-spacing: -0.01em;
   color: var(--lead-color);
+  text-shadow: 0 1px 18px rgba(8, 17, 28, .5);
 }
-@media (max-width: 720px) {
-  .manifesto { padding: 52px 0; }
-  /* mobile empilha (desfaz o grid 2-col do desktop) */
-  .manifesto .container { display: block; min-height: 0; }
-  .manifesto-body { margin-top: 24px; margin-left: 0; max-width: none; }
-  .manifesto-mol { position: relative; z-index: 1; left: auto; bottom: auto; width: min(78vw, 380px); margin: 30px auto 0; justify-self: auto; }
-  .manifesto::before { -webkit-mask-image: radial-gradient(150% 80% at 50% 100%, #000 0%, transparent 60%); mask-image: radial-gradient(150% 80% at 50% 100%, #000 0%, transparent 60%); }
-}
-@media (prefers-reduced-motion: reduce) {
-  .manifesto-mol [data-draw] { stroke-dashoffset: 0; animation: none !important; }
-  .manifesto-mol .mol-atoms circle,
-  .manifesto-mol .mol-nodes circle { opacity: 1; animation: none !important; }
-  .mm-float, .mol-glow, .electron { animation: none !important; }
-  .electron { display: none; }
+@media (max-width: 820px) {
+  .manifesto { padding: clamp(300px, 46vw, 420px) 0 clamp(52px, 9vw, 76px); }
+  .manifesto-text { max-width: none; }
+  /* retrato: a foto perde a lateral, então o véu passa a subir de baixo */
+  .mf-bg { object-position: 68% 34%; }
+  .mf-veil {
+    background: linear-gradient(180deg, rgba(8,17,28,.28) 0%, rgba(8,17,28,.62) 34%, rgba(8,17,28,.93) 66%, rgba(8,17,28,.97) 100%);
+  }
+  .manifesto-body { margin-top: 24px; max-width: none; }
+  .manifesto::before {
+    -webkit-mask-image: radial-gradient(150% 80% at 50% 100%, #000 0%, transparent 60%);
+    mask-image: radial-gradient(150% 80% at 50% 100%, #000 0%, transparent 60%);
+  }
 }
 
 .differentials { padding: var(--space-section) 0; }
@@ -1000,10 +979,31 @@ button { font: inherit; cursor: pointer; background: none; border: none; color: 
   background: linear-gradient(135deg, #14253a 0%, #1a3a3a 100%);
   border: 1px solid var(--border-hairline);
   border-radius: 16px;
-  padding: 72px 56px;
+  padding: clamp(72px, 9vw, 116px) clamp(28px, 5vw, 64px);
   text-align: center;
   position: relative;
   overflow: hidden;
+  isolation: isolate;
+}
+/* fecho cinematográfico: a foto vive dentro do card (não sangra a página inteira,
+   para não virar a terceira banda full-bleed idêntica do index) */
+/* o card é mais largo (2.2) que a foto (1.79): com object-fit cover o eixo X satura e
+   object-position horizontal não tem efeito. Daí o zoom por transform, que de fato reenquadra. */
+.cta-bg {
+  position: absolute; z-index: -2; top: 0; left: 50%;
+  height: 100%; width: auto; min-width: 100%;
+  object-fit: cover;
+  transform: translateX(-50%) scale(1.55); transform-origin: center;
+}
+.cta-veil {
+  position: absolute; inset: 0; z-index: -1;
+  background:
+    radial-gradient(94% 132% at 50% 50%, rgba(8,17,28,.50) 0%, rgba(8,17,28,.80) 56%, rgba(8,17,28,.95) 100%),
+    linear-gradient(180deg, rgba(13,27,42,.45) 0%, rgba(13,27,42,0) 40%);
+}
+@media (max-width: 820px) {
+  .cta-bg { transform: translateX(-50%) scale(1.2); }
+  .cta-veil { background: linear-gradient(180deg, rgba(8,17,28,.62) 0%, rgba(8,17,28,.88) 100%); }
 }
 .cta-journey-card::before {
   content: '';
@@ -1013,7 +1013,8 @@ button { font: inherit; cursor: pointer; background: none; border: none; color: 
   pointer-events: none;
 }
 .cta-journey-card h2 {
-  font-size: clamp(28px, 3vw, 40px);
+  font-size: clamp(30px, 3.4vw, 46px);
+  text-shadow: 0 1px 24px rgba(8, 17, 28, .55);
   font-weight: 700;
   color: var(--text-primary);
   margin-bottom: 20px;
@@ -1021,11 +1022,12 @@ button { font: inherit; cursor: pointer; background: none; border: none; color: 
 }
 .cta-journey-card p {
   font-size: 17px;
-  color: var(--text-muted);
+  color: var(--lead-color);
   line-height: 1.6;
   max-width: 580px;
   margin: 0 auto 40px;
   position: relative;
+  text-shadow: 0 1px 18px rgba(8, 17, 28, .5);
 }
 .cta-journey-buttons {
   display: flex;
