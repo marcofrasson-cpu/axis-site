@@ -2700,8 +2700,14 @@ body { overflow-x: clip; }
   transition: border-color 300ms ease, transform 300ms ease, box-shadow 300ms ease;
 }
 .bl-feature:hover { border-color: var(--border-strong); transform: translateY(-4px); box-shadow: var(--shadow-lg); }
-.bl-feature-media { position: relative; min-height: 300px; }
-.bl-feature-media svg { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+.bl-feature-media { position: relative; min-height: 300px; overflow: hidden; }
+.bl-feature-media img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 50% 46%; display: block; }
+/* tratamento único das 3 fotos do blog: scrim navy que assenta a foto no card,
+   sem tinta por imagem (evita inventar 3 sistemas de cor) */
+.bl-scrim {
+  position: absolute; inset: 0; pointer-events: none;
+  background: linear-gradient(180deg, rgba(8,17,28,0) 42%, rgba(8,17,28,.35) 78%, rgba(8,17,28,.66) 100%);
+}
 .bl-feature-body { padding: 40px; display: flex; flex-direction: column; gap: 14px; }
 .bl-cats { display: flex; gap: 8px; flex-wrap: wrap; }
 .bl-cats span { font-size: 12px; color: var(--brand-green); border: 1px solid rgba(95, 200, 155, 0.3); border-radius: 999px; padding: 5px 12px; }
@@ -2712,11 +2718,22 @@ body { overflow-x: clip; }
 .bl-more { margin-top: 28px; color: var(--text-subtle); font-size: 14px; }
 .bl-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 22px; margin-top: 26px; }
 .bl-card {
-  display: flex; flex-direction: column; gap: 12px; padding: 30px;
+  display: flex; flex-direction: column; overflow: hidden;
   background: var(--bg-card); border: 1px solid var(--border-hairline); border-radius: var(--radius-md);
   transition: border-color 200ms ease, transform 200ms ease, box-shadow 200ms ease;
 }
 .bl-card:hover { border-color: var(--border-strong); transform: translateY(-4px); box-shadow: var(--shadow-lg); }
+/* foto no topo do card; o conteúdo textual recebe o padding, não o card */
+.bl-card-media { position: relative; aspect-ratio: 16 / 9; overflow: hidden; }
+.bl-card-media img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 50% 44%; display: block; transition: transform 500ms var(--ease-settle); }
+.bl-card:hover .bl-card-media img { transform: scale(1.04); }
+.bl-card > :not(.bl-card-media) { margin-left: 30px; margin-right: 30px; }
+.bl-card-media + .bl-cats { margin-top: 26px; }
+.bl-card > .bl-cats { display: flex; gap: 8px; flex-wrap: wrap; }
+.bl-card-title { margin-top: 12px; }
+.bl-card .bl-byline { margin-top: 12px; }
+.bl-card-excerpt { margin-top: 12px; }
+.bl-card .bl-readmore { margin-top: auto; padding-top: 14px; padding-bottom: 30px; }
 .bl-card-title { font-family: var(--font-display); font-weight: 600; font-size: clamp(19px, 2vw, 23px); line-height: 1.24; letter-spacing: -0.015em; color: var(--text-primary); }
 .bl-byline { font-size: 13px; color: var(--text-subtle); }
 .bl-card-excerpt { color: var(--text-muted); font-size: 15px; line-height: 1.65; }
@@ -2870,42 +2887,137 @@ body { overflow-x: clip; }
   .ct-form { padding: 26px; }
 }
 
-/* ==================== Servicos — feature cards (estilo Bevel) ==================== */
-.sv-feats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px; margin-top: 8px; }
-.sv-feat {
-  display: flex; flex-direction: column; overflow: hidden;
-  background: linear-gradient(165deg, var(--bg-card), var(--ground-deepest));
-  border: 1px solid var(--border-hairline); border-radius: 18px; padding: 30px 30px 0;
-  transition: transform 400ms var(--ease-settle), border-color 400ms ease, box-shadow 400ms ease;
+/* ==================== Servicos — Percurso (.pc) ====================
+   Banda dividida: chapa solida a esquerda com a linha do tempo, fotografia
+   sangrando ate a borda direita. Substituiu os 3 cards de icone (.sv-feat),
+   removidos junto com as animacoes tg-/dp-/ob- que so eles usavam. */
+.pc {
+  --pc-gut: 24px;                 /* espelha o padding do .container */
+  position: relative;
+  overflow: hidden;               /* clipa a sangria: nunca gera scroll-x */
+  background: var(--ground-deepest);
+  padding: clamp(72px, 8vw, 118px) 0;
 }
-.sv-feat:hover { transform: translateY(-5px); border-color: rgba(95, 200, 155, 0.4); box-shadow: var(--shadow-lg); }
-.sv-feat h3 { font-size: 22px; font-weight: 700; letter-spacing: -0.01em; margin-bottom: 12px; }
-.sv-feat p { color: var(--text-muted); font-size: 15px; line-height: 1.65; margin-bottom: 26px; }
-.sv-feat__visual {
-  margin: auto -30px 0; border-top: 1px solid var(--border-hairline);
-  background: radial-gradient(70% 90% at 50% 25%, rgba(95, 200, 155, 0.10), transparent 70%);
-  aspect-ratio: 16 / 9; display: flex; align-items: center; justify-content: center;
-}
-.sv-feat__visual svg { width: 58%; height: auto; overflow: visible; }
+/* o .reveal do site e opacity+translateY+scale+blur; numa banda full-bleed isso
+   encolhe a sangria e desfoca a foto inteira. Neutraliza o fade de bloco e deixa
+   o IntersectionObserver so marcando .is-visible. */
+.pc.reveal { opacity: 1; transform: none; filter: none; transition: none; will-change: auto; }
 
-/* Ilustracoes vivas dos cards de processo */
-.tg-r1, .tg-r2, .tg-dot, .dp-drop, .dp-dot, .ob-ring, .ob-node { transform-box: fill-box; transform-origin: center; }
-.tg-r1 { animation: tgPulse 3s ease-in-out infinite; }         /* alvo: anéis de foco */
-.tg-r2 { animation: tgPulse 3s ease-in-out infinite .5s; }
-.tg-dot { animation: svfDot 2.6s ease-in-out infinite; }
-.dp-drop { animation: dpBob 3.4s ease-in-out infinite; }        /* prescrição: gota + dose */
-.dp-dot { animation: svfDot 2.6s ease-in-out infinite .3s; }
-.ob-ring { animation: obSpin 22s linear infinite; }             /* acompanhamento: ciclo */
-.ob-node { animation: svfDot 2.6s ease-in-out infinite; }
-@keyframes tgPulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.12); } }
-@keyframes svfDot { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.32); } }
-@keyframes dpBob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(3px); } }
-@keyframes obSpin { to { transform: rotate(360deg); } }
+.pc-inner {
+  display: grid; grid-template-columns: minmax(0, 1.04fr) minmax(0, 1fr);
+  gap: clamp(32px, 5vw, 76px); align-items: center;
+}
+.pc-col { grid-column: 1; }
+.pc-col h2 {
+  font-family: var(--font-display); font-weight: 600;
+  font-size: clamp(28px, 3.2vw, 44px);   /* menor que .qa-title: divide a linha com a foto */
+  line-height: 1.1; letter-spacing: -.025em; color: var(--text-primary); margin: 0 0 16px;
+}
+.pc-lead {
+  font-family: var(--font-display); font-size: clamp(16px, 1.3vw, 18.5px);
+  line-height: 1.6; color: var(--lead-color); margin: 0; max-width: 46ch;
+}
+
+.pc-media {
+  position: relative; grid-column: 2; align-self: stretch;
+  min-height: clamp(380px, 38vw, 540px);
+  /* a borda da viewport fica a (100vw - max-width)/2 + gutter do .container.
+     Somar so a metade deixava a foto parar 24px antes. Overshoot e seguro: .pc clipa. */
+  width: calc(100% + var(--pc-gut) + max(0px, (100vw - var(--max-width)) / 2));
+  overflow: hidden;
+}
+.pc-photo {
+  position: absolute; inset: 0; width: 100%; height: 100%;
+  object-fit: cover; object-position: 50% 40%;
+  opacity: 0; transform: scale(1.035);
+  transition: opacity 820ms var(--ease-settle), transform 820ms var(--ease-settle);
+}
+.pc.is-visible .pc-photo { opacity: 1; transform: none; }
+/* costura a foto na chapa e assenta topo/base. Sem veu, sem vinheta. */
+.pc-fade {
+  position: absolute; inset: 0; pointer-events: none;
+  background:
+    linear-gradient(90deg, var(--ground-deepest) 0%, rgba(8,17,28,.72) 11%, rgba(8,17,28,.18) 36%, rgba(8,17,28,0) 64%),
+    linear-gradient(180deg, rgba(8,17,28,.40) 0%, rgba(8,17,28,0) 24%, rgba(8,17,28,0) 76%, rgba(8,17,28,.40) 100%);
+}
+
+.pc-steps { list-style: none; margin: clamp(34px, 4vw, 48px) 0 0; padding: 0; }
+.pc-step {
+  position: relative; padding: 0 0 clamp(22px, 2.6vw, 32px) 44px;
+  opacity: 0; transform: translateY(14px);
+  transition: opacity 520ms var(--ease-settle), transform 520ms var(--ease-settle);
+}
+.pc-step:last-child { padding-bottom: 0; }
+.pc.is-visible .pc-step { opacity: 1; transform: none; }
+/* trilho por segmento (entre um no e o proximo): nunca sobra ponta solta */
+.pc-step::before, .pc-step::after {
+  content: ""; position: absolute; left: 6px; top: 19px; bottom: -3px; width: 1px;
+}
+.pc-step::before { background: var(--border-hairline); }
+.pc-step::after {
+  background: var(--brand-green); transform: scaleY(0); transform-origin: top center;
+  transition: transform 560ms var(--ease-settle);
+}
+.pc-step:nth-child(2)::after { background: linear-gradient(180deg, var(--brand-green), var(--oil-hi)); }
+.pc-step:last-child::before, .pc-step:last-child::after { display: none; }
+.pc.is-visible .pc-step::after { transform: scaleY(1); }
+
+.pc-node {
+  position: absolute; left: 0; top: 3px; width: 13px; height: 13px; border-radius: 50%;
+  background: var(--ground-deepest); border: 1.5px solid rgba(95,200,155,.30);
+  transition: border-color 520ms var(--ease-settle), box-shadow 520ms var(--ease-settle);
+}
+.pc.is-visible .pc-node { border-color: var(--brand-green); box-shadow: 0 0 0 4px rgba(95,200,155,.08); }
+.pc.is-visible .pc-step:last-child .pc-node { border-color: var(--oil-hi); box-shadow: 0 0 0 4px rgba(245,192,107,.09); }
+
+/* coreografia total <= 880ms: a luz do trilho vai na frente do texto */
+.pc.is-visible .pc-step:nth-child(1), .pc.is-visible .pc-step:nth-child(1) .pc-node { transition-delay: 60ms; }
+.pc.is-visible .pc-step:nth-child(2), .pc.is-visible .pc-step:nth-child(2) .pc-node { transition-delay: 210ms; }
+.pc.is-visible .pc-step:nth-child(3), .pc.is-visible .pc-step:nth-child(3) .pc-node { transition-delay: 360ms; }
+.pc.is-visible .pc-step:nth-child(1)::after { transition-delay: 180ms; }
+.pc.is-visible .pc-step:nth-child(2)::after { transition-delay: 330ms; }
+
+.pc-num {
+  display: block; font-family: var(--font-display); font-size: 12.5px; font-weight: 500;
+  letter-spacing: .2em; color: var(--brand-green); margin-bottom: 8px;
+}
+.pc-step:last-child .pc-num { color: var(--oil-hi); }
+.pc-step h3 {
+  font-family: var(--font-display); font-weight: 600;
+  font-size: clamp(19px, 1.7vw, 23px); line-height: 1.2; letter-spacing: -.015em;
+  color: var(--text-primary); margin: 0 0 7px;
+}
+.pc-step p {
+  font-family: 'Hanken Grotesk', -apple-system, system-ui, sans-serif;
+  font-size: 15px; line-height: 1.6; color: var(--lead-color); margin: 0; max-width: 42ch;
+}
+
+/* empilha antes da zona morta entre 821 e 1150px */
+@media (max-width: 1024px) {
+  .pc { padding: 0 0 clamp(56px, 8vw, 78px); }   /* a foto encosta no topo da banda */
+  .pc-inner { grid-template-columns: 1fr; gap: clamp(30px, 5vw, 44px); }
+  .pc-media {
+    grid-column: 1; grid-row: 1; width: auto; margin: 0 calc(var(--pc-gut) * -1);
+    min-height: 0; aspect-ratio: 16 / 9;
+  }
+  .pc-col { grid-column: 1; grid-row: 2; }
+  .pc-photo { object-position: 50% 38%; }
+  .pc-fade { background: linear-gradient(180deg, rgba(8,17,28,.28) 0%, rgba(8,17,28,0) 32%, rgba(8,17,28,.55) 76%, var(--ground-deepest) 100%); }
+  .pc-lead { max-width: 60ch; }
+}
+@media (max-width: 768px) {
+  .pc { --pc-gut: 20px; }            /* acompanha o .container */
+  .pc-media { aspect-ratio: 4 / 3; }
+  .pc-step { padding-left: 38px; }
+  .pc-step p { font-size: 14.5px; max-width: 46ch; }
+}
 @media (prefers-reduced-motion: reduce) {
-  .tg-r1, .tg-r2, .tg-dot, .dp-drop, .dp-dot, .ob-ring, .ob-node { animation: none !important; }
+  .pc-photo { opacity: 1 !important; transform: none !important; transition: none !important; }
+  .pc-step  { opacity: 1 !important; transform: none !important; transition: none !important; }
+  .pc-step::after { transform: scaleY(1) !important; transition: none !important; }
+  .pc-node { transition: none !important; border-color: var(--brand-green) !important; }
+  .pc-step:last-child .pc-node { border-color: var(--oil-hi) !important; }
 }
-
-@media (max-width: 900px) { .sv-feats { grid-template-columns: 1fr; } }
 
 /* ==================== Mobile: mata gaps exagerados + transicoes ==================== */
 @media (max-width: 768px) {
