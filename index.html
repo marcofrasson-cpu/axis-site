@@ -28,7 +28,8 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Spectral:wght@400;500;600;700&family=Hanken+Grotesk:wght@400;500;600;700;800&display=swap">
 <link rel="icon" type="image/svg+xml" href="assets/img/logo.svg">
-<link rel="stylesheet" href="assets/css/styles.css?v=38">
+<link rel="stylesheet" href="assets/css/styles.css?v=39">
+<noscript><style>.reveal,.reveal-stagger [class*="-card"],.blog-highlight.reveal .blog-feature-image,.blog-highlight.reveal .blog-feature-content{opacity:1!important;transform:none!important;filter:none!important}</style></noscript>
 <script type="application/ld+json">
 {"@context":"https://schema.org","@type":"MedicalClinic","name":"Axis FitoMed","url":"https://axisfitomed.com.br/","description":"Associação médica de cannabis medicinal com rigor científico, em Curitiba, Paraná.","email":"contato@axisfitomed.com.br","medicalSpecialty":"Cannabis medicinal e medicina endocanabinoide","areaServed":{"@type":"City","name":"Curitiba"},"address":{"@type":"PostalAddress","addressLocality":"Curitiba","addressRegion":"PR","addressCountry":"BR"},"logo":"https://axisfitomed.com.br/assets/img/logo.svg"}
 </script>
@@ -424,15 +425,18 @@
 </section>
 
 <!-- CTA jornada -->
-<section class="cta-journey reveal aura aura-floor" aria-labelledby="cta-journey-title">
-  <div class="container">
-    <div class="cta-journey-card">
-      <img class="cta-bg" src="assets/img/cena-molecular.jpg" alt="" loading="lazy" decoding="async" width="2400" height="1339">
-      <div class="cta-veil" aria-hidden="true"></div>
+<!-- Fecho: cena cheia, não card. Deliberadamente mais baixo e mais vazio
+     que a banda .qa acima, para não virar metade de um par simétrico. -->
+<section class="finale" aria-labelledby="cta-journey-title">
+  <img class="fin-bg" src="assets/img/cena-molecular.jpg" alt="" loading="lazy" decoding="async" fetchpriority="low" width="2400" height="1339">
+  <div class="fin-glow" aria-hidden="true"></div>
+  <div class="fin-veil" aria-hidden="true"></div>
+  <div class="container fin-inner">
+    <div class="fin-copy reveal">
       <div class="cta-nodes" aria-hidden="true"><span></span><span></span></div>
-      <h2 id="cta-journey-title">Pronto para uma avaliação clínica?</h2>
-      <p>Nossa equipe avalia, com método e honestidade, se a cannabis medicinal é apropriada para o seu caso.</p>
-      <div class="cta-journey-buttons">
+      <h2 class="fin-title" id="cta-journey-title">Pronto para uma <span class="amber">avaliação clínica</span>?</h2>
+      <p class="fin-body">Nossa equipe avalia, com método e honestidade, se a cannabis medicinal é apropriada para o seu caso.</p>
+      <div class="fin-ctas">
         <a href="contato.html" class="btn btn-primary">Agendar avaliação</a>
       </div>
     </div>
@@ -481,6 +485,6 @@
   <div class="pf-wordmark" aria-hidden="true"><span>Axis FitoMed</span></div>
 </footer>
 
-<script src="assets/js/main.js?v=38"></script>
+<script src="assets/js/main.js?v=39"></script>
 </body>
 </html>
