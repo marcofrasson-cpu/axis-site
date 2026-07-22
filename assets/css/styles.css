@@ -620,10 +620,16 @@ button { font: inherit; cursor: pointer; background: none; border: none; color: 
 @keyframes bmFlow { from { stroke-dashoffset: 100; } to { stroke-dashoffset: 0; } }
 @keyframes bmConduit { 0% { stroke-dashoffset: 16; opacity: 0; } 18% { opacity: 1; } 100% { stroke-dashoffset: -100; opacity: 0; } }
 
-.bm-panel { position: relative; min-height: 240px; }
+/* grid de célula única: as categorias empilham na mesma área e align-items
+   centra cada uma verticalmente, qualquer que seja a altura dela */
+.bm-panel { position: relative; min-height: 240px; display: grid; align-items: center; }
 .bm-cat[hidden] { display: none; } /* fallback sem JS */
 .bm-cat {
-  position: absolute; top: 0; left: 0; right: 0;
+  /* mesma célula do grid: empilham sem position:absolute e ficam centradas.
+     Antes (top:0) as categorias curtas subiam ~50px e saíam do eixo do boneco.
+     O transform fica só com o deslize do cross-fade — transição de translateY
+     com calc(%) não avançava e travava 10px fora do lugar. */
+  grid-area: 1 / 1;
   opacity: 0; transform: translateY(10px); pointer-events: none;
   transition: opacity .4s ease, transform .45s cubic-bezier(.2, .7, .2, 1);
 }
