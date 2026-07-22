@@ -95,7 +95,12 @@ h1, h2, .nh-title, .ab-hero h1, .ct-title, .bl-h1, .pf-wordmark span {
   font-weight: 400;
 }
 
-img { max-width: 100%; display: block; }
+/* height: auto e companheira obrigatoria dos atributos width/height nas <img>.
+   Sem ela o atributo height vira presentational hint, as duas dimensoes ficam
+   definidas e o aspect-ratio do CSS e ignorado — a foto estica ate a altura
+   original do arquivo. Seletor de elemento (0,0,1): qualquer regra de classe
+   que precise de altura propria (.bl-card-media img, .pc-bg...) continua vencendo. */
+img { max-width: 100%; height: auto; display: block; }
 a { color: inherit; text-decoration: none; }
 button { font: inherit; cursor: pointer; background: none; border: none; color: inherit; }
 :focus-visible { outline: 2px solid var(--brand-green); outline-offset: 3px; border-radius: 4px; }
