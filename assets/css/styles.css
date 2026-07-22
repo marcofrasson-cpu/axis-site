@@ -2942,17 +2942,29 @@ body { overflow-x: clip; }
    removidos junto com as animacoes tg-/dp-/ob- que so eles usavam. */
 .pc {
   --pc-gut: 24px;                 /* espelha o padding do .container */
+  --pc-pad: clamp(72px, 8vw, 118px);
   position: relative;
   overflow: hidden;               /* clipa a sangria: nunca gera scroll-x */
   background: var(--ground-deepest);
-  padding: clamp(72px, 8vw, 118px) 0;
+  padding: var(--pc-pad) 0;
 }
+/* Faixas de dissolução no topo e na base, cobrindo a largura inteira (chapa + foto).
+   Uniformes: matam de uma vez o degrau da seção contra o navy da página e a aresta
+   reta da fotografia. Um gradiente só no fundo da seção não servia — a .pc-fade tem
+   a borda esquerda chapada e divergia dele nas pontas, criando emenda vertical. */
+.pc::before, .pc::after {
+  content: ""; position: absolute; left: 0; right: 0; z-index: 3; pointer-events: none;
+  height: clamp(96px, 13vh, 170px);
+}
+.pc::before { top: 0;    background: linear-gradient(180deg, var(--brand-navy) 0%, rgba(13,27,42,.6) 42%, rgba(13,27,42,0) 100%); }
+.pc::after  { bottom: 0; background: linear-gradient(0deg,   var(--brand-navy) 0%, rgba(13,27,42,.6) 42%, rgba(13,27,42,0) 100%); }
 /* o .reveal do site e opacity+translateY+scale+blur; numa banda full-bleed isso
    encolhe a sangria e desfoca a foto inteira. Neutraliza o fade de bloco e deixa
    o IntersectionObserver so marcando .is-visible. */
 .pc.reveal { opacity: 1; transform: none; filter: none; transition: none; will-change: auto; }
 
 .pc-inner {
+  position: relative; z-index: 4;   /* acima das faixas de dissolução */
   display: grid; grid-template-columns: minmax(0, 1.04fr) minmax(0, 1fr);
   gap: clamp(32px, 5vw, 76px); align-items: center;
 }
@@ -2969,7 +2981,20 @@ body { overflow-x: clip; }
 
 .pc-media {
   position: relative; grid-column: 2; align-self: stretch;
+  /* sangra também na vertical (cancela o padding da seção): sem isso sobrava
+     uma faixa de fundo acima e abaixo da foto, criando dois cortes horizontais */
+  margin-block: calc(-1 * var(--pc-pad));
   min-height: clamp(380px, 38vw, 540px);
+  /* máscara: a própria foto desaparece nas bordas (esquerda, topo, base).
+     Melhor que casar cor de véu com fundo — não existe emenda possível. */
+  -webkit-mask-image:
+    linear-gradient(90deg, transparent 0%, rgba(0,0,0,.35) 12%, #000 34%),
+    linear-gradient(180deg, transparent 0%, #000 15%, #000 85%, transparent 100%);
+  -webkit-mask-composite: source-in;
+  mask-image:
+    linear-gradient(90deg, transparent 0%, rgba(0,0,0,.35) 12%, #000 34%),
+    linear-gradient(180deg, transparent 0%, #000 15%, #000 85%, transparent 100%);
+  mask-composite: intersect;
   /* a borda da viewport fica a (100vw - max-width)/2 + gutter do .container.
      Somar so a metade deixava a foto parar 24px antes. Overshoot e seguro: .pc clipa. */
   width: calc(100% + var(--pc-gut) + max(0px, (100vw - var(--max-width)) / 2));
@@ -2984,12 +3009,12 @@ body { overflow-x: clip; }
   transition: opacity 820ms var(--ease-settle), transform 820ms var(--ease-settle);
 }
 .pc.is-visible .pc-photo { opacity: 1; transform: none; }
-/* costura a foto na chapa e assenta topo/base. Sem veu, sem vinheta. */
+/* escurece o lado que encosta na chapa, para a foto entrar em tom e não em aresta.
+   A dissolução das bordas é feita pela máscara em .pc-media. */
 .pc-fade {
   position: absolute; inset: 0; pointer-events: none;
-  background:
-    linear-gradient(90deg, var(--ground-deepest) 0%, rgba(8,17,28,.72) 11%, rgba(8,17,28,.18) 36%, rgba(8,17,28,0) 64%),
-    linear-gradient(180deg, rgba(8,17,28,.40) 0%, rgba(8,17,28,0) 24%, rgba(8,17,28,0) 76%, rgba(8,17,28,.40) 100%);
+  background: linear-gradient(90deg,
+    rgba(8,17,28,.85) 0%, rgba(8,17,28,.5) 18%, rgba(8,17,28,.12) 42%, rgba(8,17,28,0) 68%);
 }
 
 .pc-steps { list-style: none; margin: clamp(34px, 4vw, 48px) 0 0; padding: 0; }
@@ -3046,15 +3071,21 @@ body { overflow-x: clip; }
 
 /* empilha antes da zona morta entre 821 e 1150px */
 @media (max-width: 1024px) {
-  .pc { padding: 0 0 clamp(56px, 8vw, 78px); }   /* a foto encosta no topo da banda */
+  .pc { --pc-pad: 0px; padding: 0 0 clamp(56px, 8vw, 78px); }   /* a foto encosta no topo da banda */
   .pc-inner { grid-template-columns: 1fr; gap: clamp(30px, 5vw, 44px); }
   .pc-media {
     grid-column: 1; grid-row: 1; width: auto; margin: 0 calc(var(--pc-gut) * -1);
     min-height: 0; aspect-ratio: 16 / 9;
+    /* empilhado não há chapa ao lado: dissolve só topo/base, sem comer a lateral */
+    -webkit-mask-image: linear-gradient(180deg, transparent 0%, #000 14%, #000 80%, transparent 100%);
+    mask-image: linear-gradient(180deg, transparent 0%, #000 14%, #000 80%, transparent 100%);
+    -webkit-mask-composite: source-over;
+    mask-composite: add;
   }
   .pc-col { grid-column: 1; grid-row: 2; }
   .pc-photo { object-position: 50% 38%; }
-  .pc-fade { background: linear-gradient(180deg, rgba(8,17,28,.28) 0%, rgba(8,17,28,0) 32%, rgba(8,17,28,.55) 76%, var(--ground-deepest) 100%); }
+  /* topo dissolve no navy (a foto encosta na seção anterior), base na chapa */
+  .pc-fade { background: linear-gradient(180deg, var(--brand-navy) 0%, rgba(13,27,42,0) 26%, rgba(8,17,28,.55) 74%, var(--ground-deepest) 100%); }
   .pc-lead { max-width: 60ch; }
 }
 @media (max-width: 768px) {
