@@ -28,7 +28,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Spectral:wght@400;500;600;700&family=Hanken+Grotesk:wght@400;500;600;700;800&display=swap">
 <link rel="icon" type="image/svg+xml" href="assets/img/logo.svg">
-<link rel="stylesheet" href="assets/css/styles.css?v=53">
+<link rel="stylesheet" href="assets/css/styles.css?v=58">
 <noscript><style>.reveal,.reveal-stagger [class*="-card"],.blog-highlight.reveal .blog-feature-image,.blog-highlight.reveal .blog-feature-content{opacity:1!important;transform:none!important;filter:none!important}</style></noscript>
 </head>
 <body>
@@ -306,9 +306,12 @@ c14 -96 15 -120 4 -133 -41 -50 -120 29 -120 121 0 35 29 104 58 137 26 30 39
   </div>
 </section>
 
-<!-- Percurso: banda dividida. Chapa sólida à esquerda com a linha do tempo,
-     fotografia sangrando até a borda direita. Substitui os 3 cards de ícone. -->
+<!-- Percurso: banda cinematográfica. Fotografia full-bleed atrás da seção inteira
+     (mesmo padrão da .qa e do fecho) + véu que segura o texto à esquerda.
+     Sem retângulo de foto = sem aresta de cor possível. -->
 <section class="pc reveal" aria-labelledby="sv-feat-title">
+  <img class="pc-bg" src="assets/img/percurso-clinico.jpg" alt="" width="2400" height="1339" loading="lazy" decoding="async">
+  <div class="pc-veil" aria-hidden="true"></div>
   <div class="container pc-inner">
 
     <div class="pc-col">
@@ -336,11 +339,6 @@ c14 -96 15 -120 4 -133 -41 -50 -120 29 -120 121 0 35 29 104 58 137 26 30 39
           <p>Reavaliações periódicas para ajuste de dose e manejo de efeitos. O tratamento não termina na primeira receita.</p>
         </li>
       </ol>
-    </div>
-
-    <div class="pc-media" aria-hidden="true">
-      <img class="pc-photo" src="assets/img/percurso-clinico.jpg" alt="" width="2400" height="1339" loading="lazy" decoding="async">
-      <span class="pc-fade"></span>
     </div>
 
   </div>
@@ -419,6 +417,6 @@ c14 -96 15 -120 4 -133 -41 -50 -120 29 -120 121 0 35 29 104 58 137 26 30 39
   <div class="pf-wordmark" aria-hidden="true"><span>Axis FitoMed</span></div>
 </footer>
 
-<script src="assets/js/main.js?v=53"></script>
+<script src="assets/js/main.js?v=58"></script>
 </body>
 </html>

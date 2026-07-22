@@ -2943,84 +2943,51 @@ body { overflow-x: clip; }
 }
 
 /* ==================== Servicos — Percurso (.pc) ====================
-   Banda dividida: chapa solida a esquerda com a linha do tempo, fotografia
-   sangrando ate a borda direita. Substituiu os 3 cards de icone (.sv-feat),
-   removidos junto com as animacoes tg-/dp-/ob- que so eles usavam. */
+   Banda cinematografica: fotografia full-bleed atras da secao inteira (mesmo
+   padrao da .qa e do fecho .finale) + veu que segura o texto a esquerda.
+   Antes era uma foto retangular na 2a coluna de um grid — e todo retangulo
+   deixa aresta: dependia de casar a cor do veu com o fundo da banda, e no
+   Safari a tentativa com mask-composite nem recortava. Sem retangulo, nao ha
+   aresta possivel. Substituiu os 3 cards de icone (.sv-feat). */
 .pc {
-  --pc-gut: 24px;                 /* espelha o padding do .container */
-  --pc-pad: clamp(72px, 8vw, 118px);
-  position: relative;
-  overflow: hidden;               /* clipa a sangria: nunca gera scroll-x */
+  position: relative; overflow: hidden; isolation: isolate;
   background: var(--ground-deepest);
-  padding: var(--pc-pad) 0;
+  padding: clamp(84px, 10vw, 150px) 0;
 }
-/* Faixas de dissolução no topo e na base, cobrindo a largura inteira (chapa + foto).
-   Uniformes: matam de uma vez o degrau da seção contra o navy da página e a aresta
-   reta da fotografia. Um gradiente só no fundo da seção não servia — a .pc-fade tem
-   a borda esquerda chapada e divergia dele nas pontas, criando emenda vertical. */
-.pc::before, .pc::after {
-  content: ""; position: absolute; left: 0; right: 0; z-index: 3; pointer-events: none;
-  height: clamp(96px, 13vh, 170px);
+.pc-bg {
+  position: absolute; inset: 0; z-index: -2;
+  width: 100%; height: 100%; object-fit: cover; object-position: 74% 38%;
+  opacity: 0; transform: scale(1.035);
+  transition: opacity 900ms var(--ease-settle), transform 900ms var(--ease-settle);
 }
-.pc::before { top: 0;    background: linear-gradient(180deg, var(--brand-navy) 0%, rgba(13,27,42,.6) 42%, rgba(13,27,42,0) 100%); }
-.pc::after  { bottom: 0; background: linear-gradient(0deg,   var(--brand-navy) 0%, rgba(13,27,42,.6) 42%, rgba(13,27,42,0) 100%); }
+.pc.is-visible .pc-bg { opacity: 1; transform: none; }
+/* veu: horizontal segura a coluna de texto; vertical dissolve a banda no navy
+   da pagina em cima e embaixo (inclusive sobre a foto, sem emenda) */
+.pc-veil {
+  position: absolute; inset: 0; z-index: -1; pointer-events: none;
+  background:
+    linear-gradient(90deg, rgba(8,17,28,.97) 0%, rgba(8,17,28,.93) 30%, rgba(8,17,28,.55) 58%, rgba(8,17,28,.2) 100%),
+    /* fecha cedo embaixo (68%) para dissolver a linha do tampo que existe na foto */
+    linear-gradient(180deg, var(--brand-navy) 0%, rgba(13,27,42,0) 17%, rgba(13,27,42,0) 62%,
+                            rgba(13,27,42,.72) 88%, var(--brand-navy) 100%);
+}
 /* o .reveal do site e opacity+translateY+scale+blur; numa banda full-bleed isso
-   encolhe a sangria e desfoca a foto inteira. Neutraliza o fade de bloco e deixa
-   o IntersectionObserver so marcando .is-visible. */
+   desfoca a foto inteira. Neutraliza o fade de bloco e deixa o
+   IntersectionObserver so marcando .is-visible. */
 .pc.reveal { opacity: 1; transform: none; filter: none; transition: none; will-change: auto; }
 
-.pc-inner {
-  position: relative; z-index: 4;   /* acima das faixas de dissolução */
-  display: grid; grid-template-columns: minmax(0, 1.04fr) minmax(0, 1fr);
-  gap: clamp(32px, 5vw, 76px); align-items: center;
-}
-.pc-col { grid-column: 1; }
+.pc-inner { position: relative; z-index: 1; }
+.pc-col { max-width: min(560px, 60%); }
 .pc-col h2 {
   font-family: var(--font-display); font-weight: 600;
-  font-size: clamp(28px, 3.2vw, 44px);   /* menor que .qa-title: divide a linha com a foto */
+  font-size: clamp(28px, 3.2vw, 44px);
   line-height: 1.1; letter-spacing: -.025em; color: var(--text-primary); margin: 0 0 16px;
+  text-shadow: 0 1px 16px rgba(8,17,28,.6);
 }
 .pc-lead {
   font-family: var(--font-display); font-size: clamp(16px, 1.3vw, 18.5px);
   line-height: 1.6; color: var(--lead-color); margin: 0; max-width: 46ch;
-}
-
-.pc-media {
-  position: relative; grid-column: 2; align-self: stretch;
-  /* sangra também na vertical (cancela o padding da seção): sem isso sobrava
-     uma faixa de fundo acima e abaixo da foto, criando dois cortes horizontais */
-  margin-block: calc(-1 * var(--pc-pad));
-  min-height: clamp(380px, 38vw, 540px);
-  /* máscara: a própria foto desaparece nas bordas (esquerda, topo, base).
-     Melhor que casar cor de véu com fundo — não existe emenda possível. */
-  -webkit-mask-image:
-    linear-gradient(90deg, transparent 0%, rgba(0,0,0,.35) 12%, #000 34%),
-    linear-gradient(180deg, transparent 0%, #000 15%, #000 85%, transparent 100%);
-  -webkit-mask-composite: source-in;
-  mask-image:
-    linear-gradient(90deg, transparent 0%, rgba(0,0,0,.35) 12%, #000 34%),
-    linear-gradient(180deg, transparent 0%, #000 15%, #000 85%, transparent 100%);
-  mask-composite: intersect;
-  /* a borda da viewport fica a (100vw - max-width)/2 + gutter do .container.
-     Somar so a metade deixava a foto parar 24px antes. Overshoot e seguro: .pc clipa. */
-  width: calc(100% + var(--pc-gut) + max(0px, (100vw - var(--max-width)) / 2));
-  overflow: hidden;
-}
-.pc-photo {
-  position: absolute; inset: 0; width: 100%; height: 100%;
-  /* a media é retrato (0.86) e a foto é 16:9: em 50% cortava a mão. 76% enquadra
-     as vértebras inteiras + a mão apontando. */
-  object-fit: cover; object-position: 76% 42%;
-  opacity: 0; transform: scale(1.035);
-  transition: opacity 820ms var(--ease-settle), transform 820ms var(--ease-settle);
-}
-.pc.is-visible .pc-photo { opacity: 1; transform: none; }
-/* escurece o lado que encosta na chapa, para a foto entrar em tom e não em aresta.
-   A dissolução das bordas é feita pela máscara em .pc-media. */
-.pc-fade {
-  position: absolute; inset: 0; pointer-events: none;
-  background: linear-gradient(90deg,
-    rgba(8,17,28,.85) 0%, rgba(8,17,28,.5) 18%, rgba(8,17,28,.12) 42%, rgba(8,17,28,0) 68%);
+  text-shadow: 0 1px 14px rgba(8,17,28,.6);
 }
 
 .pc-steps { list-style: none; margin: clamp(34px, 4vw, 48px) 0 0; padding: 0; }
@@ -3075,33 +3042,23 @@ body { overflow-x: clip; }
   font-size: 15px; line-height: 1.6; color: var(--lead-color); margin: 0; max-width: 42ch;
 }
 
-/* empilha antes da zona morta entre 821 e 1150px */
 @media (max-width: 1024px) {
-  .pc { --pc-pad: 0px; padding: 0 0 clamp(56px, 8vw, 78px); }   /* a foto encosta no topo da banda */
-  .pc-inner { grid-template-columns: 1fr; gap: clamp(30px, 5vw, 44px); }
-  .pc-media {
-    grid-column: 1; grid-row: 1; width: auto; margin: 0 calc(var(--pc-gut) * -1);
-    min-height: 0; aspect-ratio: 16 / 9;
-    /* empilhado não há chapa ao lado: dissolve só topo/base, sem comer a lateral */
-    -webkit-mask-image: linear-gradient(180deg, transparent 0%, #000 14%, #000 80%, transparent 100%);
-    mask-image: linear-gradient(180deg, transparent 0%, #000 14%, #000 80%, transparent 100%);
-    -webkit-mask-composite: source-over;
-    mask-composite: add;
-  }
-  .pc-col { grid-column: 1; grid-row: 2; }
-  .pc-photo { object-position: 50% 38%; }
-  /* topo dissolve no navy (a foto encosta na seção anterior), base na chapa */
-  .pc-fade { background: linear-gradient(180deg, var(--brand-navy) 0%, rgba(13,27,42,0) 26%, rgba(8,17,28,.55) 74%, var(--ground-deepest) 100%); }
+  .pc { padding: clamp(64px, 9vw, 96px) 0; }
+  .pc-col { max-width: none; }
+  .pc-bg { object-position: 62% 40%; }
+  /* retrato: o texto ocupa a largura toda, então a foto vira atmosfera —
+     véu bem mais fechado para não competir com a leitura */
+  .pc-veil { background: linear-gradient(180deg,
+    var(--brand-navy) 0%, rgba(8,17,28,.72) 12%, rgba(8,17,28,.93) 34%,
+    rgba(8,17,28,.95) 82%, var(--brand-navy) 100%); }
   .pc-lead { max-width: 60ch; }
 }
 @media (max-width: 768px) {
-  .pc { --pc-gut: 20px; }            /* acompanha o .container */
-  .pc-media { aspect-ratio: 4 / 3; }
   .pc-step { padding-left: 38px; }
   .pc-step p { font-size: 14.5px; max-width: 46ch; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .pc-photo { opacity: 1 !important; transform: none !important; transition: none !important; }
+  .pc-bg { opacity: 1 !important; transform: none !important; transition: none !important; }
   .pc-step  { opacity: 1 !important; transform: none !important; transition: none !important; }
   .pc-step::after { transform: scaleY(1) !important; transition: none !important; }
   .pc-node { transition: none !important; border-color: var(--brand-green) !important; }
