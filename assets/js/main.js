@@ -26,7 +26,9 @@
       var y = window.scrollY;
       if (y > 20) header.classList.add('scrolled');
       else header.classList.remove('scrolled');
-      var isMobile = window.matchMedia('(max-width: 720px)').matches;
+      // 860px: mesmo ponto em que o CSS troca para o menu mobile (styles.css).
+      // Estava 720px, deixando 140px de faixa em que o header nao se escondia.
+      var isMobile = window.matchMedia('(max-width: 860px)').matches;
       var menuOpen = nav && nav.classList.contains('open');
       if (isMobile && !menuOpen && y > 120 && y > lastY + 4) {
         header.classList.add('header-hidden');       // descendo
@@ -39,17 +41,22 @@
     onScroll();
   }
 
-  // Marca link ativo pela pagina atual
+  // Marca link ativo pela pagina atual.
+  // Antes usava href.replace('/','') — String.replace com padrao string troca so a
+  // PRIMEIRA ocorrencia, entao '../sobre.html' virava '..sobre.html' e nunca casava:
+  // nos 3 posts do blog nenhum item do menu ficava marcado.
   var path = window.location.pathname;
+  var inBlog = path.indexOf('/blog/') !== -1;
+  var here = path.split('/').pop() || 'index.html';
   document.querySelectorAll('.nav-links a').forEach(function (a) {
     var href = a.getAttribute('href') || '';
-    if (
-      (path === '/' || path.endsWith('/index.html')) && (href === '/' || href === 'index.html' || href === '/index.html')
-    ) {
-      a.classList.add('active');
-    } else if (href !== '/' && href !== 'index.html' && href !== '/index.html' && path.indexOf(href.replace('./', '').replace('/', '')) !== -1) {
-      a.classList.add('active');
-    }
+    var target = href.split('/').pop() || 'index.html';
+    var sobe = href.indexOf('../') === 0;          // link que sai da pasta blog/
+    var ativo = inBlog
+      // dentro de blog/: so o item Blog acende (href relativo, sem ../)
+      ? (href.indexOf('blog/') !== -1 || (!sobe && target === 'index.html'))
+      : target === here;
+    if (ativo) a.classList.add('active');
   });
 
   // ========== Fade-in on scroll ==========
@@ -163,6 +170,7 @@
       var g = function (id) { var el = document.getElementById(id); return el ? el.value.trim() : ''; };
       var assunto = g('assunto') || 'Contato';
       var subject = 'Contato site — ' + assunto + ' — ' + g('nome') + ' ' + g('sobrenome');
+      var consentEl = document.getElementById('consent');
       var body = [
         'Nome: ' + g('nome') + ' ' + g('sobrenome'),
         'E-mail: ' + g('email'),
@@ -171,8 +179,23 @@
         'Assunto: ' + assunto,
         '',
         'Mensagem:',
-        g('mensagem')
+        g('mensagem'),
+        '',
+        // registra o aceite: o formulario exige o consentimento, entao ele precisa
+        // chegar junto — sem isso a associacao nao guarda prova nenhuma
+        '---',
+        'Consentimento LGPD: ' + (consentEl && consentEl.checked ? 'aceito' : 'nao aceito') +
+          ' (enviado pelo formulario do site)'
       ].join('\n');
+
+      // Feedback: o mailto abre o cliente de e-mail do visitante. Se ele nao tiver
+      // um configurado, o clique nao faz nada — sem esta nota o usuario fica sem saber.
+      var aviso = document.getElementById('contatoAviso');
+      if (aviso) {
+        aviso.hidden = false;
+        aviso.textContent = 'Abrimos o seu aplicativo de e-mail com a mensagem pronta — revise e envie. ' +
+          'Se nada abriu, escreva direto para contato@axisfitomed.com.br.';
+      }
       window.location.href = 'mailto:contato@axisfitomed.com.br?subject=' +
         encodeURIComponent(subject) + '&body=' + encodeURIComponent(body);
     });

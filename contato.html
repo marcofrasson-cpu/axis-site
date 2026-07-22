@@ -28,16 +28,17 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Spectral:wght@400;500;600;700&family=Hanken+Grotesk:wght@400;500;600;700;800&display=swap">
 <link rel="icon" type="image/svg+xml" href="assets/img/logo.svg">
-<link rel="stylesheet" href="assets/css/styles.css?v=60">
+<link rel="stylesheet" href="assets/css/styles.css?v=61">
 <noscript><style>.reveal,.reveal-stagger [class*="-card"],.blog-highlight.reveal .blog-feature-image,.blog-highlight.reveal .blog-feature-content{opacity:1!important;transform:none!important;filter:none!important}</style></noscript>
 </head>
 <body>
+<a class="skip-link" href="#conteudo">Pular para o conteúdo</a>
 
 <header class="site-header">
   <div class="container">
     <nav class="nav" aria-label="principal">
       <a class="brand" href="index.html">
-        <img class="brand-mark" src="assets/img/logo-mark.svg" alt="">
+        <img class="brand-mark" src="assets/img/logo-mark.svg" alt="" width="256" height="256">
         <span class="brand-text">Axis FitoMed</span>
       </a>
       <ul class="nav-links">
@@ -59,7 +60,7 @@
   </div>
 </header>
 
-<main>
+<main id="conteudo">
 
 <section class="section ct-section reveal">
   <div class="container ct-wrap">
@@ -93,6 +94,7 @@
       <p class="ct-privacy-note">Não envie exames, laudos ou informações clínicas sensíveis por este formulário. Quando necessário, nossa equipe solicitará esses dados por um canal seguro.</p>
       <label class="ct-consent"><input type="checkbox" id="consent" required> Concordo em ser contatado pela Axis FitoMed sobre a minha solicitação e com o tratamento dos meus dados para esse fim.</label>
       <button type="submit" class="btn btn-primary ct-submit">Enviar</button>
+      <p class="ct-aviso" id="contatoAviso" role="status" hidden></p>
       <p class="ct-note">O envio abre seu app de e-mail com a mensagem já preenchida.</p>
     </form>
 
@@ -109,9 +111,9 @@
 <footer class="pf">
   <div class="container">
     <div class="pf-top">
-      <a class="brand" href="index.html" aria-label="Axis FitoMed"><img class="pf-mark" src="assets/img/logo.svg" alt=""></a>
+      <a class="brand" href="index.html" aria-label="Axis FitoMed"><img class="pf-mark" src="assets/img/logo.svg" alt="" width="256" height="256"></a>
       <div class="pf-col">
-        <h4>Navegar</h4>
+        <h3>Navegar</h3>
         <ul>
           <li><a href="index.html">Início</a></li>
           <li><a href="sobre.html">Sobre</a></li>
@@ -122,7 +124,7 @@
         </ul>
       </div>
       <div class="pf-col">
-        <h4>Institucional</h4>
+        <h3>Institucional</h3>
         <ul>
           <li>Responsável técnico:<br>Dr. Marco Aurélio Frasson · CRM-PR 47986</li>
           <li>Conforme Anvisa</li>
@@ -130,7 +132,7 @@
         </ul>
       </div>
       <div class="pf-col">
-        <h4>Contato</h4>
+        <h3>Contato</h3>
         <ul>
           <li><a href="mailto:contato@axisfitomed.com.br">contato@axisfitomed.com.br</a></li>
           <li>WhatsApp em breve</li>
@@ -146,6 +148,6 @@
   <div class="pf-wordmark" aria-hidden="true"><span>Axis FitoMed</span></div>
 </footer>
 
-<script src="assets/js/main.js?v=60"></script>
+<script src="assets/js/main.js?v=61"></script>
 </body>
 </html>
