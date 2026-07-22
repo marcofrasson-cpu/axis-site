@@ -2992,15 +2992,18 @@ body { overflow-x: clip; }
 
 .pc-steps { list-style: none; margin: clamp(34px, 4vw, 48px) 0 0; padding: 0; }
 .pc-step {
-  position: relative; padding: 0 0 clamp(22px, 2.6vw, 32px) 44px;
+  /* trilho aproximado do texto: 44px deixava 31px de vão e o trilho boiava
+     solto ao lado da massa tipográfica */
+  position: relative; padding: 0 0 clamp(20px, 2.2vw, 26px) 34px;
   opacity: 0; transform: translateY(14px);
   transition: opacity 520ms var(--ease-settle), transform 520ms var(--ease-settle);
 }
 .pc-step:last-child { padding-bottom: 0; }
 .pc.is-visible .pc-step { opacity: 1; transform: none; }
 /* trilho por segmento (entre um no e o proximo): nunca sobra ponta solta */
+/* 2px em vez de 1px: um fio de 1px desaparecia ao lado de um título de 23px */
 .pc-step::before, .pc-step::after {
-  content: ""; position: absolute; left: 6px; top: 19px; bottom: -3px; width: 1px;
+  content: ""; position: absolute; left: 7px; top: 22px; bottom: -3px; width: 2px; border-radius: 2px;
 }
 .pc-step::before { background: var(--border-hairline); }
 .pc-step::after {
@@ -3012,12 +3015,13 @@ body { overflow-x: clip; }
 .pc.is-visible .pc-step::after { transform: scaleY(1); }
 
 .pc-node {
-  position: absolute; left: 0; top: 3px; width: 13px; height: 13px; border-radius: 50%;
-  background: var(--ground-deepest); border: 1.5px solid rgba(95,200,155,.30);
+  /* 16px com borda de 2px: proporcional ao peso do título que ele marca */
+  position: absolute; left: 0; top: 1px; width: 16px; height: 16px; border-radius: 50%;
+  background: var(--ground-deepest); border: 2px solid rgba(95,200,155,.32);
   transition: border-color 520ms var(--ease-settle), box-shadow 520ms var(--ease-settle);
 }
-.pc.is-visible .pc-node { border-color: var(--brand-green); box-shadow: 0 0 0 4px rgba(95,200,155,.08); }
-.pc.is-visible .pc-step:last-child .pc-node { border-color: var(--oil-hi); box-shadow: 0 0 0 4px rgba(245,192,107,.09); }
+.pc.is-visible .pc-node { border-color: var(--brand-green); box-shadow: 0 0 0 5px rgba(95,200,155,.10); }
+.pc.is-visible .pc-step:last-child .pc-node { border-color: var(--oil-hi); box-shadow: 0 0 0 5px rgba(245,192,107,.11); }
 
 /* coreografia total <= 880ms: a luz do trilho vai na frente do texto */
 .pc.is-visible .pc-step:nth-child(1), .pc.is-visible .pc-step:nth-child(1) .pc-node { transition-delay: 60ms; }
@@ -3054,7 +3058,7 @@ body { overflow-x: clip; }
   .pc-lead { max-width: 60ch; }
 }
 @media (max-width: 768px) {
-  .pc-step { padding-left: 38px; }
+  .pc-step { padding-left: 32px; }
   .pc-step p { font-size: 14.5px; max-width: 46ch; }
 }
 @media (prefers-reduced-motion: reduce) {
