@@ -1666,17 +1666,74 @@ body { overflow-x: clip; }
 }
 .ab-quote blockquote .hl { color: var(--brand-green); }
 
-.ab-values { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+/* ===== No que acreditamos =====
+   Eram tres caixas iguais lado a lado: forma neutra que nao diz nada sobre o
+   que esta escrito nela. Viraram tres linhas de monografia — a palavra em
+   corpo monumental na serifada da marca, o texto ao lado, fio entre elas.
+   A palavra e desenhada duas vezes: a de baixo em contorno vazado, a de cima
+   solida, revelada da esquerda pra direita quando a linha entra na tela. O
+   verde preenchendo a palavra e a assinatura do bloco. */
+.ab-values { display: grid; gap: 0; }
 .ab-value {
-  border: 1px solid var(--border-hairline); border-radius: 14px; padding: 28px;
-  background: var(--bg-card); transition: border-color 300ms ease, transform 300ms ease;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 0.92fr);
+  gap: clamp(24px, 4vw, 64px);
+  align-items: center;
+  padding: clamp(30px, 4vw, 52px) 0;
+  border-top: 1px solid var(--border-hairline);
 }
-.ab-value:hover { border-color: var(--border-strong); transform: translateY(-3px); }
-.ab-value .ab-vk {
-  font-size: 12px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase;
-  color: var(--brand-green); margin-bottom: 14px;
+.ab-value:last-child { border-bottom: 1px solid var(--border-hairline); }
+
+.ab-value-num {
+  grid-column: 1 / -1;
+  font-family: 'Hanken Grotesk', sans-serif; font-size: 12px; font-weight: 700;
+  letter-spacing: 0.08em; color: var(--brand-green); margin-bottom: 6px;
 }
-.ab-value p { color: var(--text-muted); font-size: 14.5px; line-height: 1.65; }
+
+.ab-vk {
+  margin: 0; line-height: 0.92;
+  font-family: var(--font-display); font-weight: 600;
+  font-size: clamp(46px, 8.4vw, 116px); letter-spacing: -0.035em;
+}
+/* camada de baixo: a palavra vazada, so contorno */
+.ab-vk-fill {
+  position: relative; display: inline-block;
+  color: transparent;
+  -webkit-text-stroke: 1px var(--border-strong);
+}
+/* camada de cima: a mesma palavra solida, revelada por clip da esquerda */
+/* Padrao VISIVEL. A revelacao e enfeite: se o JS do reveal nao rodar, a
+   palavra continua la. Texto que so existe depois de um observer disparar e
+   texto que pode nao existir. */
+.ab-vk-fill::after {
+  content: attr(data-texto);
+  position: absolute; inset: 0;
+  color: var(--text-primary);
+  -webkit-text-stroke: 0;
+  clip-path: inset(0 0 0 0);
+}
+.reveal.is-visible .ab-vk-fill::after {
+  animation: vkPreenche 1100ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+@keyframes vkPreenche {
+  from { clip-path: inset(0 100% 0 0); }
+  to   { clip-path: inset(0 0 0 0); }
+}
+/* a terceira — Valores — fecha em verde, para o olho terminar na marca */
+.ab-value:last-child .ab-vk-fill::after { color: var(--brand-green); }
+
+.ab-value p {
+  color: var(--lead-color); font-size: clamp(15px, 1.15vw, 17px); line-height: 1.72;
+  max-width: 46ch; margin: 0;
+}
+
+@media (max-width: 860px) {
+  .ab-value { grid-template-columns: 1fr; gap: 16px; align-items: start; }
+  .ab-vk { font-size: clamp(42px, 13vw, 72px); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .reveal.is-visible .ab-vk-fill::after { animation: none; }
+}
 
 .kicker { display: flex; align-items: center; gap: 12px; margin-bottom: 18px; }
 .kicker--center { justify-content: center; }
@@ -1717,9 +1774,11 @@ body { overflow-x: clip; }
   color: var(--text-primary); margin: 0;
 }
 .ab-mast-title em { font-style: italic; color: var(--oil-hi); }
+/* align-items:start, nao end: com o lead em 6 linhas e a ficha em 3, o
+   alinhamento pela base deixava um vao morto no topo da coluna direita. */
 .ab-mast-grid {
   display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 0.82fr);
-  gap: clamp(32px, 5vw, 80px); align-items: end;
+  gap: clamp(32px, 5vw, 80px); align-items: start;
   margin-top: clamp(28px, 4vw, 52px);
 }
 .ab-mast-lead {
@@ -1877,7 +1936,9 @@ body { overflow-x: clip; }
   font-family: 'Hanken Grotesk', sans-serif; font-size: 12px; font-weight: 600;
   letter-spacing: 0.16em; text-transform: uppercase; color: var(--brand-green); margin-bottom: 32px;
 }
-.ab-band .ab-values { grid-template-columns: repeat(3, 1fr); gap: clamp(24px, 3vw, 52px); }
+/* As tres colunas viraram tres linhas de monografia; a regra antiga (0-2-0)
+   vencia a nova e mantinha o grid de cards. */
+.ab-band .ab-values { grid-template-columns: 1fr; gap: 0; }
 
 /* Compromissos (grade de duas colunas, réguas hairline) */
 .ab-commit { padding: clamp(44px, 5vw, 76px) 0; }
@@ -1898,7 +1959,7 @@ body { overflow-x: clip; }
   .ab-chapter { grid-template-columns: 1fr; gap: 20px; padding: 40px 0; }
   .ab-rail { position: static; }
   .ab-read { max-width: none; }
-  .ab-band .ab-values { grid-template-columns: 1fr; gap: 26px; }
+  .ab-band .ab-values { grid-template-columns: 1fr; gap: 0; }
   .ab-commit-list { grid-template-columns: 1fr; }
 }
 @media (max-width: 560px) {
@@ -2310,8 +2371,11 @@ body { overflow-x: clip; }
 .pc.is-visible .pc-step { opacity: 1; transform: none; }
 /* trilho por segmento (entre um no e o proximo): nunca sobra ponta solta */
 /* 2px em vez de 1px: um fio de 1px desaparecia ao lado de um título de 23px */
+/* top: 15px, nao 22px. O no vai de y=1 a y=17; comecar a linha em 22 deixava
+   5px de vao entre a bolinha e o trilho em TODA etapa — a quebra visivel.
+   15 faz a linha nascer 2px por baixo da borda do no, que a cobre. */
 .pc-step::before, .pc-step::after {
-  content: ""; position: absolute; left: 7px; top: 22px; bottom: -3px; width: 2px; border-radius: 2px;
+  content: ""; position: absolute; left: 7px; top: 15px; bottom: -3px; width: 2px; border-radius: 2px;
 }
 .pc-step::before { background: var(--border-hairline); }
 .pc-step::after {
