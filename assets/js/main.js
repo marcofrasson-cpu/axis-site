@@ -222,8 +222,7 @@
     var nhHint = nhVisual.querySelector('.nh-hint');
     var nhNodes = [].slice.call(nhVisual.querySelectorAll('.nh-node'));
     if (nhTip && nhConn && nhNodes.length) {
-      var nhTouch = window.matchMedia && window.matchMedia('(hover: none)').matches;
-      if (nhHint) { var hs = nhHint.querySelector('span'); if (hs) hs.textContent = nhTouch ? 'Toque nos pontos' : 'Passe o mouse pelos pontos'; }
+      // a troca mouse/toque da legenda agora e CSS (@media pointer:coarse)
       var nhActive = null;
 
       var nhHero = nhVisual.closest('.nh-hero') || nhVisual;

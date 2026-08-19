@@ -2061,6 +2061,17 @@ body { overflow-x: clip; }
   transition: opacity .3s ease;
 }
 .nh-hint.is-hidden { opacity: 0 !important; animation: none; }
+/* A legenda decide sozinha, no CSS, se fala em mouse ou em toque — assim ela ja
+   nasce certa, sem esperar o JS. */
+.nh-hint [data-pointer="coarse"] { display: none; }
+@media (pointer: coarse) {
+  .nh-hint [data-pointer="fine"] { display: none; }
+  .nh-hint [data-pointer="coarse"] { display: inline; }
+  /* Alvo de toque: r=38 no viewBox de 480 da >=44px reais mesmo com o SVG
+     reduzido a 300px no mobile (480/300 = 1.6; 38*2/1.6 = 47.5px).
+     A menor distancia entre dois nos e 93 unidades, entao 38 nao encosta. */
+  .nh-hit { r: 38px; }
+}
 @keyframes nhHintPulse { 0%, 100% { opacity: .45; } 50% { opacity: .85; } }
 @media (prefers-reduced-motion: reduce) {
   .nh-dot { transition: none; }
@@ -2102,7 +2113,8 @@ body { overflow-x: clip; }
   .nh-trust li { border: 0; background: none; padding: 0; font-size: 12px; gap: 6px; }
   .nh-trust svg { width: 15px; height: 15px; }
   .nh-visual { order: -1; max-width: 300px; margin: -8px auto 8px; }
-  .nh-hint { display: none; }
+  /* era display:none — sumia com o "Toque nos pontos" no unico lugar onde ele importa */
+  .nh-hint { bottom: -14px; font-size: 11.5px; }
 }
 @media (prefers-reduced-motion: reduce) {
   .nh-node, .nh-mol, .nh-pulse, .nh-core, .nh-inner > *, .nh-visual { animation: none !important; opacity: 1 !important; transform: none !important; }
