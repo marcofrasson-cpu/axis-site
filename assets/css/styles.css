@@ -1764,9 +1764,16 @@ body { overflow-x: clip; }
 
 /* Medida de leitura: titulo em 22ch, apoio em 58ch. Sem isso a headline
    atravessa 1132px e o olho perde a proxima linha. */
+/* 34ch, nao 22ch. O 22ch e a medida do REGISTRO DE HEROI (h1 grande e
+   centralizado, como .page-hero h1) e eu tinha aplicado ele em h2 de secao —
+   titulo de 54 caracteres virava tres linhas curtas de ~400px enquanto o lead
+   embaixo corria os 1490px inteiros. A referencia certa ja estava no arquivo:
+   .differentials .section-title usa max-width 720px (~38ch) e e o unico que
+   fecha em duas linhas. 34ch poe todos os titulos do site em duas linhas. */
 .section-heading h2, .section-title, .team-preview .section-title,
-.indications-split h2 { max-width: 22ch; }
-.section-heading p, .indications-intro-text { max-width: 58ch; }
+.indications-split h2 { max-width: 34ch; }
+/* .section-intro faltava: era o lead sem teto do bodymap em servicos.html */
+.section-heading p, .indications-intro-text, .section-intro { max-width: 58ch; }
 
 .kicker { display: flex; align-items: center; gap: 12px; margin-bottom: 18px; }
 .kicker--center { justify-content: center; }
