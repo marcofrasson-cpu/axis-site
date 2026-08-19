@@ -377,6 +377,16 @@ button { font: inherit; cursor: pointer; background: none; border: none; color: 
 .section { padding: var(--space-section) 0; }
 .section-narrow { padding: 64px 0; }
 
+/* Corpo base do titulo de secao. Existia so em quatro seletores escopados
+   (.differentials, .indications-preview, .blog-highlight, .team-preview) e o
+   .section-title do .bodymap em servicos.html ficou de fora — caia no h2
+   global de 24px enquanto os seis h3 DENTRO dele mediam 34px. Titulo menor
+   que os proprios subtitulos. Os escopados mantem seus max-width proprios. */
+.section-title {
+  font-size: clamp(28px, 3vw, 40px); font-weight: 700;
+  line-height: 1.12; letter-spacing: -0.02em;
+}
+
 .section-heading {
   text-align: center;
   margin-bottom: 48px;
