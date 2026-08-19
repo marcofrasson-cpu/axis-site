@@ -1799,15 +1799,26 @@ body { overflow-x: clip; }
 /* align-items:start, nao end: com o lead em 6 linhas e a ficha em 3, o
    alinhamento pela base deixava um vao morto no topo da coluna direita. */
 .ab-mast-grid {
+  --mast-lead-fs: clamp(18px, 1.45vw, 23px);
   display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 0.82fr);
   gap: clamp(32px, 5vw, 80px); align-items: start;
   margin-top: clamp(28px, 4vw, 52px);
 }
 .ab-mast-lead {
   font-family: var(--font-display); font-weight: 400;
-  font-size: clamp(18px, 1.45vw, 23px); line-height: 1.6; color: var(--lead-color); max-width: 54ch; margin: 0;
+  font-size: var(--mast-lead-fs); line-height: 1.6; color: var(--lead-color); max-width: 54ch; margin: 0;
 }
-.ab-mast-facts { border-top: 1px solid var(--border-strong); }
+/* A regua do bloco de fatos alinha com a TINTA da primeira linha do lead, nao
+   com a caixa dele. Entre o topo da caixa e o topo das maiusculas ha:
+     meia-entrelinha            (1.6em - 1em) / 2      = 0.300em
+   + folga do ascendente Spectral (1.049em - 0.776em)  = 0.274em
+   -------------------------------------------------------------
+                                                         0.574em
+   Medido na tinta em 1512px: 12,6px, e o em faz escalar junto com o clamp. */
+.ab-mast-facts {
+  border-top: 1px solid var(--border-strong);
+  margin-top: calc(var(--mast-lead-fs) * 0.574);
+}
 .ab-mast-facts > div {
   display: grid; grid-template-columns: minmax(96px, 0.45fr) 1fr; gap: 16px;
   padding: 12px 0; border-bottom: 1px solid var(--border-hairline);
@@ -1978,6 +1989,7 @@ body { overflow-x: clip; }
 @media (max-width: 920px) {
   .ab-mast-grid { grid-template-columns: 1fr; gap: 30px; align-items: start; }
   .ab-mast-lead { max-width: none; }
+  .ab-mast-facts { margin-top: 0; }   /* empilhado nao ha o que alinhar */
   .ab-chapter { grid-template-columns: 1fr; gap: 20px; padding: 40px 0; }
   .ab-rail { position: static; }
   .ab-read { max-width: none; }
