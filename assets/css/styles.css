@@ -10,7 +10,7 @@
   --bg-card-hover: #1f3149;
   --text-primary: #f1f5f9;
   --text-muted: #94a3b8;
-  --text-subtle: #64748b;
+  --text-subtle: #8291a3;   /* era #64748b: 3.05-3.99:1, reprovava AA em todo fundo */
   --border-hairline: rgba(255, 255, 255, 0.08);
   --border-strong: rgba(255, 255, 255, 0.14);
   --shadow-lg: 0 12px 36px rgba(0, 0, 0, 0.35);
@@ -18,7 +18,8 @@
   --radius-md: 8px;
   --radius-lg: 12px;
   --max-width: 1180px;
-  --space-section: 68px;
+  --space-section: 96px;
+  --space-section-tight: 64px;
   --header-h: 64px;
   /* Superficies tonais — deltas sub-10/canal: leem como profundidade, nao cor */
   --ground-deep: #0a1522;
@@ -123,21 +124,9 @@ button { font: inherit; cursor: pointer; background: none; border: none; color: 
 
 /* ---------- Header ---------- */
 
-.site-header {
-  position: sticky;
-  top: 0;
-  z-index: 50;
-  height: var(--header-h);
-  background: rgba(13, 27, 42, 0.85);
-  backdrop-filter: saturate(140%) blur(10px);
-  -webkit-backdrop-filter: saturate(140%) blur(10px);
-  border-bottom: 1px solid transparent;
-  transition: border-color 200ms ease, box-shadow 200ms ease;
-}
-.site-header.scrolled {
-  border-bottom-color: var(--border-hairline);
-  box-shadow: 0 1px 0 rgba(0,0,0,0.2);
-}
+/* .site-header vive so no bloco HEADER la embaixo (pill flutuante).
+   Havia mais duas declaracoes aqui e na linha ~1511 que a cascata ja matava:
+   height/background/z-index:50 eram sobrescritos ponto a ponto. Removidas. */
 .nav {
   height: 100%;
   display: flex;
@@ -248,21 +237,30 @@ button { font: inherit; cursor: pointer; background: none; border: none; color: 
   font-size: clamp(64px, 8vw, 96px);
   font-weight: 800;
   line-height: 1;
-  background: linear-gradient(120deg, var(--brand-green) 0%, var(--oil-hi) 100%);
-  -webkit-background-clip: text; background-clip: text;
-  -webkit-text-fill-color: transparent; color: transparent;
+  /* Cor solida. O gradiente era resolvido por elemento — cada numero saia numa
+     cor conforme a propria largura. Mesma escala, tres cores diferentes. */
+  color: var(--brand-green);
   letter-spacing: -0.02em;
   margin-bottom: 16px;
   font-variant-numeric: tabular-nums;
 }
 .stat-label {
   font-size: 15px;
-  color: var(--text-muted);
+  color: #a8b6c6;
   line-height: 1.5;
-  text-transform: lowercase;
+  letter-spacing: .01em;
+  /* era lowercase: virava "rqe" a sigla do registro profissional */
+  text-transform: none;
 }
 @media (max-width: 768px) {
   .stats-grid { grid-template-columns: 1fr; }
+}
+/* 96px e a respiracao do desktop; no mobile a tela e curta demais pra isso */
+@media (max-width: 780px) {
+  .stats, .differentials, .indications-preview, .team-preview,
+  .team-section, .section, .bodymap, .ecs, .fs {
+    padding-block: var(--space-section-tight);
+  }
 }
 
 /* ---------- Step icon (Como funciona) ---------- */
@@ -695,7 +693,7 @@ button { font: inherit; cursor: pointer; background: none; border: none; color: 
   color: var(--text-primary);
   text-shadow: 0 1px 26px rgba(8, 17, 28, .5);
 }
-.manifesto-lead .hl { color: var(--oil-hi); }
+.manifesto-lead .hl { color: var(--brand-green); }   /* "metodos." — era ambar */
 .manifesto-body {
   margin: 32px 0 0; max-width: 38ch;
   font-family: var(--font-display); font-weight: 500;
@@ -889,9 +887,12 @@ button { font: inherit; cursor: pointer; background: none; border: none; color: 
 
 .team-photo {
   width: 100%;
-  aspect-ratio: 1 / 1;
+  height: auto;                 /* sem isso o height="" do HTML fixa a 2a dimensao
+                                   e o aspect-ratio e ignorado: foto esticada */
+  aspect-ratio: 4 / 5;          /* os 3 arquivos ja sao 4:5 — zero corte */
   object-fit: cover;
-  object-position: center 25%;  /* prioriza rosto */
+  object-position: 50% 22%;
+  filter: saturate(.92) contrast(1.04);   /* aproxima as 3 temperaturas */
   display: block;
 }
 
@@ -1380,9 +1381,7 @@ button { font: inherit; cursor: pointer; background: none; border: none; color: 
 }
 .stats .stat-number {
   font-weight: 700;            /* era 800 — Inter so tem ate 700 (evita faux-bold borrado) */
-  background: linear-gradient(120deg, var(--brand-green) 0%, var(--oil-hi) 100%);
-  -webkit-background-clip: text; background-clip: text;
-  -webkit-text-fill-color: transparent; color: transparent;
+  color: var(--brand-green);
   letter-spacing: -0.03em;
   margin-bottom: 0;
 }
@@ -1431,10 +1430,10 @@ button { font: inherit; cursor: pointer; background: none; border: none; color: 
   content: "";
   position: absolute;
   top: 32px;
-  left: 8%;
-  right: 8%;
+  left: 44px;
+  right: calc(33.3333% - 60px);
   height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(95, 200, 155, 0.35) 12%, rgba(95, 200, 155, 0.35) 88%, transparent);
+  background: rgba(95, 200, 155, 0.35);
   transform: scaleX(0);
   transform-origin: left;
   transition: transform 1s var(--ease-settle) 0.15s;
@@ -1507,13 +1506,11 @@ body { overflow-x: clip; }
 .indications-bento .bento-card:nth-child(5) { transition-delay: 0.16s; }
 .indications-bento .bento-card:nth-child(6) { transition-delay: 0.24s; }
 
-/* Header some ao rolar pra baixo no mobile, volta ao subir (classe via JS) */
-.site-header {
-  transition: border-color 200ms ease, box-shadow 200ms ease, transform 280ms ease, opacity 280ms ease;
-}
+/* Header some ao rolar pra baixo no mobile, volta ao subir (classe via JS).
+   A transicao real esta no bloco HEADER (pill) — esta declaracao era duplicata. */
 
 /* Numero duotone: corpo creme + prefixo/sufixo (+) verde */
-.stats .stat-affix { color: var(--oil-hi); -webkit-text-fill-color: var(--oil-hi); font-weight: 500; }
+.stats .stat-affix { color: var(--brand-green); font-weight: 500; }
 
 /* CTA: eco dos nos da marca — a pagina abre e fecha na mesma assinatura */
 .cta-nodes {
@@ -1605,26 +1602,36 @@ body { overflow-x: clip; }
   height: auto;
   padding: 8px 8px 8px 22px;
   border-radius: 999px;
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.09), rgba(255, 255, 255, 0.02));
-  border: 1px solid rgba(255, 255, 255, 0.16);
-  backdrop-filter: saturate(135%) blur(26px);
-  -webkit-backdrop-filter: saturate(135%) blur(26px);
+  /* Camada de tint OPACA sob o gloss. So blur nao mata o que passa por baixo:
+     titulo serif e tom de pele da secao Equipe liam atraves da pilula. */
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, .055), rgba(255, 255, 255, .015)),
+    rgba(12, 24, 38, .82);
+  border: 1px solid rgba(255, 255, 255, 0.10);
+  backdrop-filter: saturate(125%) blur(14px);
+  -webkit-backdrop-filter: saturate(125%) blur(14px);
   /* camada própria: mantém o backdrop-filter estável entre repaints no Safari */
   transform: translateZ(0);
   -webkit-transform: translateZ(0);
   box-shadow:
-    0 14px 38px rgba(0, 0, 0, 0.30),
-    inset 0 1px 0 rgba(255, 255, 255, 0.24),
-    inset 0 -1px 0 rgba(0, 0, 0, 0.14);
-  transition: box-shadow 260ms ease, border-color 260ms ease, background 260ms ease;
+    0 10px 30px rgba(0, 0, 0, .38),
+    inset 0 1px 0 rgba(255, 255, 255, .09);
+  transition: background 220ms var(--ease-settle),
+              border-color 220ms var(--ease-settle),
+              box-shadow 220ms var(--ease-settle);
 }
 .site-header.scrolled .nav {
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.04));
-  border-color: rgba(255, 255, 255, 0.20);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, .05), rgba(255, 255, 255, .012)),
+    rgba(10, 21, 34, .93);
+  border-color: rgba(255, 255, 255, .13);
   box-shadow:
-    0 18px 48px rgba(0, 0, 0, 0.46),
-    inset 0 1px 0 rgba(255, 255, 255, 0.18),
-    inset 0 -1px 0 rgba(0, 0, 0, 0.24);
+    0 12px 34px rgba(0, 0, 0, .46),
+    inset 0 1px 0 rgba(255, 255, 255, .08);
+}
+/* sem backdrop-filter (Firefox antigo), vai a quase solido */
+@supports not (backdrop-filter: blur(1px)) {
+  .site-header .nav { background: rgba(10, 21, 34, .97); }
 }
 .nav-btn { padding: 10px 20px; font-size: 14px; white-space: nowrap; border-radius: 999px; }
 
@@ -1735,6 +1742,12 @@ body { overflow-x: clip; }
   .reveal.is-visible .ab-vk-fill::after { animation: none; }
 }
 
+/* Medida de leitura: titulo em 22ch, apoio em 58ch. Sem isso a headline
+   atravessa 1132px e o olho perde a proxima linha. */
+.section-heading h2, .section-title, .team-preview .section-title,
+.indications-split h2 { max-width: 22ch; }
+.section-heading p, .indications-intro-text { max-width: 58ch; }
+
 .kicker { display: flex; align-items: center; gap: 12px; margin-bottom: 18px; }
 .kicker--center { justify-content: center; }
 .kicker__rule { width: 32px; height: 1px; background: var(--brand-green); flex: none; }
@@ -1773,7 +1786,7 @@ body { overflow-x: clip; }
   font-size: clamp(40px, 6.6vw, 88px); line-height: 1.02; letter-spacing: -0.025em;
   color: var(--text-primary); margin: 0;
 }
-.ab-mast-title em { font-style: italic; color: var(--oil-hi); }
+.ab-mast-title em { font-style: italic; color: var(--brand-green); }
 /* align-items:start, nao end: com o lead em 6 linhas e a ficha em 3, o
    alinhamento pela base deixava um vao morto no topo da coluna direita. */
 .ab-mast-grid {
@@ -2056,7 +2069,7 @@ body { overflow-x: clip; }
 
 .nh-hint {
   position: absolute; left: 50%; bottom: -2px; transform: translateX(-50%);
-  margin: 0; font-size: 12px; letter-spacing: .04em; color: var(--text-subtle);
+  margin: 0; font-size: 13px; letter-spacing: .04em; color: var(--text-subtle);
   pointer-events: none; white-space: nowrap; animation: nhHintPulse 2.8s ease-in-out infinite;
   transition: opacity .3s ease;
 }
@@ -2114,7 +2127,7 @@ body { overflow-x: clip; }
   .nh-trust svg { width: 15px; height: 15px; }
   .nh-visual { order: -1; max-width: 300px; margin: -8px auto 8px; }
   /* era display:none — sumia com o "Toque nos pontos" no unico lugar onde ele importa */
-  .nh-hint { bottom: -14px; font-size: 11.5px; }
+  .nh-hint { bottom: -14px; font-size: 12.5px; }
 }
 @media (prefers-reduced-motion: reduce) {
   .nh-node, .nh-mol, .nh-pulse, .nh-core, .nh-inner > *, .nh-visual { animation: none !important; opacity: 1 !important; transform: none !important; }
@@ -2232,7 +2245,11 @@ body { overflow-x: clip; }
 
 /* ==================== Footer — wordmark gigante (estilo Popcorn) ==================== */
 .pf { position: relative; overflow: hidden; background: linear-gradient(to bottom, var(--brand-navy) 0, var(--ground-deepest) 180px); border-top: none; padding: 72px 0 0; margin-top: 0; }
-.pf-top { display: grid; grid-template-columns: auto 1.3fr 1.3fr 1.3fr; gap: 40px; align-items: start; }
+.pf-top { display: grid; grid-template-columns: repeat(3, 1fr); gap: 28px 40px; align-items: start; }
+.pf-top > a { grid-column: 1; grid-row: 1; }
+/* so no desktop: no @media 860px o grid vira 2 colunas e o grid-row fixo
+   empilharia as tres colunas na mesma faixa */
+@media (min-width: 861px) { .pf-top > .pf-col { grid-row: 2; } }
 .pf-mark { width: 46px; height: 46px; }
 .pf-col h3 { font-size: 13px; font-weight: 600; color: var(--text-primary); margin-bottom: 16px; }
 .pf-col ul { list-style: none; display: flex; flex-direction: column; gap: 0; }
@@ -2250,13 +2267,14 @@ body { overflow-x: clip; }
   margin-top: 44px; padding: 22px 0 26px; display: flex; justify-content: space-between;
   flex-wrap: wrap; gap: 10px; color: var(--text-subtle); font-size: 12.5px;
 }
-.pf-wordmark { width: 100%; text-align: center; line-height: .78; overflow: hidden; pointer-events: none; }
+.pf-wordmark { width: 100%; text-align: center; line-height: .78; overflow: hidden; pointer-events: none; opacity: .5; }
 .pf-wordmark span {
   display: inline-block; white-space: nowrap; font-weight: 700; letter-spacing: -0.04em;
-  font-size: clamp(64px, 17vw, 260px);
+  font-size: clamp(64px, 11vw, 150px);
+  line-height: .85;
   background: linear-gradient(90deg, rgba(244, 242, 236, 0.16), rgba(95, 200, 155, 0.2));
   -webkit-background-clip: text; background-clip: text; color: transparent;
-  transform: translateY(20%);
+  transform: translateY(18%);
 }
 @media (max-width: 860px) {
   .pf-top { grid-template-columns: 1fr 1fr; gap: 30px 24px; }
@@ -2270,11 +2288,9 @@ body { overflow-x: clip; }
 }
 .sv-stats .stat-number {
   font-size: clamp(40px, 5vw, 62px); font-weight: 700; letter-spacing: -0.03em; line-height: 1; font-variant-numeric: tabular-nums;
-  background: linear-gradient(120deg, var(--brand-green) 0%, var(--oil-hi) 100%);
-  -webkit-background-clip: text; background-clip: text;
-  -webkit-text-fill-color: transparent; color: transparent;
+  color: var(--brand-green);
 }
-.sv-stats .stat-affix { color: var(--oil-hi); -webkit-text-fill-color: var(--oil-hi); }
+.sv-stats .stat-affix { color: var(--brand-green); }
 
 /* ==================== Contato — formulario (estilo Until) ==================== */
 .ct-wrap { max-width: 780px; margin: 0 auto; }
@@ -2485,7 +2501,7 @@ body { overflow-x: clip; }
   font-family: var(--font-display); font-weight: 600; font-size: clamp(30px, 4vw, 52px);
   line-height: 1.08; letter-spacing: -.025em; color: var(--text-primary); margin: 0 0 20px;
 }
-.qa-title .amber { color: var(--oil-hi); }
+.qa-title .amber { color: var(--brand-green); }      /* "Certificado de Analise." */
 .qa-body { font-family: var(--font-display); font-size: clamp(16px, 1.4vw, 20px); line-height: 1.6; color: var(--lead-color); margin: 0 0 24px; }
 .qa-list { list-style: none; display: grid; gap: 0; margin: 0 0 24px; max-width: 34ch; }
 .qa-list li {
@@ -2559,7 +2575,8 @@ body { overflow-x: clip; }
   line-height: 1.08; letter-spacing: -.025em; color: var(--text-primary);
   margin: 0 0 18px; text-wrap: balance;
 }
-.fin-title .amber { color: var(--oil-hi); }
+.fin-title .amber { color: var(--brand-green-hover); }  /* CTA de fecho: verde claro,
+   porque o verde base sobre a foto cai pra 3.22:1 */
 .fin-body {
   font-family: var(--font-display); font-size: clamp(16.5px, 1.35vw, 19px);
   line-height: 1.62; color: var(--lead-color); max-width: 48ch; margin: 0 auto 32px;
