@@ -339,8 +339,20 @@ button { font: inherit; cursor: pointer; background: none; border: none; color: 
   content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--brand-green);
   box-shadow: 0 0 0 4px rgba(95, 200, 155, 0.16);
 }
-.page-hero h1 { font-size: clamp(36px, 4.6vw, 58px); font-weight: 700; letter-spacing: -0.03em; line-height: 1.06; margin-bottom: 16px; }
-.page-hero p { color: var(--lead-color); font-size: var(--fs-lead); max-width: 62ch; }
+/* Capa de pagina centralizada. Antes o lead ficava travado em 62ch e preso a
+   esquerda: num container de 1180px sobravam 713px de vazio a direita — o
+   texto colado num canto e a metade da tela morta. Centralizar o bloco resolve
+   sem apertar a medida de leitura, que continua em 62ch. */
+.page-hero > .container { text-align: center; }
+.page-hero h1 {
+  font-size: clamp(36px, 4.6vw, 58px); font-weight: 700; letter-spacing: -0.03em;
+  line-height: 1.06; margin-bottom: 16px;
+  max-width: 22ch; margin-inline: auto;
+}
+.page-hero p {
+  color: var(--lead-color); font-size: var(--fs-lead);
+  max-width: 62ch; margin-inline: auto;
+}
 
 /* ---------- Sections ---------- */
 
@@ -1097,7 +1109,11 @@ button { font: inherit; cursor: pointer; background: none; border: none; color: 
 /* ============================================================
    CIENCIA (pagina O que a ciencia diz)
    ============================================================ */
-.ciencia-hero { padding: 40px 0 8px; text-align: left; }
+/* Mesma regra da capa das outras paginas: bloco centralizado, medida de
+   leitura preservada. Esta pagina tinha classe propria (.ciencia-hero) e por
+   isso escapava do padrao — era a origem do texto colado na esquerda com meia
+   tela morta. */
+.ciencia-hero { padding: 40px 0 8px; text-align: center; }
 .ciencia-hero .section-eyebrow {
   display: inline-flex; align-items: center; gap: 9px;
   color: var(--brand-green); font-size: 12.5px; font-weight: 600;
@@ -1110,8 +1126,12 @@ button { font: inherit; cursor: pointer; background: none; border: none; color: 
 .ciencia-hero h1 {
   font-size: clamp(34px, 4.6vw, 56px); font-weight: 700; color: var(--text-primary);
   line-height: 1.06; margin-bottom: 18px; letter-spacing: -0.03em;
+  max-width: 22ch; margin-inline: auto;
 }
-.ciencia-hero-text { font-size: var(--fs-lead); color: var(--lead-color); line-height: 1.6; max-width: 64ch; }
+.ciencia-hero-text {
+  font-size: var(--fs-lead); color: var(--lead-color); line-height: 1.6;
+  max-width: 64ch; margin-inline: auto;
+}
 
 /* Filtros */
 .ciencia-filters { padding: 12px 0 0; }
@@ -1719,12 +1739,20 @@ body { overflow-x: clip; }
 
 /* Corpo do documento: capítulos em grid (trilha sticky + leitura) */
 .ab-doc { padding-bottom: clamp(16px, 2vw, 32px); }
+/* Duas linhas de grade: o indice e o rotulo ocupam a primeira, titulo e texto
+   dividem a segunda. E o que faz o titulo comecar exatamente na mesma linha do
+   corpo — antes o par indice+rotulo empurrava o h2 72px pra baixo. Feito por
+   grade, e nao por padding calculado, pra bater em qualquer largura e corpo
+   de fonte. */
 .ab-chapter {
   display: grid; grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.55fr);
-  gap: clamp(40px, 5vw, 96px); align-items: start;
+  grid-template-rows: auto 1fr;
+  gap: 0 clamp(40px, 5vw, 96px); align-items: start;
   padding: clamp(44px, 5vw, 76px) 0; border-top: 1px solid var(--border-hairline);
 }
-.ab-rail { position: sticky; top: 116px; }
+.ab-rail-head { grid-column: 1; grid-row: 1; }
+.ab-rail { grid-column: 1; grid-row: 2; position: sticky; top: 116px; }
+.ab-chapter > .ab-read { grid-column: 2; grid-row: 2; }
 .ab-index {
   display: inline-block; font-family: 'Hanken Grotesk', sans-serif; font-size: 12px; font-weight: 700;
   letter-spacing: 0.08em; color: var(--brand-green); margin-bottom: 16px;
