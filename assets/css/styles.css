@@ -2276,7 +2276,10 @@ body { overflow-x: clip; }
 
 /* ==================== Footer — wordmark gigante (estilo Popcorn) ==================== */
 .pf { position: relative; overflow: hidden; background: linear-gradient(to bottom, var(--brand-navy) 0, var(--ground-deepest) 180px); border-top: none; padding: 72px 0 0; margin-top: 0; }
-.pf-top { display: grid; grid-template-columns: 1.7fr 1fr 1.2fr 1fr; gap: 56px 48px; align-items: start; }
+.pf-top { display: grid; grid-template-columns: 1.6fr 1.35fr 1.15fr 1fr; gap: 56px 48px; align-items: start; }
+/* 6 destinos em coluna unica deixavam o "Navegar" 150px mais alto que os
+   vizinhos. Em 3+3 o rodape fecha parelho. */
+.pf-col--nav ul { grid-template-columns: 1fr 1fr; column-gap: 20px; }
 /* A marca era filha solta do grid e um grid-row:2 nas colunas a jogava sozinha
    pra primeira linha. Agora ela e uma coluna como as outras. */
 .pf-col--brand .pf-mark { margin-bottom: 20px; }
@@ -2312,7 +2315,7 @@ body { overflow-x: clip; }
   position: relative; z-index: 0; pointer-events: none;
   overflow: hidden;
   font-size: clamp(72px, 12.4vw, 196px);
-  height: 0.46em;
+  height: 0.597em;   /* 1.061em (baseline) - 0.464em (altura-x) da Spectral */
   margin-top: 64px;
 }
 .pf-wordmark span {
