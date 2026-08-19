@@ -2276,46 +2276,58 @@ body { overflow-x: clip; }
 
 /* ==================== Footer — wordmark gigante (estilo Popcorn) ==================== */
 .pf { position: relative; overflow: hidden; background: linear-gradient(to bottom, var(--brand-navy) 0, var(--ground-deepest) 180px); border-top: none; padding: 72px 0 0; margin-top: 0; }
-.pf-top { display: grid; grid-template-columns: repeat(3, 1fr); gap: 28px 40px; align-items: start; }
-.pf-top > a { grid-column: 1; grid-row: 1; }
+.pf-top { display: grid; grid-template-columns: 1.7fr 1fr 1.2fr 1fr; gap: 56px 48px; align-items: start; }
+/* A marca era filha solta do grid e um grid-row:2 nas colunas a jogava sozinha
+   pra primeira linha. Agora ela e uma coluna como as outras. */
+.pf-col--brand .pf-mark { margin-bottom: 20px; }
+.pf-rt { font-size: 14px; line-height: 1.55; color: var(--text-muted); max-width: 30ch; margin: 0; }
 /* so no desktop: no @media 860px o grid vira 2 colunas e o grid-row fixo
    empilharia as tres colunas na mesma faixa */
-@media (min-width: 861px) { .pf-top > .pf-col { grid-row: 2; } }
 .pf-mark { width: 46px; height: 46px; }
 .pf-col h3 { font-size: 13px; font-weight: 600; color: var(--text-primary); margin-bottom: 16px; }
-.pf-col ul { list-style: none; display: flex; flex-direction: column; gap: 0; }
+.pf-col ul { list-style: none; display: grid; gap: 12px; margin: 0; padding: 0; }
 /* alvo de toque: os links do rodapé mediam 19px de altura — abaixo do piso de
    24px da WCAG 2.2. O padding vai no <li> (ritmo uniforme entre itens de texto
    e de link) e o <a> cobre esse padding com margin negativa, sem espaçar em
    dobro. Sem :has() — suporte irregular é risco desnecessário aqui. */
-.pf-col ul li { padding: 8px 0; }
-.pf-col ul li a { display: block; margin: -8px 0; padding: 8px 0; }
+.pf-col ul li { padding: 0; }
+.pf-col ul li a { display: inline-block; padding-block: 1px; }
 .pf-col li { color: var(--text-muted); font-size: 14.5px; line-height: 1.5; }
 .pf-col a { color: var(--text-muted); font-size: 14.5px; transition: color 120ms ease; }
 .pf-col a:hover { color: var(--brand-green); }
+/* "Conforme Anvisa" e "Uso sob prescricao medica" sao afirmacoes, nao destinos */
+.pf-note { font-size: 14px; line-height: 1.5; color: var(--text-subtle); margin: 0 0 10px; }
+.pf-note:last-child { margin-bottom: 0; }
+.pf-col--contato .pf-note { margin-top: 12px; }
 .pf-bottom {
   position: relative; z-index: 1; border-top: 1px solid var(--border-hairline);
   margin-top: 44px; padding: 22px 0 26px; display: flex; justify-content: space-between;
   flex-wrap: wrap; gap: 10px; color: var(--text-subtle); font-size: 12.5px;
 }
-.pf-wordmark { width: 100%; text-align: center; line-height: .78; overflow: hidden; pointer-events: none; opacity: .5; }
+/* Estava fora do .container e centralizado na viewport — por isso o "A" nao
+   nascia na mesma vertical do "Navegar", e o corte vinha da borda da tela.
+   Agora mora no container e o corte e deliberado: a caixa tem 0.46em de altura
+   e a palavra sai por baixo, cortada na propria altura-x. */
+.pf-wordmark {
+  position: relative; z-index: 0; pointer-events: none;
+  overflow: hidden;
+  font-size: clamp(72px, 12.4vw, 196px);
+  height: 0.46em;
+  margin-top: 64px;
+}
 .pf-wordmark span {
-  display: inline-block; white-space: nowrap; font-weight: 700; letter-spacing: -0.04em;
-  font-size: clamp(64px, 11vw, 150px);
-  line-height: .85;
-  background: linear-gradient(90deg, rgba(244, 242, 236, 0.16), rgba(95, 200, 155, 0.2));
-  -webkit-background-clip: text; background-clip: text; color: transparent;
-  transform: translateY(18%);
+  display: block; white-space: nowrap; font-weight: 700;
+  font-size: 1em; line-height: 1; letter-spacing: -0.035em;
+  color: rgba(241, 245, 249, .055);
 }
 @media (max-width: 860px) {
   .pf-top { grid-template-columns: 1fr 1fr; gap: 30px 24px; }
-  .pf-top > a { grid-column: 1 / -1; }
-  .pf-col:nth-of-type(1) { grid-column: 1 / -1; }
-  .pf-col:nth-of-type(1) ul { display: grid; grid-template-columns: 1fr 1fr; gap: 12px 20px; }
+  /* seletor por classe, nao por posicao: a marca entrou como 1a coluna e o
+     :nth-of-type(1) antigo passaria a mirar ela em vez do "Navegar" */
+  .pf-col--brand { grid-column: 1 / -1; }
+  .pf-col--nav { grid-column: 1 / -1; }
+  .pf-col--nav ul { grid-template-columns: 1fr 1fr; gap: 12px 20px; }
   .pf-col a, .pf-col li { overflow-wrap: anywhere; }
-}
-@media (max-width: 520px) {
-  .pf-wordmark span { transform: translateY(14%); }
 }
 .sv-stats .stat-number {
   font-size: clamp(40px, 5vw, 62px); font-weight: 700; letter-spacing: -0.03em; line-height: 1; font-variant-numeric: tabular-nums;
