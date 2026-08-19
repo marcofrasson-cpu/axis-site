@@ -18,8 +18,17 @@
   --radius-md: 8px;
   --radius-lg: 12px;
   --max-width: 1180px;
+  /* Escala vertical de secao — tres registros, nada fora deles:
+     heroi de pagina (assimetrico de proposito: o header ja da ar em cima),
+     banda padrao, e banda full-bleed com foto. */
+  --space-hero-top: 52px;
+  --space-hero-bottom: 36px;
   --space-section: 96px;
-  --space-section-tight: 64px;
+  --space-section-tight: 64px;   /* a banda padrao no mobile */
+  /* Nao e 168 fixo: e o clamp que .qa e .manifesto ja usam. Fixo faria
+     .finale e .qa baterem so em 1400px+ e divergirem abaixo disso. */
+  --space-band: clamp(88px, 12vw, 168px);
+  --gap-title-lead: 20px;
   /* O header mede 98px de caixa e o pill 62px. O token unico que existia aqui
      valia 64px e servia de "offset do header" num lugar e de "altura do pill"
      no outro — 64 nao era o valor certo de nenhum dos dois, era so o numero que
@@ -331,7 +340,7 @@ button { font: inherit; cursor: pointer; background: none; border: none; color: 
 }
 .hero h1 .accent { color: var(--brand-green); }
 
-.page-hero { position: relative; overflow: hidden; padding: 52px 0 36px; }
+.page-hero { position: relative; overflow: hidden; padding: var(--space-hero-top) 0 var(--space-hero-bottom); }
 .page-hero::before {
   content: ""; position: absolute; inset: 0; pointer-events: none;
   background-image: radial-gradient(rgba(95, 200, 155, 0.10) 1px, transparent 1.6px);
@@ -1125,7 +1134,7 @@ button { font: inherit; cursor: pointer; background: none; border: none; color: 
    leitura preservada. Esta pagina tinha classe propria (.ciencia-hero) e por
    isso escapava do padrao — era a origem do texto colado na esquerda com meia
    tela morta. */
-.ciencia-hero { padding: 40px 0 8px; text-align: center; }
+.ciencia-hero { padding: var(--space-hero-top) 0 var(--space-hero-bottom); text-align: center; }
 .ciencia-hero .section-eyebrow {
   display: inline-flex; align-items: center; gap: 9px;
   color: var(--brand-green); font-size: 12.5px; font-weight: 600;
@@ -1179,7 +1188,7 @@ button { font: inherit; cursor: pointer; background: none; border: none; color: 
 .filter-chip.is-active { background: var(--brand-green); border-color: var(--brand-green); color: var(--brand-navy); font-weight: 600; }
 
 /* Cards de papers */
-.ciencia-papers { padding: 32px 0 72px; }
+.ciencia-papers { padding-block: 48px; }   /* era 32/72, assimetria sem motivo */
 .papers-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 22px; }
 .paper-card {
   padding: 30px 30px 24px;
@@ -1787,7 +1796,7 @@ body { overflow-x: clip; }
 .ab-wrap { max-width: 1220px; margin-inline: auto; padding-inline: clamp(24px, 5vw, 56px); }
 
 /* Masthead / capa */
-.ab-mast { padding: clamp(40px, 6vw, 92px) 0 clamp(28px, 3vw, 44px); }
+.ab-mast { padding: var(--space-hero-top) 0 var(--space-hero-bottom); }
 .ab-mast-eyebrow {
   font-family: 'Hanken Grotesk', sans-serif; font-size: 12px; font-weight: 600;
   letter-spacing: 0.18em; text-transform: uppercase; color: var(--brand-green); margin-bottom: 22px;
@@ -1963,7 +1972,7 @@ body { overflow-x: clip; }
 
 /* Valores (faixa full-bleed) */
 .ab-band {
-  padding: clamp(48px, 6vw, 92px) 0;
+  padding-block: var(--space-section);
   background: linear-gradient(180deg, rgba(255, 255, 255, 0.028), rgba(255, 255, 255, 0.006));
   border-top: 1px solid var(--border-hairline); border-bottom: 1px solid var(--border-hairline);
 }
@@ -1976,7 +1985,7 @@ body { overflow-x: clip; }
 .ab-band .ab-values { grid-template-columns: 1fr; gap: 0; }
 
 /* Compromissos (grade de duas colunas, réguas hairline) */
-.ab-commit { padding: clamp(44px, 5vw, 76px) 0; }
+.ab-commit { padding-block: var(--space-section); }
 .ab-commit-list {
   list-style: none; display: grid; grid-template-columns: repeat(2, 1fr);
   column-gap: clamp(32px, 5vw, 72px); row-gap: 2px;
@@ -2397,7 +2406,7 @@ body { overflow-x: clip; }
 .pc {
   position: relative; overflow: hidden; isolation: isolate;
   background: var(--ground-deepest);
-  padding: clamp(84px, 10vw, 150px) 0;
+  padding-block: var(--space-band);
 }
 .pc-bg {
   position: absolute; inset: 0; z-index: -2;
@@ -2556,6 +2565,10 @@ body { overflow-x: clip; }
 }
 .qa-title .amber { color: var(--brand-green); }      /* "Certificado de Analise." */
 .qa-body { font-family: var(--font-display); font-size: clamp(16px, 1.4vw, 20px); line-height: 1.6; color: var(--lead-color); margin: 0 0 24px; }
+/* Um so gap entre titulo e lead: media 20 no .qa, 24 no .indications-preview
+   e 18 no .finale. O eyebrow -> h2 (18px) ja e consistente e nao muda. */
+.qa h2 + p, .indications-preview h2 + p, .finale h2 + p,
+.section-heading h2 + p { margin-top: var(--gap-title-lead); }
 .qa-list { list-style: none; display: grid; gap: 0; margin: 0 0 24px; max-width: 34ch; }
 .qa-list li {
   display: flex; align-items: center; gap: 12px; padding: 12px 2px;
@@ -2583,9 +2596,9 @@ body { overflow-x: clip; }
    sem foto, que é o desenho original daquele componente. */
 .finale {
   position: relative; overflow: hidden; isolation: isolate;
-  /* menor que .qa (clamp(88px,12vw,168px)): o fecho é o momento mais vazio
-     da página, não o mais alto */
-  padding: clamp(78px, 9vw, 124px) 0 clamp(92px, 10vw, 136px);
+  /* Era 124/136 assimetrico, com a ideia de que o fecho devia ser mais baixo
+     que o .qa. Na pratica lia apertado logo abaixo dele. Entra na escala. */
+  padding-block: var(--space-band);
   background: var(--brand-navy); /* fallback se a imagem falhar */
 }
 /* Sobre: a cena e uma consulta — medico e paciente frente a frente, a janela
