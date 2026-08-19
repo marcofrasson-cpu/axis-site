@@ -1679,10 +1679,10 @@ body { overflow-x: clip; }
   grid-template-columns: minmax(0, 1fr) minmax(0, 0.92fr);
   gap: clamp(24px, 4vw, 64px);
   align-items: center;
-  padding: clamp(30px, 4vw, 52px) 0;
-  border-top: 1px solid var(--border-hairline);
+  padding: clamp(34px, 4.4vw, 58px) 0;
 }
-.ab-value:last-child { border-bottom: 1px solid var(--border-hairline); }
+/* fio SO entre as linhas — sem regua no topo nem no fim do bloco */
+.ab-value + .ab-value { border-top: 1px solid var(--border-hairline); }
 
 .ab-value-num {
   grid-column: 1 / -1;
@@ -1944,11 +1944,11 @@ body { overflow-x: clip; }
 .ab-commit { padding: clamp(44px, 5vw, 76px) 0; }
 .ab-commit-list {
   list-style: none; display: grid; grid-template-columns: repeat(2, 1fr);
-  column-gap: clamp(32px, 5vw, 72px); border-top: 1px solid var(--border-hairline);
+  column-gap: clamp(32px, 5vw, 72px); row-gap: 2px;
+  border-top: 1px solid var(--border-hairline); padding-top: 12px;
 }
 .ab-commit-list li {
-  display: flex; align-items: center; gap: 13px; padding: 16px 2px;
-  border-bottom: 1px solid var(--border-hairline);
+  display: flex; align-items: center; gap: 13px; padding: 13px 2px;
   font-family: 'Hanken Grotesk', sans-serif; font-size: 14.5px; color: var(--lead-color);
 }
 .ab-commit-list li::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--brand-green); flex: none; }
@@ -2507,10 +2507,11 @@ body { overflow-x: clip; }
   padding: clamp(78px, 9vw, 124px) 0 clamp(92px, 10vw, 136px);
   background: var(--brand-navy); /* fallback se a imagem falhar */
 }
-/* Sobre: o sujeito (caneta+caderno) vive no terço inferior — baixa o
-   enquadramento e sobe o glow, para a caneta não sair de quadro sob o texto. */
-.finale--sobre .fin-bg { object-position: 46% 72%; }
-.finale--sobre .fin-glow { background: radial-gradient(42% 46% at 46% 66%, rgba(245,192,107,.22), transparent 74%); }
+/* Sobre: a cena e uma consulta — medico e paciente frente a frente, a janela
+   ao fundo. O enquadramento fica no centro para as duas figuras nao saírem de
+   quadro sob o texto, e o glow acompanha a luz da janela. */
+.finale--sobre .fin-bg { object-position: 50% 46%; }
+.finale--sobre .fin-glow { background: radial-gradient(46% 50% at 50% 48%, rgba(245,192,107,.20), transparent 74%); }
 /* camadas: imagem (-3) → glow (-2) → véu (-1) → conteúdo (1).
    O véu é a última camada antes do texto: é ele quem governa o contraste. */
 .fin-bg {
