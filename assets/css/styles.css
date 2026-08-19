@@ -25,7 +25,9 @@
      no outro — 64 nao era o valor certo de nenhum dos dois, era so o numero que
      nao quebrava os dois ao mesmo tempo. Agora sao dois, cada um com um dono: */
   --pill-h: 62px;        /* altura real do .nav (o pill) */
-  --hero-offset: 64px;   /* mantem o min-height do hero exatamente onde estava */
+  /* Caixa do header em fluxo: o pill mais os 18px de padding de cima e de baixo
+     do .site-header. E o que o hero precisa descontar pra fechar a tela cheia. */
+  --header-box: calc(var(--pill-h) + 36px);
   /* Superficies tonais — deltas sub-10/canal: leem como profundidade, nao cor */
   --ground-deep: #0a1522;
   --ground-raised: #0f1c2b;
@@ -2020,7 +2022,13 @@ body { overflow-x: clip; }
 .nh-grid {
   position: relative; z-index: 1;
   display: grid; grid-template-columns: 1.05fr 0.95fr; gap: 44px; align-items: center;
-  min-height: calc(78vh - var(--hero-offset)); padding: 20px 24px 40px;
+  /* Tela cheia: o header e sticky, entao ocupa lugar no fluxo e o hero desconta
+     a caixa dele. Antes eram 78vh - 64px, o que deixava ~164px da secao
+     seguinte espiando por baixo em 900px de altura. */
+  min-height: calc(100vh - var(--header-box));
+  min-height: calc(100dvh - var(--header-box));   /* dvh: no mobile a barra do
+                                                     navegador entra na conta */
+  padding: 20px 24px 40px;
 }
 .nh-eyebrow {
   display: inline-flex; align-items: center; gap: 9px; font-size: 12.5px; font-weight: 600;
