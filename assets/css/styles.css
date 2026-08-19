@@ -20,7 +20,12 @@
   --max-width: 1180px;
   --space-section: 96px;
   --space-section-tight: 64px;
-  --header-h: 64px;
+  /* O header mede 98px de caixa e o pill 62px. O token unico que existia aqui
+     valia 64px e servia de "offset do header" num lugar e de "altura do pill"
+     no outro — 64 nao era o valor certo de nenhum dos dois, era so o numero que
+     nao quebrava os dois ao mesmo tempo. Agora sao dois, cada um com um dono: */
+  --pill-h: 62px;        /* altura real do .nav (o pill) */
+  --hero-offset: 64px;   /* mantem o min-height do hero exatamente onde estava */
   /* Superficies tonais — deltas sub-10/canal: leem como profundidade, nao cor */
   --ground-deep: #0a1522;
   --ground-raised: #0f1c2b;
@@ -40,7 +45,11 @@
 }
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-html { scroll-behavior: smooth; }
+html {
+  scroll-behavior: smooth;
+  /* sem isso toda ancora aterrissa em top:0, atras do pill (que vai ate 80px) */
+  scroll-padding-top: 100px;
+}
 /* rolagem suave e um gatilho vestibular — quem pediu menos movimento nao deve receber */
 @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
 
@@ -1061,7 +1070,7 @@ button { font: inherit; cursor: pointer; background: none; border: none; color: 
     display: flex;
     flex-direction: column;
     position: absolute;
-    top: var(--header-h);
+    top: calc(var(--pill-h) + 2px);
     left: 0;
     right: 0;
     background: var(--brand-navy);
@@ -1979,7 +1988,9 @@ body { overflow-x: clip; }
   .ab-principles, .ab-receptors { grid-template-columns: 1fr; }
 }
 @media (prefers-reduced-motion: no-preference) {
-  .ab-chapter, .ab-pull { scroll-margin-top: 120px; }
+  /* 20, nao 120: soma com o scroll-padding-top:100px do html e da os mesmos
+     120px de antes. Medido em producao — as duas propriedades sao aditivas. */
+  .ab-chapter, .ab-pull { scroll-margin-top: 20px; }
 }
 
 @media (max-width: 860px) {
@@ -1997,7 +2008,7 @@ body { overflow-x: clip; }
 .nh-grid {
   position: relative; z-index: 1;
   display: grid; grid-template-columns: 1.05fr 0.95fr; gap: 44px; align-items: center;
-  min-height: calc(78vh - var(--header-h)); padding: 20px 24px 40px;
+  min-height: calc(78vh - var(--hero-offset)); padding: 20px 24px 40px;
 }
 .nh-eyebrow {
   display: inline-flex; align-items: center; gap: 9px; font-size: 12.5px; font-weight: 600;
