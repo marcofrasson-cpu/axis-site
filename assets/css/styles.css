@@ -1032,6 +1032,24 @@ button { font: inherit; cursor: pointer; background: none; border: none; color: 
 }
 .article-cta p { margin-bottom: 16px; }
 
+/* Documentos legais — mesma coluna de leitura do artigo, com os elementos que
+   so eles usam: subtitulo de terceiro nivel, lista e link no corpo do texto. */
+.lg-doc h3 {
+  font-family: var(--font-body);
+  font-size: 15px; font-weight: 600; letter-spacing: .01em;
+  color: var(--brand-green);
+  margin: 30px 0 10px;
+}
+.lg-doc ul { margin: 0 0 20px; padding-left: 20px; }
+.lg-doc li {
+  margin-bottom: 8px; color: var(--text-primary);
+  font-size: 16px; line-height: 1.7;
+}
+.lg-doc li::marker { color: var(--text-subtle); }
+.lg-doc p a { color: var(--brand-green); text-decoration: underline; text-underline-offset: 3px; }
+.lg-doc p a:hover { color: var(--brand-green-hover); }
+.lg-doc .article-meta { line-height: 1.6; }
+
 /* Continue lendo (relacionados no fim do artigo) */
 .post-related { margin-top: 56px; padding-top: 36px; border-top: 1px solid var(--border-hairline); }
 .post-related-title {
