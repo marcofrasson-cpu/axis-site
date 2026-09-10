@@ -96,14 +96,24 @@
   var numbers = document.querySelectorAll('.stat-number');
   if (numbers.length) {
     var affix = function (s) { return s ? '<span class="stat-affix">' + s + '</span>' : ''; };
+    // Fecha o numero no valor real e marca como resolvido. Toda saida da
+    // animacao passa por aqui — e o unico lugar que escreve o valor final.
+    var settleCounter = function (el) {
+      el.innerHTML = affix(el.dataset.prefix || '') + parseInt(el.dataset.target, 10) +
+        affix(el.dataset.suffix || '');
+      el.dataset.done = '1';
+    };
     var animateCounter = function (el) {
+      // rAF nao roda em aba que nao esta em primeiro plano: a contagem ficaria
+      // congelada em 0 e a secao anunciaria "0 medicos com RQE" pra quem abriu
+      // o link em nova aba. Sem primeiro plano, nao anima — escreve o valor.
+      if (prefersReducedMotion || document.visibilityState !== 'visible') {
+        settleCounter(el);
+        return;
+      }
       var target = parseInt(el.dataset.target, 10);
       var prefix = el.dataset.prefix || '';
       var suffix = el.dataset.suffix || '';
-      if (prefersReducedMotion) {
-        el.innerHTML = affix(prefix) + target + affix(suffix);
-        return;
-      }
       var duration = 1400;
       var start = performance.now();
       var tick = function (now) {
@@ -113,6 +123,7 @@
         var current = Math.round(target * eased);
         el.innerHTML = affix(prefix) + current + affix(suffix);
         if (progress < 1) requestAnimationFrame(tick);
+        else settleCounter(el);
       };
       requestAnimationFrame(tick);
     };
@@ -129,6 +140,12 @@
     } else {
       numbers.forEach(animateCounter);
     }
+    // Se o visitante trocou de aba no meio da contagem, o rAF parou onde estava.
+    // Ao voltar, fecha nos valores reais o que ficou pendente.
+    document.addEventListener('visibilitychange', function () {
+      if (document.visibilityState !== 'visible') return;
+      numbers.forEach(function (n) { if (!n.dataset.done) settleCounter(n); });
+    });
   }
 
   // ========== Filtros Ciencia ==========
@@ -220,7 +237,14 @@
     var nhTipD = nhTip && nhTip.querySelector('.nh-tip-d');
     var nhConn = nhVisual.querySelector('.nh-connector');
     var nhHint = nhVisual.querySelector('.nh-hint');
+    var nhLegend = [].slice.call(nhVisual.querySelectorAll('.nh-legend li'));
     var nhNodes = [].slice.call(nhVisual.querySelectorAll('.nh-node'));
+    // acende na legenda o termo do no ativo (passe null para apagar todos)
+    var nhMark = function (mod) {
+      nhLegend.forEach(function (li) {
+        li.classList.toggle('is-on', !!mod && li.getAttribute('data-mod') === mod);
+      });
+    };
     if (nhTip && nhConn && nhNodes.length) {
       // a troca mouse/toque da legenda agora e CSS (@media pointer:coarse)
       var nhActive = null;
@@ -254,6 +278,7 @@
         nhConn.setAttribute('x2', node.getAttribute('data-cx'));
         nhConn.setAttribute('y2', node.getAttribute('data-cy'));
         nhConn.classList.add('is-on');
+        nhMark(node.getAttribute('data-mod'));
         if (nhHint) nhHint.classList.add('is-hidden');
       };
       var nhHide = function (node) {
@@ -261,6 +286,7 @@
         if (nhActive === node || !node) nhActive = null;
         nhTip.classList.remove('is-on');
         nhConn.classList.remove('is-on');
+        nhMark(null);
       };
       nhNodes.forEach(function (node) {
         node.addEventListener('pointerenter', function (e) { if (e.pointerType !== 'touch') nhShow(node); });

@@ -2,60 +2,60 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://axisfitomed.com.br/</loc>
-    <lastmod>2026-07-11</lastmod>
+    <lastmod>2026-09-10</lastmod>
     <changefreq>monthly</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://axisfitomed.com.br/sobre.html</loc>
-    <lastmod>2026-07-11</lastmod>
+    <loc>https://axisfitomed.com.br/sobre</loc>
+    <lastmod>2026-09-10</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://axisfitomed.com.br/equipe.html</loc>
-    <lastmod>2026-07-11</lastmod>
+    <loc>https://axisfitomed.com.br/equipe</loc>
+    <lastmod>2026-09-10</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://axisfitomed.com.br/servicos.html</loc>
-    <lastmod>2026-07-11</lastmod>
+    <loc>https://axisfitomed.com.br/servicos</loc>
+    <lastmod>2026-09-10</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://axisfitomed.com.br/ciencia.html</loc>
-    <lastmod>2026-07-11</lastmod>
+    <loc>https://axisfitomed.com.br/ciencia</loc>
+    <lastmod>2026-09-10</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://axisfitomed.com.br/contato.html</loc>
-    <lastmod>2026-07-11</lastmod>
+    <loc>https://axisfitomed.com.br/contato</loc>
+    <lastmod>2026-09-10</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://axisfitomed.com.br/blog/index.html</loc>
-    <lastmod>2026-07-11</lastmod>
+    <loc>https://axisfitomed.com.br/blog</loc>
+    <lastmod>2026-09-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://axisfitomed.com.br/blog/cannabis-medicinal-rigor-cientifico.html</loc>
+    <loc>https://axisfitomed.com.br/blog/cannabis-medicinal-rigor-cientifico</loc>
     <lastmod>2026-05-27</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://axisfitomed.com.br/blog/quando-operar-nao-resolve-dor-cronica-cannabis-medicinal.html</loc>
+    <loc>https://axisfitomed.com.br/blog/quando-operar-nao-resolve-dor-cronica-cannabis-medicinal</loc>
     <lastmod>2026-07-01</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://axisfitomed.com.br/blog/cannabis-medicinal-dor-cronica-coluna.html</loc>
+    <loc>https://axisfitomed.com.br/blog/cannabis-medicinal-dor-cronica-coluna</loc>
     <lastmod>2026-06-16</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.6</priority>

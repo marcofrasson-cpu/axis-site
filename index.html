@@ -26,12 +26,12 @@
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Spectral:wght@400;500;600;700&family=Hanken+Grotesk:wght@400;500;600;700;800&display=swap">
-<link rel="icon" type="image/svg+xml" href="assets/img/logo.svg">
-<link rel="stylesheet" href="assets/css/styles.css?v=202608191857">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Spectral:wght@400;500;600;700&family=Hanken+Grotesk:wght@400;500;600;700&display=swap">
+<link rel="icon" type="image/svg+xml" href="/assets/img/logo.svg">
+<link rel="stylesheet" href="/assets/css/styles.css?v=202609101930">
 <noscript><style>.reveal,.reveal-stagger [class*="-card"],.blog-highlight.reveal .blog-feature-image,.blog-highlight.reveal .blog-feature-content{opacity:1!important;transform:none!important;filter:none!important}</style></noscript>
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"MedicalClinic","name":"Axis FitoMed","url":"https://axisfitomed.com.br/","description":"Associação médica de cannabis medicinal com rigor científico, em Curitiba, Paraná.","email":"contato@axisfitomed.com.br","medicalSpecialty":"Cannabis medicinal e medicina endocanabinoide","areaServed":{"@type":"City","name":"Curitiba"},"address":{"@type":"PostalAddress","addressLocality":"Curitiba","addressRegion":"PR","addressCountry":"BR"},"logo":"https://axisfitomed.com.br/assets/img/logo.svg"}
+{"@context":"https://schema.org","@type":"MedicalClinic","name":"Axis FitoMed","url":"https://axisfitomed.com.br/","description":"Associação médica de cannabis medicinal com rigor científico, em Curitiba, Paraná.","email":"contato@axisfitomed.com.br","medicalSpecialty":"Cannabis medicinal e medicina endocanabinoide","areaServed":{"@type":"City","name":"Curitiba"},"address":{"@type":"PostalAddress","addressLocality":"Curitiba","addressRegion":"PR","addressCountry":"BR"},"logo":"https://axisfitomed.com.br/assets/img/logo.svg","@id":"https://axisfitomed.com.br/#clinica","openingHoursSpecification":{"@type":"OpeningHoursSpecification","dayOfWeek":["Monday","Tuesday","Wednesday","Thursday","Friday"],"opens":"08:00","closes":"18:00"}}
 </script>
 </head>
 <body>
@@ -40,21 +40,21 @@
 <header class="site-header">
   <div class="container">
     <nav class="nav" aria-label="principal">
-      <a class="brand" href="index.html">
-        <img class="brand-mark" src="assets/img/logo-mark.svg" alt="" width="256" height="256">
+      <a class="brand" href="/">
+        <img class="brand-mark" src="/assets/img/logo-mark.svg" alt="" width="256" height="256">
         <span class="brand-text">Axis FitoMed</span>
       </a>
       <ul class="nav-links">
-        <li><a href="index.html">Início</a></li>
-        <li><a href="sobre.html">Sobre</a></li>
-        <li><a href="equipe.html">Equipe</a></li>
-        <li><a href="servicos.html">Serviços</a></li>
-        <li><a href="ciencia.html">Ciência</a></li>
-        <li><a href="blog/index.html">Blog</a></li>
-        <li><a href="contato.html">Contato</a></li>
+        <li><a href="/">Início</a></li>
+        <li><a href="/sobre">Sobre</a></li>
+        <li><a href="/equipe">Equipe</a></li>
+        <li><a href="/servicos">Serviços</a></li>
+        <li><a href="/ciencia">Ciência</a></li>
+        <li><a href="/blog">Blog</a></li>
+        <li><a href="/contato">Contato</a></li>
       </ul>
       <div class="nav-cta">
-        <a class="btn btn-primary nav-btn" href="contato.html">Agendar avaliação</a>
+        <a class="btn btn-primary nav-btn" href="/contato">Agendar avaliação</a>
         <button class="nav-toggle" aria-label="abrir menu" aria-expanded="false">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
         </button>
@@ -73,8 +73,8 @@
       <h1 class="nh-title">O seu corpo já conversa com a <span class="accent">cannabis</span>.</h1>
       <p class="nh-sub">Todo corpo tem um sistema endocanabinoide. Nós tratamos com rigor clínico, prescrição responsável e acompanhamento contínuo — conduzidos por médicos especialistas.</p>
       <div class="nh-ctas">
-        <a class="btn btn-primary" href="contato.html">Agendar avaliação</a>
-        <a class="btn btn-ghost" href="ciencia.html">O que a ciência diz</a>
+        <a class="btn btn-primary" href="/contato">Agendar avaliação</a>
+        <a class="btn btn-ghost" href="/ciencia">O que a ciência diz</a>
       </div>
       <ul class="nh-trust" aria-label="Credenciais e conformidade">
         <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l7 3v5c0 4.4-3 7.3-7 8.5C8 21.3 5 18.4 5 14V6l7-3z"/><path d="M9 12l2 2 4-4"/></svg>Conforme Anvisa</li>
@@ -135,6 +135,21 @@
         </g>
       </svg>
       <div class="nh-tip" role="status" aria-live="polite"><span class="nh-tip-t"></span><span class="nh-tip-d"></span></div>
+      <!-- O que o mapa diz precisa ser legivel sem hover: quem nao passa o mouse
+           (ou chega pelo celular) sairia do heroi sem a informacao. Os nos do SVG
+           ja expoem os mesmos rotulos por aria-label, entao a legenda e decorativa
+           para o leitor de tela. -->
+      <ul class="nh-legend" aria-hidden="true">
+        <li data-mod="Dor">Dor</li>
+        <li data-mod="Inflamação">Inflamação</li>
+        <li data-mod="Sono">Sono</li>
+        <li data-mod="Ansiedade">Ansiedade</li>
+        <li data-mod="Humor">Humor</li>
+        <li data-mod="Espasticidade">Espasticidade</li>
+        <li data-mod="Náusea">Náusea</li>
+        <li data-mod="Apetite">Apetite</li>
+        <li data-mod="Memória">Memória</li>
+      </ul>
       <p class="nh-hint" aria-hidden="true"><span data-pointer="fine">Passe o mouse pelos pontos</span><span data-pointer="coarse">Toque nos pontos</span></p>
     </div>
   </div>
@@ -223,7 +238,11 @@
 
 <!-- Manifesto — cena cheia: tipo grande sobre a fotografia autoral -->
 <section class="manifesto reveal">
-  <img class="mf-bg" src="assets/img/gota-oleo.jpg" alt="" loading="lazy" decoding="async" width="2400" height="1339">
+  <picture>
+    <source type="image/avif" srcset="/assets/img/gota-oleo-1600.avif 1600w, /assets/img/gota-oleo.avif 2400w" sizes="100vw">
+    <source type="image/webp" srcset="/assets/img/gota-oleo-1600.webp 1600w, /assets/img/gota-oleo.webp 2400w" sizes="100vw">
+    <img class="mf-bg" src="/assets/img/gota-oleo.jpg" alt="" loading="lazy" decoding="async" width="2400" height="1339">
+  </picture>
   <div class="mf-veil" aria-hidden="true"></div>
   <div class="container">
     <div class="manifesto-text">
@@ -281,10 +300,14 @@
 <!-- Qualidade e rastreabilidade -->
 <section class="qa reveal" aria-labelledby="qa-title">
   <picture>
-    <!-- mobile: recorte quadrado da resina densa (a landscape mostrava o topo morto) -->
-    <source media="(max-width: 820px)" srcset="assets/img/resina-macro-m.jpg">
-    <img class="qa-bg" src="assets/img/resina-macro.jpg" alt="" loading="lazy" decoding="async" width="2400" height="1339">
-  </picture>
+      <!-- mobile: recorte quadrado da resina densa (a landscape mostrava o topo morto) -->
+      <source media="(max-width: 820px)" type="image/avif" srcset="/assets/img/resina-macro-m.avif">
+      <source media="(max-width: 820px)" type="image/webp" srcset="/assets/img/resina-macro-m.webp">
+      <source media="(max-width: 820px)" srcset="/assets/img/resina-macro-m.jpg">
+      <source type="image/avif" srcset="/assets/img/resina-macro-1600.avif 1600w, /assets/img/resina-macro.avif 2400w" sizes="100vw">
+      <source type="image/webp" srcset="/assets/img/resina-macro-1600.webp 1600w, /assets/img/resina-macro.webp 2400w" sizes="100vw">
+      <img class="qa-bg" src="/assets/img/resina-macro.jpg" alt="" loading="lazy" decoding="async" width="2400" height="1339">
+    </picture>
   <div class="qa-veil" aria-hidden="true"></div>
   <div class="container qa-inner">
     <div class="qa-copy">
@@ -309,7 +332,7 @@
         <div class="kicker"><span class="kicker__rule"></span><span class="kicker__label">Indicações</span></div>
         <h2 id="indications-preview-title" class="section-title">Áreas clínicas avaliadas <span class="hl">caso a caso</span></h2>
         <p class="indications-intro-text">Organizadas por sistema, conforme a literatura disponível. O que se aplica ao seu quadro depende do histórico, das medicações em uso e da avaliação médica.</p>
-        <a href="servicos.html#indicacoes" class="btn btn-ghost indications-cta">Conhecer todas as indicações →</a>
+        <a href="/servicos#indicacoes" class="btn btn-ghost indications-cta">Conhecer todas as indicações →</a>
       </div>
 
       <div class="indications-bento">
@@ -393,7 +416,11 @@
 
     <div class="team-row team-row-medicos">
       <article class="team-card">
-        <img class="team-photo" src="assets/img/equipe/marco.jpg" alt="Dr. Marco Aurélio Frasson" width="640" height="799" loading="lazy" decoding="async">
+        <picture>
+          <source type="image/avif" srcset="/assets/img/equipe/marco-720.avif">
+          <source type="image/webp" srcset="/assets/img/equipe/marco-720.webp">
+          <img class="team-photo" src="/assets/img/equipe/marco.jpg" alt="Dr. Marco Aurélio Frasson" width="640" height="799" loading="lazy" decoding="async">
+        </picture>
         <div class="team-info">
           <h3>Dr. Marco Aurélio Frasson</h3>
           <p class="team-specialty">Ortopedista e Traumatologista</p>
@@ -403,7 +430,11 @@
       </article>
 
       <article class="team-card">
-        <img class="team-photo" src="assets/img/equipe/gustavo.jpg" alt="Dr. Gustavo Amaral" width="960" height="1200" loading="lazy" decoding="async">
+        <picture>
+          <source type="image/avif" srcset="/assets/img/equipe/gustavo-720.avif">
+          <source type="image/webp" srcset="/assets/img/equipe/gustavo-720.webp">
+          <img class="team-photo" src="/assets/img/equipe/gustavo.jpg" alt="Dr. Gustavo Amaral" width="960" height="1200" loading="lazy" decoding="async">
+        </picture>
         <div class="team-info">
           <h3>Dr. Gustavo Amaral</h3>
           <p class="team-specialty">Ortopedista e Traumatologista</p>
@@ -413,7 +444,11 @@
       </article>
 
       <article class="team-card">
-        <img class="team-photo" src="assets/img/equipe/leandro.jpg" alt="Dr. Leandro Bortoluzzi Daniel" width="960" height="1200" loading="lazy" decoding="async">
+        <picture>
+          <source type="image/avif" srcset="/assets/img/equipe/leandro-720.avif">
+          <source type="image/webp" srcset="/assets/img/equipe/leandro-720.webp">
+          <img class="team-photo" src="/assets/img/equipe/leandro.jpg" alt="Dr. Leandro Bortoluzzi Daniel" width="960" height="1200" loading="lazy" decoding="async">
+        </picture>
         <div class="team-info">
           <h3>Dr. Leandro Bortoluzzi Daniel</h3>
           <p class="team-specialty">Médico Cirurgião Geral</p>
@@ -424,7 +459,7 @@
     </div>
 
     <div class="team-preview-cta">
-      <a href="equipe.html" class="btn btn-ghost">Conhecer a equipe completa</a>
+      <a href="/equipe" class="btn btn-ghost">Conhecer a equipe completa</a>
     </div>
   </div>
 </section>
@@ -433,7 +468,11 @@
 <!-- Fecho: cena cheia, não card. Deliberadamente mais baixo e mais vazio
      que a banda .qa acima, para não virar metade de um par simétrico. -->
 <section class="finale" aria-labelledby="cta-journey-title">
-  <img class="fin-bg" src="assets/img/cena-molecular.jpg" alt="" loading="lazy" decoding="async" fetchpriority="low" width="2400" height="1339">
+  <picture>
+    <source type="image/avif" srcset="/assets/img/cena-molecular-1600.avif 1600w, /assets/img/cena-molecular.avif 2400w" sizes="100vw">
+    <source type="image/webp" srcset="/assets/img/cena-molecular-1600.webp 1600w, /assets/img/cena-molecular.webp 2400w" sizes="100vw">
+    <img class="fin-bg" src="/assets/img/cena-molecular.jpg" alt="" loading="lazy" decoding="async" fetchpriority="low" width="2400" height="1339">
+  </picture>
   <div class="fin-glow" aria-hidden="true"></div>
   <div class="fin-veil" aria-hidden="true"></div>
   <div class="container fin-inner">
@@ -442,7 +481,7 @@
       <h2 class="fin-title" id="cta-journey-title">Pronto para uma <span class="amber">avaliação clínica</span>?</h2>
       <p class="fin-body">Nossa equipe avalia, com método e honestidade, se a cannabis medicinal é apropriada para o seu caso.</p>
       <div class="fin-ctas">
-        <a href="contato.html" class="btn btn-primary">Agendar avaliação</a>
+        <a href="/contato" class="btn btn-primary">Agendar avaliação</a>
       </div>
     </div>
   </div>
@@ -454,18 +493,18 @@
   <div class="container">
     <div class="pf-top">
       <div class="pf-col pf-col--brand">
-        <a class="brand" href="index.html" aria-label="Axis FitoMed — início"><img class="pf-mark" src="assets/img/logo.svg" alt="" width="256" height="256"></a>
+        <a class="brand" href="/" aria-label="Axis FitoMed — início"><img class="pf-mark" src="/assets/img/logo.svg" alt="" width="256" height="256"></a>
         <p class="pf-rt">Responsável técnico:<br>Dr. Marco Aurélio Frasson · CRM-PR 47986</p>
       </div>
       <div class="pf-col pf-col--nav">
         <h3>Navegar</h3>
         <ul>
-          <li><a href="index.html">Início</a></li>
-          <li><a href="sobre.html">Sobre</a></li>
-          <li><a href="equipe.html">Equipe</a></li>
-          <li><a href="servicos.html">Serviços</a></li>
-          <li><a href="ciencia.html">Ciência</a></li>
-          <li><a href="blog/index.html">Blog</a></li>
+          <li><a href="/">Início</a></li>
+          <li><a href="/sobre">Sobre</a></li>
+          <li><a href="/equipe">Equipe</a></li>
+          <li><a href="/servicos">Serviços</a></li>
+          <li><a href="/ciencia">Ciência</a></li>
+          <li><a href="/blog">Blog</a></li>
         </ul>
       </div>
       <div class="pf-col pf-col--inst">
@@ -489,6 +528,7 @@
   </div>
 </footer>
 
-<script src="assets/js/main.js?v=63"></script>
+<script src="/assets/js/main.js?v=202609101930"></script>
+<script defer src="/_vercel/insights/script.js"></script>
 </body>
 </html>
