@@ -13,7 +13,8 @@
   --text-subtle: #8291a3;   /* era #64748b: 3.05-3.99:1, reprovava AA em todo fundo */
   --border-hairline: rgba(255, 255, 255, 0.08);
   --border-strong: rgba(255, 255, 255, 0.14);
-  --shadow-lg: 0 12px 36px rgba(0, 0, 0, 0.35);
+  /* Separa plano, nao encena altura: a elevacao vem do hairline e do fundo. */
+  --shadow-lg: 0 3px 12px rgba(0, 0, 0, 0.4);
   --radius-sm: 4px;
   --radius-md: 8px;
   --radius-lg: 12px;
@@ -43,8 +44,8 @@
   --ground-deepest: #08111c;
   /* Motion — uma curva "settle" (clinica, sem overshoot) + unidades compartilhadas */
   --ease-settle: cubic-bezier(0.22, 1, 0.36, 1);
-  --reveal-dist: 20px;
-  --reveal-dur: 640ms;
+  --reveal-dist: 18px;
+  --reveal-dur: 280ms;
   /* Registro tipografico intermediario (faltava) */
   --fs-lead: clamp(17px, 1.5vw, 20px);
   --lead-color: #c6d2df;
@@ -296,7 +297,7 @@ button { font: inherit; cursor: pointer; background: none; border: none; color: 
   justify-content: center;
   background: rgba(95, 200, 155, 0.08);
   border-radius: 12px;
-  transition: background 400ms ease, transform 400ms ease;
+  transition: background 180ms ease, transform 180ms ease;
 }
 .card-step:hover .step-icon {
   background: rgba(95, 200, 155, 0.16);
@@ -306,30 +307,29 @@ button { font: inherit; cursor: pointer; background: none; border: none; color: 
 
 /* ---------- Hover nos cards genericos ---------- */
 .card {
-  transition: transform 400ms cubic-bezier(0.4, 0, 0.2, 1),
-              border-color 400ms cubic-bezier(0.4, 0, 0.2, 1),
-              box-shadow 400ms cubic-bezier(0.4, 0, 0.2, 1);
+  transition: transform 180ms var(--ease-settle),
+              border-color 180ms var(--ease-settle),
+              box-shadow 180ms var(--ease-settle);
 }
 .card:hover {
   transform: translateY(-4px);
   border-color: rgba(95, 200, 155, 0.4);
-  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.2);
 }
 
 /* ---------- Fade-in on scroll ---------- */
 .reveal {
   opacity: 0;
-  transform: translateY(34px) scale(0.985);
-  filter: blur(6px);
-  transition: opacity 900ms cubic-bezier(0.16, 1, 0.3, 1),
-              transform 900ms cubic-bezier(0.16, 1, 0.3, 1),
-              filter 900ms cubic-bezier(0.16, 1, 0.3, 1);
-  will-change: opacity, transform, filter;
+  transform: translateY(18px);
+  /* So transform e opacity: o compositor resolve sem relayout. O blur que
+     havia aqui repintava a banda inteira a cada quadro e nao dizia nada — a
+     entrada ja e dita pelo deslocamento. */
+  transition: opacity var(--reveal-dur) var(--ease-settle),
+              transform var(--reveal-dur) var(--ease-settle);
+  will-change: opacity, transform;
 }
 .reveal.is-visible {
   opacity: 1;
   transform: none;
-  filter: none;
   will-change: auto;
 }
 
@@ -503,7 +503,7 @@ button { font: inherit; cursor: pointer; background: none; border: none; color: 
 .bm-marker:hover .bm-marker-dot { background: rgba(95, 200, 155, 0.85); transform: scale(1.18); }
 .bm-marker.is-on .bm-marker-dot {
   background: var(--brand-green); transform: scale(1.5);
-  box-shadow: 0 0 0 5px rgba(95, 200, 155, 0.18), 0 0 22px rgba(95, 200, 155, 0.6);
+  box-shadow: 0 0 0 5px rgba(95, 200, 155, 0.18);
 }
 /* pulso só no marcador ATIVO — foco claro */
 .bm-marker.is-on::after {
@@ -632,15 +632,14 @@ button { font: inherit; cursor: pointer; background: none; border: none; color: 
   background: linear-gradient(160deg, #14253a 0%, #0f1d2e 100%);
   border: 1px solid var(--border-hairline);
   border-radius: 14px;
-  transition: transform 400ms cubic-bezier(0.4, 0, 0.2, 1),
-              border-color 400ms cubic-bezier(0.4, 0, 0.2, 1),
-              box-shadow 400ms cubic-bezier(0.4, 0, 0.2, 1);
+  transition: transform 180ms var(--ease-settle),
+              border-color 180ms var(--ease-settle),
+              box-shadow 180ms var(--ease-settle);
   cursor: default;
 }
 .bento-card:hover {
   transform: translateY(-3px);
   border-color: rgba(95, 200, 155, 0.45);
-  box-shadow: 0 8px 32px rgba(95, 200, 155, 0.08);
 }
 .bento-icon {
   width: 44px;
@@ -781,8 +780,8 @@ button { font: inherit; cursor: pointer; background: none; border: none; color: 
   background: var(--bg-card);
   border: 1px solid var(--border-hairline);
   border-radius: 12px;
-  transition: transform 400ms cubic-bezier(0.4, 0, 0.2, 1),
-              border-color 400ms cubic-bezier(0.4, 0, 0.2, 1);
+  transition: transform 180ms var(--ease-settle),
+              border-color 180ms var(--ease-settle);
 }
 .differential-card:hover {
   transform: translateY(-4px);
@@ -1199,7 +1198,7 @@ button { font: inherit; cursor: pointer; background: none; border: none; color: 
 .filter-chip {
   padding: 7px 15px; background: transparent; border: 1px solid var(--border-hairline);
   border-radius: 999px; font-size: 13px; color: var(--text-muted); font-family: inherit;
-  cursor: pointer; transition: all 200ms ease;
+  cursor: pointer; transition: background 180ms ease, border-color 180ms ease, color 180ms ease;
 }
 .filter-chip:hover { border-color: rgba(95, 200, 155, 0.4); color: var(--text-primary); }
 .filter-chip.is-active { background: var(--brand-green); border-color: var(--brand-green); color: var(--brand-navy); font-weight: 600; }
@@ -1211,7 +1210,7 @@ button { font: inherit; cursor: pointer; background: none; border: none; color: 
   padding: 30px 30px 24px;
   background: linear-gradient(165deg, var(--bg-card), var(--ground-deepest));
   border: 1px solid var(--border-hairline); border-radius: 16px;
-  transition: transform 400ms var(--ease-settle), border-color 400ms ease, box-shadow 400ms ease;
+  transition: transform 180ms var(--ease-settle), border-color 180ms var(--ease-settle), box-shadow 180ms var(--ease-settle);
   display: flex; flex-direction: column;
 }
 .paper-card:hover { transform: translateY(-4px); border-color: rgba(95, 200, 155, 0.4); box-shadow: var(--shadow-lg); }
@@ -1314,7 +1313,7 @@ button { font: inherit; cursor: pointer; background: none; border: none; color: 
   animation-delay: 1.25s, 1.55s;
 }
 .axis-mark .n-bot { animation-delay: 1.4s, 2.85s; }
-.hero-logo-xl:hover .axis-mark { filter: drop-shadow(0 0 22px rgba(95, 200, 155, 0.55)); }
+
 
 @keyframes markDraw { to { stroke-dashoffset: 0; } }
 @keyframes markNodeIn { to { opacity: 1; } }
@@ -1651,7 +1650,7 @@ body { overflow-x: clip; }
   transform: translateZ(0);
   -webkit-transform: translateZ(0);
   box-shadow:
-    0 10px 30px rgba(0, 0, 0, .38),
+    0 3px 12px rgba(0, 0, 0, .42),
     inset 0 1px 0 rgba(255, 255, 255, .09);
   transition: background 220ms var(--ease-settle),
               border-color 220ms var(--ease-settle),
@@ -1663,7 +1662,7 @@ body { overflow-x: clip; }
     rgba(10, 21, 34, .93);
   border-color: rgba(255, 255, 255, .13);
   box-shadow:
-    0 12px 34px rgba(0, 0, 0, .46),
+    0 4px 14px rgba(0, 0, 0, .5),
     inset 0 1px 0 rgba(255, 255, 255, .08);
 }
 /* sem backdrop-filter (Firefox antigo), vai a quase solido */
@@ -1685,7 +1684,7 @@ body { overflow-x: clip; }
     -webkit-backdrop-filter: saturate(150%) blur(16px);
     border: 1px solid var(--border-hairline);
     border-radius: 18px; padding: 10px; gap: 2px;
-    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.5);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.45);
   }
   .nav.open .nav-links a { padding: 13px 14px; border-radius: 10px; font-size: 15px; }
 }
@@ -2102,20 +2101,18 @@ body { overflow-x: clip; }
 .nh-node:focus { outline: none; }
 .nh-dot {
   transform-box: fill-box; transform-origin: center;
-  transition: transform .22s var(--ease-settle), filter .22s ease;
+  transition: transform .18s var(--ease-settle);
 }
 .nh-node:focus-visible .nh-dot,
 .nh-node.is-active .nh-dot {
   transform: scale(2.2);
   fill: #a8f0cd;
-  filter: drop-shadow(0 0 7px rgba(95, 200, 155, 0.95));
 }
 /* hover só em dispositivos com mouse — evita duplo-toque no iOS */
 @media (hover: hover) {
   .nh-node:hover .nh-dot {
     transform: scale(2.2);
     fill: #a8f0cd;
-    filter: drop-shadow(0 0 7px rgba(95, 200, 155, 0.95));
   }
 }
 .nh-node:focus-visible .nh-dot { stroke: #eafff5; stroke-width: 1.4; }
@@ -2129,7 +2126,7 @@ body { overflow-x: clip; }
   padding: 10px 14px; border-radius: 12px;
   background: linear-gradient(180deg, rgba(18, 34, 52, 0.97), rgba(10, 21, 34, 0.97));
   border: 1px solid rgba(255, 255, 255, 0.12);
-  box-shadow: 0 16px 38px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.45);
   -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px);
   opacity: 0; transition: opacity .16s ease, transform .16s ease;
 }
@@ -2259,7 +2256,7 @@ body { overflow-x: clip; }
 .bl-card:hover { border-color: var(--border-strong); transform: translateY(-4px); box-shadow: var(--shadow-lg); }
 /* foto no topo do card; o conteúdo textual recebe o padding, não o card */
 .bl-card-media { position: relative; aspect-ratio: 16 / 9; overflow: hidden; }
-.bl-card-media img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 50% 44%; display: block; transition: transform 500ms var(--ease-settle); }
+.bl-card-media img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 50% 44%; display: block; transition: transform 260ms var(--ease-settle); }
 .bl-card:hover .bl-card-media img { transform: scale(1.04); }
 .bl-card > :not(.bl-card-media) { margin-left: 30px; margin-right: 30px; }
 .bl-card-media + .bl-cats { margin-top: 26px; }
@@ -2455,7 +2452,7 @@ body { overflow-x: clip; }
   position: absolute; inset: 0; z-index: -2;
   width: 100%; height: 100%; object-fit: cover; object-position: 74% 38%;
   opacity: 0; transform: scale(1.035);
-  transition: opacity 900ms var(--ease-settle), transform 900ms var(--ease-settle);
+  transition: opacity var(--reveal-dur) var(--ease-settle), transform var(--reveal-dur) var(--ease-settle);
 }
 .pc.is-visible .pc-bg { opacity: 1; transform: none; }
 /* veu: horizontal segura a coluna de texto; vertical dissolve a banda no navy
@@ -2498,7 +2495,7 @@ body { overflow-x: clip; }
      solto ao lado da massa tipográfica */
   position: relative; padding: 0 0 clamp(20px, 2.2vw, 26px) 34px;
   opacity: 0; transform: translateY(14px);
-  transition: opacity 520ms var(--ease-settle), transform 520ms var(--ease-settle);
+  transition: opacity var(--reveal-dur) var(--ease-settle), transform var(--reveal-dur) var(--ease-settle);
 }
 .pc-step:last-child { padding-bottom: 0; }
 .pc.is-visible .pc-step { opacity: 1; transform: none; }
@@ -2513,7 +2510,7 @@ body { overflow-x: clip; }
 .pc-step::before { background: var(--border-hairline); }
 .pc-step::after {
   background: var(--brand-green); transform: scaleY(0); transform-origin: top center;
-  transition: transform 560ms var(--ease-settle);
+  transition: transform var(--reveal-dur) var(--ease-settle);
 }
 .pc-step:nth-child(2)::after { background: linear-gradient(180deg, var(--brand-green), var(--oil-hi)); }
 .pc-step:last-child::before, .pc-step:last-child::after { display: none; }
@@ -2523,7 +2520,7 @@ body { overflow-x: clip; }
   /* 16px com borda de 2px: proporcional ao peso do título que ele marca */
   position: absolute; left: 0; top: 1px; width: 16px; height: 16px; border-radius: 50%;
   background: var(--ground-deepest); border: 2px solid rgba(95,200,155,.32);
-  transition: border-color 520ms var(--ease-settle), box-shadow 520ms var(--ease-settle);
+  transition: border-color 180ms var(--ease-settle), box-shadow 180ms var(--ease-settle);
 }
 .pc.is-visible .pc-node { border-color: var(--brand-green); box-shadow: 0 0 0 5px rgba(95,200,155,.10); }
 .pc.is-visible .pc-step:last-child .pc-node { border-color: var(--oil-hi); box-shadow: 0 0 0 5px rgba(245,192,107,.11); }
