@@ -263,7 +263,7 @@ button { font: inherit; cursor: pointer; background: none; border: none; color: 
   line-height: 1;
   /* Cor solida. O gradiente era resolvido por elemento — cada numero saia numa
      cor conforme a propria largura. Mesma escala, tres cores diferentes. */
-  color: var(--brand-green);
+  color: var(--text-primary);
   letter-spacing: -0.02em;
   margin-bottom: 16px;
   font-variant-numeric: tabular-nums;
@@ -295,7 +295,7 @@ button { font: inherit; cursor: pointer; background: none; border: none; color: 
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(95, 200, 155, 0.08);
+  background: var(--bg-card-hover);
   border-radius: 12px;
   transition: background 180ms ease, transform 180ms ease;
 }
@@ -562,7 +562,7 @@ button { font: inherit; cursor: pointer; background: none; border: none; color: 
 }
 .bm-ev--forte { color: #a8ecca; background: rgba(95, 200, 155, 0.16); }
 .bm-ev--media { color: #7fd6ab; background: rgba(95, 200, 155, 0.09); }
-.bm-ev--prelim { color: var(--oil-hi); background: rgba(245, 192, 107, 0.12); }
+.bm-ev--prelim { color: var(--text-muted); background: rgba(255, 255, 255, 0.06); }
 .bm-legend { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 18px; font-family: var(--font-body); font-size: 12px; color: var(--text-muted); }
 
 @media (max-width: 768px) {
@@ -647,7 +647,7 @@ button { font: inherit; cursor: pointer; background: none; border: none; color: 
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(95, 200, 155, 0.1);
+  background: var(--bg-card-hover);
   border-radius: 10px;
   margin-bottom: 16px;
 }
@@ -718,7 +718,7 @@ button { font: inherit; cursor: pointer; background: none; border: none; color: 
 .manifesto-text { position: relative; z-index: 2; max-width: min(760px, 62%); }
 .manifesto-kicker {
   margin: 0 0 26px; font-size: 12px; font-weight: 600;
-  letter-spacing: 0.22em; text-transform: uppercase; color: var(--brand-green);
+  letter-spacing: 0.22em; text-transform: uppercase; color: var(--text-muted);
 }
 .manifesto-lead {
   margin: 0; max-width: 15ch;
@@ -954,7 +954,7 @@ button { font: inherit; cursor: pointer; background: none; border: none; color: 
   letter-spacing: -0.01em;
   margin-bottom: 4px;
 }
-.team-specialty { font-size: 13.5px; color: var(--brand-green); margin-bottom: 4px; }
+.team-specialty { font-size: 13.5px; color: var(--text-muted); margin-bottom: 4px; }
 .team-crm { font-size: 12px; color: var(--text-subtle); margin-bottom: 12px; letter-spacing: 0.02em; }
 .team-bio { font-size: 13.5px; color: var(--text-muted); line-height: 1.6; }
 
@@ -1518,7 +1518,7 @@ button { font: inherit; cursor: pointer; background: none; border: none; color: 
 .blog-highlight.reveal.is-visible .blog-feature-content { transform: none; opacity: 1; }
 
 /* ---- 8. Equipe: acento base verde (ancora calma, sem firula) ---- */
-.team-preview .team-info { border-top: 2px solid var(--brand-green); }
+.team-preview .team-info { border-top: 1px solid var(--border-hairline); }
 
 /* Transforms de entrada nao geram scroll horizontal (clip e sticky-safe) */
 body { overflow-x: clip; }
@@ -1548,28 +1548,6 @@ body { overflow-x: clip; }
 /* Numero duotone: corpo creme + prefixo/sufixo (+) verde */
 .stats .stat-affix { color: var(--brand-green); font-weight: 500; }
 
-/* CTA: eco dos nos da marca — a pagina abre e fecha na mesma assinatura */
-.cta-nodes {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 9px;
-  margin-bottom: 22px;
-  position: relative;
-}
-.cta-nodes span {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: var(--brand-green);
-  box-shadow: 0 0 0 4px rgba(95, 200, 155, 0.12);
-  transform-origin: center;
-  animation: markPulse 2.6s ease-in-out infinite;
-}
-.cta-nodes span:last-child { animation-delay: 1.3s; }
-@media (prefers-reduced-motion: reduce) {
-  .cta-nodes span { animation: none; }
-}
 
 /* ---- Reduced-motion: mata TODO gesto novo (marca do hero fica isenta) ---- */
 @media (prefers-reduced-motion: reduce) {
@@ -1793,11 +1771,11 @@ body { overflow-x: clip; }
 
 .kicker { display: flex; align-items: center; gap: 12px; margin-bottom: 18px; }
 .kicker--center { justify-content: center; }
-.kicker__rule { width: 32px; height: 1px; background: var(--brand-green); flex: none; }
+.kicker__rule { width: 32px; height: 1px; background: var(--border-strong); flex: none; }
 .kicker__label {
   font-family: var(--font-body);
   font-size: 12px; font-weight: 600; letter-spacing: 0.16em;
-  text-transform: uppercase; color: var(--brand-green);
+  text-transform: uppercase; color: var(--text-muted);
 }
 
 /* Método — mesma linguagem editorial */
@@ -2071,12 +2049,12 @@ body { overflow-x: clip; }
   display: inline-flex; align-items: center; gap: 12px;
   font-family: var(--font-body);
   font-size: 12px; font-weight: 600;
-  letter-spacing: 0.16em; text-transform: uppercase; color: var(--brand-green);
+  letter-spacing: 0.16em; text-transform: uppercase; color: var(--text-muted);
   border: 0; border-radius: 0; padding: 0; background: none;
 }
 .nh-eyebrow::before {
   content: ""; flex: none; width: 32px; height: 1px;
-  background: var(--brand-green); border-radius: 0; box-shadow: none;
+  background: var(--border-strong); border-radius: 0; box-shadow: none;
 }
 /* +8px: o titulo subia junto quando o padding vertical da pilula sumiu */
 .nh-title { font-size: clamp(38px, 5.2vw, 64px); line-height: 1.05; letter-spacing: -0.03em; font-weight: 700; margin-top: 30px; }
@@ -2597,13 +2575,13 @@ body { overflow-x: clip; }
 .qa-copy { max-width: 46ch; }
 .qa-eyebrow {
   display: block; font-family: var(--font-body); font-size: 12px; font-weight: 600;
-  letter-spacing: .16em; text-transform: uppercase; color: var(--brand-green); margin-bottom: 18px;
+  letter-spacing: .16em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 18px;
 }
 .qa-title {
   font-family: var(--font-display); font-weight: 600; font-size: clamp(30px, 4vw, 52px);
   line-height: 1.08; letter-spacing: -.025em; color: var(--text-primary); margin: 0 0 20px;
 }
-.qa-title .amber { color: var(--brand-green); }      /* "Certificado de Analise." */
+.qa-title .amber { color: var(--oil); }      /* "Certificado de Analise": a cor do frasco */
 .qa-body { font-family: var(--font-display); font-size: clamp(16px, 1.4vw, 20px); line-height: 1.6; color: var(--lead-color); margin: 0 0 24px; }
 /* Um so gap entre titulo e lead: media 20 no .qa, 24 no .indications-preview
    e 18 no .finale. O eyebrow -> h2 (18px) ja e consistente e nao muda. */
@@ -2672,7 +2650,6 @@ body { overflow-x: clip; }
   /* dois passos: contato curto define a borda da letra, halo curto separa do fundo */
   text-shadow: 0 1px 2px rgba(8,17,28,.85), 0 2px 14px rgba(8,17,28,.5);
 }
-.finale .cta-nodes { margin-bottom: 24px; }
 .fin-title {
   font-family: var(--font-display); font-weight: 600;
   /* teto 48px: o h1 do hero segue o maior tipo da página e a .qa (52px) segue
@@ -2681,7 +2658,7 @@ body { overflow-x: clip; }
   line-height: 1.08; letter-spacing: -.025em; color: var(--text-primary);
   margin: 0 0 18px; text-wrap: balance;
 }
-.fin-title .amber { color: var(--brand-green-hover); }  /* CTA de fecho: verde claro,
+.fin-title .hl { color: var(--brand-green-hover); }  /* CTA de fecho: verde claro,
    porque o verde base sobre a foto cai pra 3.22:1 */
 .fin-body {
   font-family: var(--font-display); font-size: clamp(16.5px, 1.35vw, 19px);
@@ -2722,5 +2699,4 @@ body { overflow-x: clip; }
   .fin-body { font-size: 16.5px; margin-bottom: 26px; }
   .fin-ctas { flex-direction: column; align-items: stretch; }
   .fin-ctas .btn { width: 100%; justify-content: center; }
-  .finale .cta-nodes { margin-bottom: 18px; }
 }
