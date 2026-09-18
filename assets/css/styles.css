@@ -793,7 +793,7 @@ button { font: inherit; cursor: pointer; background: none; border: none; color: 
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(95, 200, 155, 0.08);
+  background: var(--bg-card-hover);
   border-radius: 12px;
   margin-bottom: 20px;
 }
@@ -1417,7 +1417,7 @@ button { font: inherit; cursor: pointer; background: none; border: none; color: 
 }
 .stats .stat-number {
   font-weight: 700;            /* era 800 — Inter so tem ate 700 (evita faux-bold borrado) */
-  color: var(--brand-green);
+  color: var(--text-primary);
   letter-spacing: -0.03em;
   margin-bottom: 0;
 }
@@ -2368,7 +2368,7 @@ body { overflow-x: clip; }
 }
 .sv-stats .stat-number {
   font-size: clamp(40px, 5vw, 62px); font-weight: 700; letter-spacing: -0.03em; line-height: 1; font-variant-numeric: tabular-nums;
-  color: var(--brand-green);
+  color: var(--text-primary);
 }
 .sv-stats .stat-affix { color: var(--brand-green); }
 
