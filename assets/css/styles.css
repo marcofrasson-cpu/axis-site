@@ -2035,9 +2035,17 @@ body { overflow-x: clip; }
   mask-image: linear-gradient(90deg, transparent 0, transparent 46%, #000 60%);
 }
 @media (max-width: 900px) {
+  /* Faixa do diagrama, medida pelo JS (--nh-flow-top/bottom no .nh-hero):
+     some acima (texto, CTAs, credenciais) e abaixo (legenda, dica). */
   .nh-flow {
-    -webkit-mask-image: linear-gradient(180deg, transparent 0, transparent 58%, #000 70%);
-    mask-image: linear-gradient(180deg, transparent 0, transparent 58%, #000 70%);
+    -webkit-mask-image: linear-gradient(180deg,
+      transparent 0, transparent calc(var(--nh-flow-top, 58%) - 24px),
+      #000 calc(var(--nh-flow-top, 58%) + 24px), #000 calc(var(--nh-flow-bottom, 100%) - 24px),
+      transparent calc(var(--nh-flow-bottom, 100%) + 8px));
+    mask-image: linear-gradient(180deg,
+      transparent 0, transparent calc(var(--nh-flow-top, 58%) - 24px),
+      #000 calc(var(--nh-flow-top, 58%) + 24px), #000 calc(var(--nh-flow-bottom, 100%) - 24px),
+      transparent calc(var(--nh-flow-bottom, 100%) + 8px));
   }
 }
 .nh-hero::before {

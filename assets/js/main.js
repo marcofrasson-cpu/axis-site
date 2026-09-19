@@ -381,12 +381,14 @@
   var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   var width = 0, height = 0, target = { x: 0, y: 0 };
+  var band = { top: 0, bottom: 0 };   // faixa vertical do diagrama (mobile)
   var paths = [], explosions = [];
   var running = false, frame = 0;
 
   function measureTarget() {
     // O alvo e a marca; sem ela, o centro do canvas.
     var mark = hero.querySelector('.axis-mark .hex');
+    var svg = hero.querySelector('.nh-visual svg');
     var hr = hero.getBoundingClientRect();
     if (mark) {
       var mr = mark.getBoundingClientRect();
@@ -395,6 +397,24 @@
     } else {
       target.x = width / 2; target.y = height / 2;
     }
+    // No mobile o diagrama e uma faixa no meio do heroi: o CSS mascara o canvas
+    // fora dela (--nh-flow-top/bottom) e as curvas nascem dentro dela.
+    if (svg) {
+      var sr = svg.getBoundingClientRect();
+      band.top = sr.top - hr.top; band.bottom = sr.bottom - hr.top;
+    } else {
+      band.top = 0; band.bottom = height;
+    }
+    hero.style.setProperty('--nh-flow-top', Math.round(band.top) + 'px');
+    hero.style.setProperty('--nh-flow-bottom', Math.round(band.bottom) + 'px');
+  }
+  // Empilhado (uma coluna) = o breakpoint do .nh-grid no CSS
+  function stacked() { return width <= 900; }
+  function spawnY(i, count) {
+    if (!stacked()) return (i / count) * height * 1.4 - height * 0.2;
+    // arcos entram de lado, na altura do diagrama, com folga de 12% acima e abaixo
+    var span = band.bottom - band.top;
+    return band.top - span * 0.12 + (i / (count - 1)) * span * 1.24;
   }
 
   function buildPaths() {
@@ -404,7 +424,7 @@
     for (var i = 0; i < count; i++) {
       paths.push({
         isLeft: i % 2 === 0,
-        startY: (i / count) * height * 1.4 - height * 0.2,
+        startY: spawnY(i, count),
         t: Math.random(),
         speed: 0.0015 + Math.random() * 0.002
       });
@@ -418,7 +438,7 @@
     canvas.width = width * dpr; canvas.height = height * dpr;
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     measureTarget();
-    if (!paths.length || Math.abs(paths.length - Math.round(width / 18)) > 12) buildPaths();
+    buildPaths();
     if (reduced) drawFrame(false);
   }
 
@@ -458,7 +478,10 @@
 
       if (advance) {
         path.t += path.speed;
-        if (path.t > 1) { path.t = 0; path.startY += (Math.random() - 0.5) * 10; }
+        if (path.t > 1) {
+          path.t = 0; path.startY += (Math.random() - 0.5) * 10;
+          if (stacked()) path.startY = Math.max(band.top - 40, Math.min(band.bottom + 40, path.startY));
+        }
       }
       var pos = bezier(path.t, p0, p1, p2, p3);
 
@@ -493,7 +516,7 @@
   window.addEventListener('load', function () { measureTarget(); if (reduced) drawFrame(false); });
 
   if (!reduced) {
-    hero.addEventListener('pointerdown', function (ev) {
+    hero.addEventListener('click', function (ev) {
       var r = hero.getBoundingClientRect();
       explosions.push({ x: ev.clientX - r.left, y: ev.clientY - r.top, radius: 0, life: 1 });
     });
