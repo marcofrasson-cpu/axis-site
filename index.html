@@ -28,7 +28,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Spectral:wght@400;500;600;700&family=Hanken+Grotesk:wght@400;500;600;700&display=swap">
 <link rel="icon" type="image/svg+xml" href="/assets/img/logo.svg">
-<link rel="stylesheet" href="/assets/css/styles.css?v=202609191745">
+<link rel="stylesheet" href="/assets/css/styles.css?v=202609191805">
 <noscript><style>.reveal,.reveal-stagger [class*="-card"],.blog-highlight.reveal .blog-feature-image,.blog-highlight.reveal .blog-feature-content{opacity:1!important;transform:none!important;filter:none!important}</style></noscript>
 <script type="application/ld+json">
 {"@context":"https://schema.org","@type":"MedicalClinic","name":"Axis FitoMed","url":"https://axisfitomed.com.br/","description":"Associação médica de cannabis medicinal com rigor científico, em Curitiba, Paraná.","email":"contato@axisfitomed.com.br","medicalSpecialty":"Cannabis medicinal e medicina endocanabinoide","areaServed":{"@type":"City","name":"Curitiba"},"address":{"@type":"PostalAddress","addressLocality":"Curitiba","addressRegion":"PR","addressCountry":"BR"},"logo":"https://axisfitomed.com.br/assets/img/logo.svg","@id":"https://axisfitomed.com.br/#clinica","openingHoursSpecification":{"@type":"OpeningHoursSpecification","dayOfWeek":["Monday","Tuesday","Wednesday","Thursday","Friday"],"opens":"08:00","closes":"18:00"}}
@@ -470,11 +470,7 @@
 <!-- Fecho: cena cheia, não card. Deliberadamente mais baixo e mais vazio
      que a banda .qa acima, para não virar metade de um par simétrico. -->
 <section class="finale" aria-labelledby="cta-journey-title">
-  <picture>
-    <source type="image/avif" srcset="/assets/img/cena-molecular-1600.avif 1600w, /assets/img/cena-molecular.avif 2400w" sizes="100vw">
-    <source type="image/webp" srcset="/assets/img/cena-molecular-1600.webp 1600w, /assets/img/cena-molecular.webp 2400w" sizes="100vw">
-    <img class="fin-bg" src="/assets/img/cena-molecular.jpg" alt="" loading="lazy" decoding="async" fetchpriority="low" width="2400" height="1339">
-  </picture>
+  <canvas class="fin-field" aria-hidden="true"></canvas>
   <div class="fin-glow" aria-hidden="true"></div>
   <div class="fin-veil" aria-hidden="true"></div>
   <div class="container fin-inner">
@@ -533,7 +529,7 @@
   </div>
 </footer>
 
-<script src="/assets/js/main.js?v=202609191745"></script>
+<script src="/assets/js/main.js?v=202609191805"></script>
 <script defer src="/_vercel/insights/script.js"></script>
 </body>
 </html>

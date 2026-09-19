@@ -533,31 +533,62 @@
   }
 })();
 
-// ========== Campo vivo do mapa do corpo (Velaris, porte em WebGL puro) ==========
-// Ruido simplex em duas oitavas e meia misturando quatro verdes da paleta sobre
-// o navy, com vinheta. Meia resolucao: o campo e suave, nao perde nada e custa
-// 4x menos. Anima so com o card em tela; sob prefers-reduced-motion desenha um
-// quadro e para. O spotlight e um div que segue o mouse dentro do card.
+// ========== Mapa do corpo: spotlight + figura em perspectiva ==========
+// O spotlight e um div que segue o mouse dentro do card. A figura inclina e
+// vira para o cursor (ate 7deg em X, 10deg em Y), com interpolacao curta, e
+// balanca devagar quando o cursor sai. So em dispositivo com hover; nada sob
+// prefers-reduced-motion; loop so com o card em tela.
 (function () {
   var stage = document.querySelector('.bm-stage');
-  var canvas = stage && stage.querySelector('.bm-field');
+  var figure = stage && stage.querySelector('.bm-figure');
   var spot = stage && stage.querySelector('.bm-spot');
+  if (!stage || !figure) return;
+  var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var canHover = window.matchMedia('(hover: hover)').matches;
+  if (reduced || !canHover) return;
+
+  var over = false, tx = 0, ty = 0, rx = 0, ry = 0, running = false, frame = 0;
+  stage.addEventListener('mousemove', function (ev) {
+    var r = stage.getBoundingClientRect();
+    if (spot) spot.style.transform = 'translate(' + (ev.clientX - r.left) + 'px,' + (ev.clientY - r.top) + 'px) translate(-50%, -50%)';
+    var f = figure.getBoundingClientRect();
+    var nx = Math.max(-1, Math.min(1, (ev.clientX - (f.left + f.width / 2)) / (f.width / 2)));
+    var ny = Math.max(-1, Math.min(1, (ev.clientY - (f.top + f.height / 2)) / (f.height / 2)));
+    ty = nx * 10; tx = -ny * 7;
+  });
+  stage.addEventListener('mouseenter', function () { over = true; stage.classList.add('is-lit'); });
+  stage.addEventListener('mouseleave', function () { over = false; stage.classList.remove('is-lit'); });
+
+  function tick(t) {
+    if (!running) return;
+    if (!over) { ty = Math.sin(t * 0.0005) * 3; tx = Math.cos(t * 0.00035) * 1.5; }   // balanco em repouso
+    rx += (tx - rx) * 0.08; ry += (ty - ry) * 0.08;
+    figure.style.setProperty('--bm-rx', rx.toFixed(2) + 'deg');
+    figure.style.setProperty('--bm-ry', ry.toFixed(2) + 'deg');
+    frame = requestAnimationFrame(tick);
+  }
+  function start() { if (running) return; running = true; frame = requestAnimationFrame(tick); }
+  function stop() { running = false; if (frame) cancelAnimationFrame(frame); frame = 0; }
+  if ('IntersectionObserver' in window) {
+    new IntersectionObserver(function (es) { es.forEach(function (e) { if (e.isIntersecting) start(); else stop(); }); }, { threshold: 0.05 }).observe(stage);
+  } else start();
+  document.addEventListener('visibilitychange', function () { if (document.visibilityState === 'visible') { if (!running) start(); } else stop(); });
+})();
+
+// ========== Campo vivo da faixa final (Velaris, porte em WebGL puro) ==========
+// Ruido simplex em duas oitavas e meia misturando quatro verdes da paleta sobre
+// o navy, com vinheta, no lugar da foto de fundo do fecho da home. Fica sob o
+// mesmo glow e veu que governam o contraste do texto. Meia resolucao: o campo
+// e suave, nao perde nada e custa 4x menos. Anima so com a faixa em tela; sob
+// prefers-reduced-motion desenha um quadro e para.
+(function () {
+  var stage = document.querySelector('.finale');
+  var canvas = stage && stage.querySelector('.fin-field');
   if (!stage || !canvas) return;
   var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  // --- spotlight (nao depende do WebGL) ---
-  if (spot && !reduced) {
-    stage.addEventListener('mousemove', function (ev) {
-      var r = stage.getBoundingClientRect();
-      spot.style.transform = 'translate(' + (ev.clientX - r.left) + 'px,' + (ev.clientY - r.top) + 'px) translate(-50%, -50%)';
-    });
-    stage.addEventListener('mouseenter', function () { stage.classList.add('is-lit'); });
-    stage.addEventListener('mouseleave', function () { stage.classList.remove('is-lit'); });
-  }
-
-  // --- campo ---
   var gl = canvas.getContext('webgl', { antialias: false, alpha: false, powerPreference: 'low-power' });
-  if (!gl) return;   // sem WebGL fica o fundo do card, que ja e o navy do shader
+  if (!gl) return;   // sem WebGL fica o navy da secao, que e o mesmo do shader
 
   var VERT = 'attribute vec2 position; varying vec2 vUv; void main(){ vUv = position * 0.5 + 0.5; gl_Position = vec4(position, 0.0, 1.0); }';
   var FRAG = [
@@ -594,7 +625,7 @@
 
   function shader(type, src) {
     var sh = gl.createShader(type); gl.shaderSource(sh, src); gl.compileShader(sh);
-    if (!gl.getShaderParameter(sh, gl.COMPILE_STATUS)) { console.warn('bm-field shader:', gl.getShaderInfoLog(sh)); return null; }
+    if (!gl.getShaderParameter(sh, gl.COMPILE_STATUS)) { console.warn('fin-field shader:', gl.getShaderInfoLog(sh)); return null; }
     return sh;
   }
   var vs = shader(gl.VERTEX_SHADER, VERT), fs = shader(gl.FRAGMENT_SHADER, FRAG);
@@ -619,9 +650,6 @@
     var dpr = Math.min(window.devicePixelRatio || 1, 2) * 0.5;   // meia resolucao
     canvas.width = Math.max(1, Math.round(r.width * dpr)); canvas.height = Math.max(1, Math.round(r.height * dpr));
     gl.viewport(0, 0, canvas.width, canvas.height);
-    // empilhado (mobile): a mascara do CSS termina onde a figura termina
-    var fig = stage.querySelector('.bm-figure');
-    if (fig) stage.style.setProperty('--bm-field-bottom', Math.round(fig.getBoundingClientRect().bottom - r.top) + 'px');
     if (reduced) draw(0);
   }
   function draw(t) {
