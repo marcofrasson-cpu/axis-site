@@ -367,3 +367,145 @@
     });
   }
 })();
+
+// ========== Fluxo do heroi (Gateway Flow, porte em canvas puro) ==========
+// Curvas de Bezier saem das bordas esquerda e direita e convergem num alvo:
+// o centro do hexagono da marca. Particulas percorrem as curvas. Um toque no
+// heroi solta uma onda que empurra as particulas. Respeita prefers-reduced-
+// motion (quadro estatico, sem loop) e so anima com o heroi em tela.
+(function () {
+  var hero = document.querySelector('.nh-hero');
+  var canvas = hero && hero.querySelector('.nh-flow');
+  if (!hero || !canvas || !canvas.getContext) return;
+  var ctx = canvas.getContext('2d');
+  var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  var width = 0, height = 0, target = { x: 0, y: 0 };
+  var paths = [], explosions = [];
+  var running = false, frame = 0;
+
+  function measureTarget() {
+    // O alvo e a marca; sem ela, o centro do canvas.
+    var mark = hero.querySelector('.axis-mark .hex');
+    var hr = hero.getBoundingClientRect();
+    if (mark) {
+      var mr = mark.getBoundingClientRect();
+      target.x = mr.left + mr.width / 2 - hr.left;
+      target.y = mr.top + mr.height / 2 - hr.top;
+    } else {
+      target.x = width / 2; target.y = height / 2;
+    }
+  }
+
+  function buildPaths() {
+    // Densidade acompanha a largura: 80 curvas em 1440px, 24 em 390px.
+    var count = Math.max(24, Math.min(80, Math.round(width / 18)));
+    paths = [];
+    for (var i = 0; i < count; i++) {
+      paths.push({
+        isLeft: i % 2 === 0,
+        startY: (i / count) * height * 1.4 - height * 0.2,
+        t: Math.random(),
+        speed: 0.0015 + Math.random() * 0.002
+      });
+    }
+  }
+
+  function resize() {
+    var r = hero.getBoundingClientRect();
+    var dpr = Math.min(window.devicePixelRatio || 1, 2);
+    width = Math.round(r.width); height = Math.round(r.height);
+    canvas.width = width * dpr; canvas.height = height * dpr;
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    measureTarget();
+    if (!paths.length || Math.abs(paths.length - Math.round(width / 18)) > 12) buildPaths();
+    if (reduced) drawFrame(false);
+  }
+
+  function bezier(t, p0, p1, p2, p3) {
+    var u = 1 - t;
+    return {
+      x: u*u*u*p0.x + 3*u*u*t*p1.x + 3*u*t*t*p2.x + t*t*t*p3.x,
+      y: u*u*u*p0.y + 3*u*u*t*p1.y + 3*u*t*t*p2.y + t*t*t*p3.y
+    };
+  }
+
+  function drawFrame(advance) {
+    ctx.clearRect(0, 0, width, height);
+    var tx = target.x, ty = target.y;
+
+    if (advance) {
+      explosions.forEach(function (e) { e.radius += 15; e.life -= 0.015; });
+      explosions = explosions.filter(function (e) { return e.life > 0; });
+    }
+
+    for (var i = 0; i < paths.length; i++) {
+      var path = paths[i];
+      // Os pontos de controle sao os do original, com o alvo no lugar do centro.
+      var p0 = { x: path.isLeft ? 0 : width, y: path.startY };
+      var p1 = { x: path.isLeft ? tx * 0.5 : width - (width - tx) * 0.5, y: path.startY };
+      var p2 = { x: path.isLeft ? tx * 0.8 : width - (width - tx) * 0.8, y: ty };
+      var p3 = { x: tx, y: ty };
+
+      ctx.beginPath();
+      ctx.moveTo(p0.x, p0.y);
+      ctx.bezierCurveTo(p1.x, p1.y, p2.x, p2.y, p3.x, p3.y);
+      ctx.strokeStyle = 'rgba(95, 200, 155, 0.28)';
+      ctx.lineWidth = 1;
+      ctx.setLineDash([1, 4]);
+      ctx.stroke();
+      ctx.setLineDash([]);
+
+      if (advance) {
+        path.t += path.speed;
+        if (path.t > 1) { path.t = 0; path.startY += (Math.random() - 0.5) * 10; }
+      }
+      var pos = bezier(path.t, p0, p1, p2, p3);
+
+      var dxT = 0, dyT = 0;
+      for (var k = 0; k < explosions.length; k++) {
+        var e = explosions[k];
+        var dx = pos.x - e.x, dy = pos.y - e.y;
+        var dist = Math.hypot(dx, dy) || 1;
+        if (dist < e.radius + 120 && dist > e.radius - 120) {
+          var force = (1 - Math.abs(dist - e.radius) / 120) * e.life;
+          dxT += (dx / dist) * force * 80;
+          dyT += (dy / dist) * force * 80;
+        }
+      }
+      ctx.fillStyle = 'rgba(168, 236, 202, 0.75)';
+      ctx.fillRect(pos.x + dxT - 1.25, pos.y + dyT - 1.25, 2.5, 2.5);
+    }
+  }
+
+  function loop() {
+    if (!running) return;
+    drawFrame(true);
+    frame = requestAnimationFrame(loop);
+  }
+  function start() { if (running || reduced) return; running = true; frame = requestAnimationFrame(loop); }
+  function stop() { running = false; if (frame) cancelAnimationFrame(frame); frame = 0; }
+
+  resize();
+  if ('ResizeObserver' in window) new ResizeObserver(resize).observe(hero);
+  else window.addEventListener('resize', resize);
+  // A grade assenta depois das fontes; o alvo e medido de novo.
+  window.addEventListener('load', function () { measureTarget(); if (reduced) drawFrame(false); });
+
+  if (!reduced) {
+    hero.addEventListener('pointerdown', function (ev) {
+      var r = hero.getBoundingClientRect();
+      explosions.push({ x: ev.clientX - r.left, y: ev.clientY - r.top, radius: 0, life: 1 });
+    });
+    if ('IntersectionObserver' in window) {
+      new IntersectionObserver(function (entries) {
+        entries.forEach(function (en) { if (en.isIntersecting) start(); else stop(); });
+      }, { threshold: 0.05 }).observe(hero);
+    } else {
+      start();
+    }
+    document.addEventListener('visibilitychange', function () {
+      if (document.visibilityState === 'visible') { if (!running) start(); } else stop();
+    });
+  }
+})();

@@ -2023,6 +2023,23 @@ body { overflow-x: clip; }
 
 /* ==================== Hero — sistema endocanabinoide vivo ==================== */
 .nh-hero { position: relative; overflow: hidden; background: var(--brand-navy); }
+/* Fluxo: curvas que entram pelas bordas e convergem no hexagono da marca.
+   Fica entre o fundo e a grade (z 0 < .nh-grid z 1). Sem ponteiro: o clique
+   passa para os nos e botoes; o JS ouve o pointerdown no proprio heroi. */
+.nh-flow { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 0; display: block; pointer-events: none; }
+/* O fluxo nao entra na coluna de leitura: no desktop a mascara apaga o canvas
+   da esquerda ate a divisa das colunas (o texto ocupa ~52%); no mobile apaga
+   de cima ate a faixa de credenciais, onde comeca o diagrama. */
+.nh-flow {
+  -webkit-mask-image: linear-gradient(90deg, transparent 0, transparent 46%, #000 60%);
+  mask-image: linear-gradient(90deg, transparent 0, transparent 46%, #000 60%);
+}
+@media (max-width: 900px) {
+  .nh-flow {
+    -webkit-mask-image: linear-gradient(180deg, transparent 0, transparent 58%, #000 70%);
+    mask-image: linear-gradient(180deg, transparent 0, transparent 58%, #000 70%);
+  }
+}
 .nh-hero::before {
   content: ""; position: absolute; inset: 0; pointer-events: none;
   background:
