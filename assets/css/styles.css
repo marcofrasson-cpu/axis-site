@@ -1640,30 +1640,31 @@ body { overflow-x: clip; }
 /* Header some ao rolar pra baixo no mobile, volta ao subir (classe via JS).
    A transicao real esta no bloco HEADER (pill) — esta declaracao era duplicata. */
 
-/* Numero duotone: corpo creme + prefixo/sufixo (+) verde */
-/* Contador. Numeral na display face, tabular; a linha-fio abaixo se preenche
-   no ritmo da contagem (transform: scaleX(--count), escrito pelo JS a cada
-   quadro — a mesma quantidade dita duas vezes, numero e traco). O "+" e cinza
-   e menor: numero nao clica. Escopado em .stats: /servicos tem o proprio
+/* Contador. Numeral na display face, tabular; rotulo em Hanken colado abaixo.
+   Referencias (Mobbin): Klarna, Amplemarket, Webflow "By the numbers" — numero
+   medio + rotulo curto, sem barra nem caixa, so o fio entre colunas. No mobile
+   vira ficha em linhas (Instrument/Büro): numero a esquerda, rotulo a direita,
+   fio entre linhas — em vez de tres numerais gigantes empilhados. O "+" e
+   cinza e menor: numero nao clica. Escopado em .stats: /servicos tem o proprio
    .sv-stats .stat-number. */
 .stats-kicker { margin: 0; font-family: var(--font-body); font-size: var(--fs-12); font-weight: 600; letter-spacing: .14em; text-transform: uppercase; color: var(--text-muted); }
-.stats .stats-grid { margin-top: 40px; }
+.stats .stats-grid { margin-top: 36px; }
 .stats .stat-number {
   font-family: var(--font-display); font-weight: 600;
-  font-size: clamp(56px, 6.4vw, 88px); line-height: 1; letter-spacing: -.02em;
+  font-size: clamp(48px, 5vw, 72px); line-height: 1; letter-spacing: -.02em;
   color: var(--text-primary); font-variant-numeric: tabular-nums;
 }
-.stats .stat-affix { font-size: .5em; font-weight: 500; color: var(--text-subtle); margin-left: .08em; vertical-align: .38em; }
-.stat-bar { position: relative; height: 1px; margin: 20px 0 14px; background: var(--border-hairline); overflow: hidden; }
-.stat-bar::after {
-  content: ""; position: absolute; inset: 0; background: var(--text-primary); opacity: .6;
-  transform-origin: left center; transform: scaleX(var(--count, 0));
-}
-.stats .stat-label { margin: 0; font-size: var(--fs-14); line-height: 1.5; color: var(--text-muted); }
+.stats .stat-affix { font-size: .5em; font-weight: 500; color: var(--text-subtle); margin-left: .06em; vertical-align: .34em; }
+.stats .stat-label { margin: 12px 0 0; font-size: var(--fs-14); line-height: 1.45; color: var(--text-muted); max-width: 18ch; }
 @media (max-width: 768px) {
-  .stats .stat-card { padding: 22px 0; border-left: 0; border-top: 1px solid var(--border-hairline); }
-  .stats .stat-card:first-child { border-top: 0; padding-top: 6px; }
-  .stats .stats-grid { margin-top: 28px; }
+  .stats .stats-grid { margin-top: 20px; }
+  .stats .stat-card {
+    display: grid; grid-template-columns: 104px 1fr; align-items: center; column-gap: 16px;
+    padding: 14px 0; border-left: 0; border-top: 1px solid var(--border-hairline);
+  }
+  .stats .stat-card:first-child { border-top: 0; padding-top: 4px; }
+  .stats .stat-number { font-size: 40px; }
+  .stats .stat-label { margin: 0; max-width: none; }
 }
 
 
