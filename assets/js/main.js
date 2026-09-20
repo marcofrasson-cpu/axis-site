@@ -672,3 +672,39 @@
   }
 })();
 
+// ========== Equipe em orbita (home) ==========
+// Palco de referencia 1200x490, centro dos arcos em (600,620), raios 492 e 372.
+// Escala so a geometria (posicoes, altura do palco); o texto fica no tamanho da
+// escala tipografica. Abaixo de 640px os angulos sao os de data-angle-m e os
+// fatos saem do arco (o CSS os poe em fileira).
+(function () {
+  var orb = document.querySelector('.orb');
+  if (!orb) return;
+  var frame = orb.querySelector('.orb-frame'), stage = orb.querySelector('.orb-stage'), facts = orb.querySelector('.orb-facts');
+  var W = 1200, H = 490, CX = 600, CY = 620, R = { outer: 492, inner: 372 };
+  function layout() {
+    var w = frame.clientWidth; if (!w) return;
+    var narrow = w < 640;            // angulos de data-angle-m, avatar menor (CSS)
+    var factsRow = w < 1000;         // fatos saem do arco e vao para a fileira
+    orb.classList.toggle('orb--facts-row', factsRow);
+    var s = Math.min(1, Math.max(0.6, w / W));
+    frame.style.height = Math.round(H * s) + 'px';
+    stage.style.width = Math.round(W * s) + 'px'; stage.style.height = Math.round(H * s) + 'px';
+    var offset = (w - W * s) / 2;   // o palco e centrado no quadro; os fatos sao relativos ao quadro
+    orb.querySelectorAll('[data-ring]').forEach(function (el) {
+      var inFacts = facts && facts.contains(el);
+      if (inFacts && factsRow) { el.style.left = ''; el.style.top = ''; return; }
+      var deg = parseFloat((narrow && el.dataset.angleM) ? el.dataset.angleM : el.dataset.angle);
+      var a = deg * Math.PI / 180, r = R[el.dataset.ring] * s;
+      var x = CX * s + r * Math.cos(a), y = CY * s - r * Math.sin(a);
+      if (inFacts) x += offset;
+      el.style.left = Math.round(x) + 'px'; el.style.top = Math.round(y) + 'px';
+    });
+    var core = orb.querySelector('.orb-core');
+    if (core) { core.style.left = Math.round(CX * s) + 'px'; core.style.top = Math.round(393 * s) + 'px'; }
+  }
+  layout();
+  if ('ResizeObserver' in window) new ResizeObserver(layout).observe(frame); else window.addEventListener('resize', layout);
+  window.addEventListener('load', layout);
+})();
+

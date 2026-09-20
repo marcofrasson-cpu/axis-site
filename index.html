@@ -28,7 +28,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Spectral:wght@400;500;600;700&family=Hanken+Grotesk:wght@400;500;600;700&display=swap">
 <link rel="icon" type="image/svg+xml" href="/assets/img/logo.svg">
-<link rel="stylesheet" href="/assets/css/styles.css?v=202609201407">
+<link rel="stylesheet" href="/assets/css/styles.css?v=202609201427">
 <noscript><style>.reveal,.reveal-stagger [class*="-card"],.blog-highlight.reveal .blog-feature-image,.blog-highlight.reveal .blog-feature-content{opacity:1!important;transform:none!important;filter:none!important}</style></noscript>
 <script type="application/ld+json">
 {"@context":"https://schema.org","@type":"MedicalClinic","name":"Axis FitoMed","url":"https://axisfitomed.com.br/","description":"Associação médica de cannabis medicinal com rigor científico, em Curitiba, Paraná.","email":"contato@axisfitomed.com.br","medicalSpecialty":"Cannabis medicinal e medicina endocanabinoide","areaServed":{"@type":"City","name":"Curitiba"},"address":{"@type":"PostalAddress","addressLocality":"Curitiba","addressRegion":"PR","addressCountry":"BR"},"logo":"https://axisfitomed.com.br/assets/img/logo.svg","@id":"https://axisfitomed.com.br/#clinica","openingHoursSpecification":{"@type":"OpeningHoursSpecification","dayOfWeek":["Monday","Tuesday","Wednesday","Thursday","Friday"],"opens":"08:00","closes":"18:00"}}
@@ -416,48 +416,54 @@
     <div class="kicker"><span class="kicker__rule"></span><span class="kicker__label">Equipe</span></div>
     <h2 id="team-preview-title" class="section-title">Médicos com RQE e formação em medicina endocanabinoide</h2>
 
-    <div class="team-row team-row-medicos">
-      <article class="team-card">
+    <!-- Os medicos orbitam a marca: dois arcos, os tres no externo (foto real,
+         nome, CRM e RQE), tres fatos no interno, o A no centro. A geometria e a
+         de um palco de 1200x490 com centro em (600,620); o JS escala so a
+         geometria — o texto fica no tamanho da escala. -->
+    <div class="orb" data-orbit>
+      <div class="orb-frame">
+        <div class="orb-stage">
+          <svg class="orb-arcs" viewBox="0 0 1200 490" preserveAspectRatio="none" aria-hidden="true">
+            <path class="orb-arc" pathLength="1" d="M 133.4 490 A 492 492 0 0 1 1066.6 490"/>
+            <path class="orb-arc orb-arc--inner" pathLength="1" d="M 269.6 490 A 372 372 0 0 1 930.4 490"/>
+          </svg>
+      <div class="orb-item orb-doc" data-ring="outer" data-angle="144" data-angle-m="112" style="--i:0">
         <picture>
           <source type="image/avif" srcset="/assets/img/equipe/marco-720.avif">
           <source type="image/webp" srcset="/assets/img/equipe/marco-720.webp">
-          <img class="team-photo" src="/assets/img/equipe/marco.jpg" alt="Dr. Marco Aurélio Frasson" width="640" height="799" loading="lazy" decoding="async">
+          <img class="orb-avatar" src="/assets/img/equipe/marco.jpg" alt="" width="640" height="799" loading="lazy" decoding="async">
         </picture>
-        <div class="team-info">
-          <h3>Dr. Marco Aurélio Frasson</h3>
-          <p class="team-specialty">Ortopedista e Traumatologista</p>
-          <p class="team-crm">CRM-PR 47986 · RQE 37027</p>
-          <p class="team-bio">Trauma, coluna e dor crônica musculoesquelética. Coordena a prática clínica da Axis.</p>
-        </div>
-      </article>
-
-      <article class="team-card">
+        <span class="orb-name">Dr. Marco Aurélio Frasson</span>
+        <span class="orb-rqe">CRM-PR 47986 · RQE 37027</span>
+      </div>
+      <div class="orb-item orb-doc" data-ring="outer" data-angle="90" data-angle-m="90" style="--i:1">
         <picture>
           <source type="image/avif" srcset="/assets/img/equipe/gustavo-720.avif">
           <source type="image/webp" srcset="/assets/img/equipe/gustavo-720.webp">
-          <img class="team-photo" src="/assets/img/equipe/gustavo.jpg" alt="Dr. Gustavo Amaral" width="960" height="1200" loading="lazy" decoding="async">
+          <img class="orb-avatar" src="/assets/img/equipe/gustavo.jpg" alt="" width="960" height="1200" loading="lazy" decoding="async">
         </picture>
-        <div class="team-info">
-          <h3>Dr. Gustavo Amaral</h3>
-          <p class="team-specialty">Ortopedista e Traumatologista</p>
-          <p class="team-crm">CRM-PR 33952 · RQE 32175</p>
-          <p class="team-bio">Cirurgia de coluna minimamente invasiva e avaliação clínica.</p>
-        </div>
-      </article>
-
-      <article class="team-card">
+        <span class="orb-name">Dr. Gustavo Amaral</span>
+        <span class="orb-rqe">CRM-PR 33952 · RQE 32175</span>
+      </div>
+      <div class="orb-item orb-doc" data-ring="outer" data-angle="36" data-angle-m="68" style="--i:2">
         <picture>
           <source type="image/avif" srcset="/assets/img/equipe/leandro-720.avif">
           <source type="image/webp" srcset="/assets/img/equipe/leandro-720.webp">
-          <img class="team-photo" src="/assets/img/equipe/leandro.jpg" alt="Dr. Leandro Bortoluzzi Daniel" width="960" height="1200" loading="lazy" decoding="async">
+          <img class="orb-avatar" src="/assets/img/equipe/leandro.jpg" alt="" width="960" height="1200" loading="lazy" decoding="async">
         </picture>
-        <div class="team-info">
-          <h3>Dr. Leandro Bortoluzzi Daniel</h3>
-          <p class="team-specialty">Médico Cirurgião Geral</p>
-          <p class="team-crm">CRM-PR 45192 · RQE 35978</p>
-          <p class="team-bio">Cirurgia geral, com foco em dor crônica musculoesquelética.</p>
+        <span class="orb-name">Dr. Leandro Bortoluzzi Daniel</span>
+        <span class="orb-rqe">CRM-PR 45192 · RQE 35978</span>
+      </div>
+          <div class="orb-core" aria-hidden="true">
+            <svg viewBox="0 0 96 96" fill="none"><polygon points="48,16 75.7,32 75.7,64 48,80 20.3,64 20.3,32" stroke="#5fc89b" stroke-width="2.5" fill="rgba(95,200,155,.10)"/><path transform="translate(48,48) scale(0.62) translate(-139.6,-88)" d="M 126.6 116 L 139.6 58 L 152.6 116 M 131.1 95 L 148.1 95" stroke="#5fc89b" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
         </div>
-      </article>
+      </div>
+      <div class="orb-facts" aria-label="Base da prática clínica">
+      <span class="orb-fact" data-ring="inner" data-angle="118" data-angle-m="118" style="--i:3"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M8.5 12.5l2.5 2.5 4.5-5"/></svg>Conforme Anvisa</span>
+      <span class="orb-fact" data-ring="inner" data-angle="90" data-angle-m="90" style="--i:4"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M8.5 12.5l2.5 2.5 4.5-5"/></svg>Certificado de Análise em todo produto</span>
+      <span class="orb-fact" data-ring="inner" data-angle="62" data-angle-m="62" style="--i:5"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M8.5 12.5l2.5 2.5 4.5-5"/></svg>Formação WeCannAcademy</span>
+      </div>
     </div>
 
     <div class="team-preview-cta">
@@ -529,7 +535,7 @@
   </div>
 </footer>
 
-<script src="/assets/js/main.js?v=202609201407"></script>
+<script src="/assets/js/main.js?v=202609201427"></script>
 <script defer src="/_vercel/insights/script.js"></script>
 </body>
 </html>
