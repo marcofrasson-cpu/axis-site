@@ -715,8 +715,35 @@ button { font: inherit; cursor: pointer; background: none; border: none; color: 
   .indications-bento { grid-template-columns: repeat(2, 1fr); gap: 12px; }
   .bento-card { padding: 20px 18px; }
 }
-@media (max-width: 420px) {
-  .indications-bento { grid-template-columns: 1fr; }
+/* Ate 720px: indice editorial em linhas (icone | area + quadros | numero), nao
+   seis cartoes de 370px empilhados. O icone se desenha quando a secao acende. */
+@media (max-width: 720px) {
+  .indications-bento { display: block; counter-reset: ind; border-top: 1px solid var(--border-hairline); }
+  .bento-card {
+    counter-increment: ind;
+    display: grid; grid-template-columns: 24px 1fr auto; column-gap: 14px; align-items: start;
+    padding: 15px 0; border: 0; border-bottom: 1px solid var(--border-hairline); border-radius: 0; background: none;
+  }
+  .bento-card:hover { transform: none; }
+  .bento-icon { width: 24px; height: 24px; background: none; border-radius: 0; margin: 1px 0 0; }
+  .bento-icon svg { width: 24px; height: 24px; }
+  .bento-card h3 { grid-column: 2; margin-bottom: 3px; }
+  .bento-card p { grid-column: 2; }
+  .bento-card::after {
+    content: counter(ind, decimal-leading-zero); grid-column: 3; grid-row: 1 / span 2;
+    font-size: var(--fs-12); font-weight: 600; letter-spacing: .06em; color: var(--text-subtle);
+    font-variant-numeric: tabular-nums; padding-top: 3px;
+  }
+  .bento-icon :is(path, circle) { stroke-dasharray: 140; stroke-dashoffset: 140; transition: stroke-dashoffset 900ms var(--ease-settle); }
+  .indications-preview.is-visible .bento-icon :is(path, circle) { stroke-dashoffset: 0; }
+  .bento-card:nth-child(2) .bento-icon * { transition-delay: 90ms; }
+  .bento-card:nth-child(3) .bento-icon * { transition-delay: 180ms; }
+  .bento-card:nth-child(4) .bento-icon * { transition-delay: 270ms; }
+  .bento-card:nth-child(5) .bento-icon * { transition-delay: 360ms; }
+  .bento-card:nth-child(6) .bento-icon * { transition-delay: 450ms; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .bento-icon :is(path, circle) { transition: none; stroke-dashoffset: 0; }
 }
 
 /* ---------- Differentials (home) ---------- */
@@ -2120,7 +2147,10 @@ body { overflow-x: clip; }
   .ab-mast-grid { grid-template-columns: 1fr; gap: 30px; align-items: start; }
   .ab-mast-lead { max-width: none; }
   .ab-mast-facts { margin-top: 0; }   /* empilhado nao ha o que alinhar */
-  .ab-chapter { grid-template-columns: 1fr; gap: 20px; padding: 40px 0; }
+  .ab-chapter { grid-template-columns: 1fr; grid-template-rows: auto; gap: 20px; padding: 40px 0; }
+  /* grid-column: 2 do .ab-read criava uma coluna implicita: h2 espremido a
+     esquerda, texto a direita, num celular. Tudo na coluna unica, em ordem. */
+  .ab-rail-head, .ab-rail, .ab-chapter > .ab-read { grid-column: 1; grid-row: auto; }
   .ab-rail { position: static; }
   .ab-read { max-width: none; }
   .ab-band .ab-values { grid-template-columns: 1fr; gap: 0; }
@@ -2754,9 +2784,12 @@ body { overflow-x: clip; }
      vertical não corta. O quadrado resolve: cover recorta topo/base e a resina domina. */
   .qa { padding: 0 0 52px; }
   .qa-bg { object-position: 50% 46%; }
-  .qa-veil { background: linear-gradient(180deg, rgba(8,17,28,.14) 0%, rgba(8,17,28,.40) 34%, rgba(8,17,28,.82) 64%, rgba(8,17,28,.96) 100%); }
-  /* reveal moderado da resina no topo, depois o texto assenta sobre o véu */
-  .qa-inner { padding-top: 26vh; }
+  .qa-veil { background: linear-gradient(180deg, rgba(8,17,28,.10) 0%, rgba(8,17,28,.48) 24%, rgba(8,17,28,.88) 50%, rgba(8,17,28,.96) 100%); }
+  /* a resina aparece no topo (14vh, era 26vh: sobrava) e o texto assenta sobre
+     o veu, que aqui fecha mais cedo — eyebrow e lead eram cinza sobre a foto */
+  .qa-inner { padding-top: 14vh; }
+  .qa-eyebrow { color: var(--text-primary); opacity: .82; }
+  .qa-body, .qa-list li { color: var(--text-primary); }
   .qa-copy, .qa-list, .qa-note { max-width: none; }
   .qa-title, .qa-body { text-shadow: 0 1px 12px rgba(8,17,28,.6); }
 }
@@ -2861,6 +2894,19 @@ body { overflow-x: clip; }
   .finale { padding: 60px 0 76px; }
   .fin-title { font-size: clamp(26px, 7.2vw, 33px); }
   .fin-body { font-size: var(--fs-16); margin-bottom: 26px; }
-  .fin-ctas { flex-direction: column; align-items: stretch; }
-  .fin-ctas .btn { width: 100%; justify-content: center; }
+  .fin-ctas { flex-direction: column; align-items: center; }
 }
+/* CTA do fecho: pill de vidro (Apple) — translucida, fio claro na borda de
+   cima, o campo verde desfocado atras. O verde chapado virava um bloco. */
+.fin-ctas .btn-primary {
+  padding: 14px 30px; border-radius: 999px; font-size: var(--fs-16); font-weight: 500; color: #fff;
+  background: rgba(95,200,155,.16); border: 1px solid rgba(255,255,255,.22); text-shadow: none;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.30), inset 0 -1px 0 rgba(0,0,0,.16), 0 10px 30px rgba(0,0,0,.28);
+  -webkit-backdrop-filter: blur(18px) saturate(160%); backdrop-filter: blur(18px) saturate(160%);
+  transition: background 160ms ease, border-color 160ms ease, transform 160ms var(--ease-settle), box-shadow 160ms ease;
+}
+.fin-ctas .btn-primary:hover {
+  background: rgba(95,200,155,.28); border-color: rgba(255,255,255,.36); transform: translateY(-1px);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.34), inset 0 -1px 0 rgba(0,0,0,.16), 0 14px 34px rgba(0,0,0,.32);
+}
+.fin-ctas .btn-primary:active { transform: translateY(0); }

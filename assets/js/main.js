@@ -609,9 +609,11 @@
     'void main(){',
     '  vec2 uv = vUv; float ratio = u_resolution.x / u_resolution.y; vec2 p = uv - 0.5; p.x *= ratio;',
     '  float t = u_time * 0.1;',
-    '  float n1 = snoise(p * 0.4 + vec2(t * 0.2, -t * 0.3));',
-    '  float n2 = snoise(p * 0.55 + vec2(-t * 0.15, t * 0.25) + n1 * 0.25);',
-    '  float n3 = snoise(p * 0.75 + vec2(t * 0.1, -t * 0.2) + n2 * 0.2);',
+    // Escala espacial 1.1/1.5/2.0 (era 0.4/0.55/0.75): com p em +-0.5 no
+    // retrato, 0.4 dava um unico borrao plano — nada para se mover.
+    '  float n1 = snoise(p * 1.1 + vec2(t * 0.2, -t * 0.3));',
+    '  float n2 = snoise(p * 1.5 + vec2(-t * 0.15, t * 0.25) + n1 * 0.25);',
+    '  float n3 = snoise(p * 2.0 + vec2(t * 0.1, -t * 0.2) + n2 * 0.2);',
     '  vec3 col = u_bg; float dist = length(p) * 1.5; float vignette = 1.0 - smoothstep(0.3, 1.2, dist);',
     '  col = mix(col, u_colors[0], smoothstep(-0.2, 0.5, n1) * 0.85);',
     '  col = mix(col, u_colors[1], smoothstep(-0.1, 0.6, n2) * 0.7);',
@@ -641,7 +643,8 @@
 
   function rgb(hex) { var h = hex.replace('#', ''); return [parseInt(h.slice(0, 2), 16) / 255, parseInt(h.slice(2, 4), 16) / 255, parseInt(h.slice(4, 6), 16) / 255]; }
   // Paleta: verde profundo, verde da marca (tambem no brilho central), verde-musgo, navy.
-  var COLORS = ['#1c5a45', '#3fa57c', '#0f3d2e', '#0d1b2a'], BG = '#08111c', SPEED = 0.6, GRAIN = 0.15;
+  // SPEED 2.4 (era 0.6): a 0.6 o campo mudava ~1% em 2 s — parecia parado.
+  var COLORS = ['#1c5a45', '#3fa57c', '#0f3d2e', '#0d1b2a'], BG = '#08111c', SPEED = 2.4, GRAIN = 0.15;
   var flat = new Float32Array([].concat.apply([], COLORS.map(rgb)));
   gl.uniform3fv(U.colors, flat); gl.uniform3f(U.bg, rgb(BG)[0], rgb(BG)[1], rgb(BG)[2]); gl.uniform1f(U.grain, GRAIN);
 
