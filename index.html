@@ -28,7 +28,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Spectral:wght@400;500;600;700&family=Hanken+Grotesk:wght@400;500;600;700&display=swap">
 <link rel="icon" type="image/svg+xml" href="/assets/img/logo.svg">
-<link rel="stylesheet" href="/assets/css/styles.css?v=202609201444">
+<link rel="stylesheet" href="/assets/css/styles.css?v=202609201911">
 <noscript><style>.reveal,.reveal-stagger [class*="-card"],.blog-highlight.reveal .blog-feature-image,.blog-highlight.reveal .blog-feature-content{opacity:1!important;transform:none!important;filter:none!important}</style></noscript>
 <script type="application/ld+json">
 {"@context":"https://schema.org","@type":"MedicalClinic","name":"Axis FitoMed","url":"https://axisfitomed.com.br/","description":"Associação médica de cannabis medicinal com rigor científico, em Curitiba, Paraná.","email":"contato@axisfitomed.com.br","medicalSpecialty":"Cannabis medicinal e medicina endocanabinoide","areaServed":{"@type":"City","name":"Curitiba"},"address":{"@type":"PostalAddress","addressLocality":"Curitiba","addressRegion":"PR","addressCountry":"BR"},"logo":"https://axisfitomed.com.br/assets/img/logo.svg","@id":"https://axisfitomed.com.br/#clinica","openingHoursSpecification":{"@type":"OpeningHoursSpecification","dayOfWeek":["Monday","Tuesday","Wednesday","Thursday","Friday"],"opens":"08:00","closes":"18:00"}}
@@ -190,52 +190,56 @@
 
     <div class="differentials-grid">
       <article class="differential-card">
-        <div class="differential-icon" aria-hidden="true">
+        <div class="dc-head"><span class="dc-kind">Produto</span><div class="differential-icon" aria-hidden="true">
           <svg viewBox="0 0 48 48" fill="none" stroke="#5fc89b" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
             <path d="M24 6c-4 8-8 12-8 18a8 8 0 0016 0c0-6-4-10-8-18z"/>
             <path d="M18 30l4 4 8-8"/>
           </svg>
-        </div>
+        </div></div>
         <h3>Curadoria Farmacêutica</h3>
         <p>Seleção rigorosa de extratos com certificados de análise (COA) e padronização internacional.</p>
+      <a class="dc-proof" href="#coa">Ver o Certificado de Análise<span aria-hidden="true"> →</span></a>
       </article>
 
       <article class="differential-card">
-        <div class="differential-icon" aria-hidden="true">
+        <div class="dc-head"><span class="dc-kind">Equipe</span><div class="differential-icon" aria-hidden="true">
           <svg viewBox="0 0 48 48" fill="none" stroke="#5fc89b" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
             <circle cx="16" cy="14" r="5"/>
             <circle cx="32" cy="14" r="5"/>
             <path d="M8 36c0-5 4-9 8-9s8 4 8 9"/>
             <path d="M24 36c0-5 4-9 8-9s8 4 8 9"/>
           </svg>
-        </div>
+        </div></div>
         <h3>Corpo médico com RQE</h3>
         <p>Especialidades registradas (CRM · RQE) e certificação internacional WeCannAcademy em medicina endocanabinoide como formação complementar.</p>
+      <a class="dc-proof" href="/equipe">Conhecer os médicos<span aria-hidden="true"> →</span></a>
       </article>
 
       <article class="differential-card">
-        <div class="differential-icon" aria-hidden="true">
+        <div class="dc-head"><span class="dc-kind">Cuidado</span><div class="differential-icon" aria-hidden="true">
           <svg viewBox="0 0 48 48" fill="none" stroke="#5fc89b" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
             <path d="M10 24a14 14 0 0128 0"/>
             <rect x="6" y="24" width="8" height="14" rx="2"/>
             <rect x="34" y="24" width="8" height="14" rx="2"/>
             <path d="M38 38v3a4 4 0 01-4 4h-6"/>
           </svg>
-        </div>
+        </div></div>
         <h3>Acompanhamento Próximo</h3>
         <p>Suporte contínuo entre consultas, ajustes finos de dosagem e canal direto com a equipe clínica.</p>
+      <a class="dc-proof" href="#como-funciona">Como funciona<span aria-hidden="true"> →</span></a>
       </article>
 
       <article class="differential-card">
-        <div class="differential-icon" aria-hidden="true">
+        <div class="dc-head"><span class="dc-kind">Conhecimento</span><div class="differential-icon" aria-hidden="true">
           <svg viewBox="0 0 48 48" fill="none" stroke="#5fc89b" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
             <path d="M8 12h32v24H8z"/>
             <path d="M8 12l16 12 16-12"/>
             <path d="M24 28v8"/>
           </svg>
-        </div>
+        </div></div>
         <h3>Educação Continuada</h3>
         <p>Conteúdo técnico de alta qualidade para ampliar a autonomia de pacientes, familiares e profissionais de saúde.</p>
+      <a class="dc-proof" href="/ciencia">Ver os estudos<span aria-hidden="true"> →</span></a>
       </article>
     </div>
   </div>
@@ -259,7 +263,7 @@
 </section>
 
 <!-- Como funciona -->
-<section class="section reveal reveal-stagger">
+<section id="como-funciona" class="section reveal reveal-stagger">
   <div class="container">
     <div class="section-heading">
       <div class="kicker"><span class="kicker__rule"></span><span class="kicker__label">Como funciona</span></div>
@@ -303,7 +307,7 @@
 </section>
 
 <!-- Qualidade e rastreabilidade -->
-<section class="qa reveal" aria-labelledby="qa-title">
+<section id="coa" class="qa reveal" aria-labelledby="qa-title">
   <picture>
       <!-- mobile: recorte quadrado da resina densa (a landscape mostrava o topo morto) -->
       <source media="(max-width: 820px)" type="image/avif" srcset="/assets/img/resina-macro-m.avif">
@@ -538,7 +542,7 @@
   </div>
 </footer>
 
-<script src="/assets/js/main.js?v=202609201444"></script>
+<script src="/assets/js/main.js?v=202609201911"></script>
 <script defer src="/_vercel/insights/script.js"></script>
 </body>
 </html>

@@ -843,7 +843,29 @@ button { font: inherit; cursor: pointer; background: none; border: none; color: 
   font-size: var(--fs-14);
   color: var(--text-muted);
   line-height: 1.55;
+  flex: 1;   /* empurra a prova para o pe: os quatro links alinham entre cards */
 }
+/* Anatomia do card: cabecalho (tipo do pilar + icone na mesma linha), corpo,
+   e no pe a prova — para onde cada pilar aponta. O bloco de icone de 56px
+   que ficava sozinho acima do titulo engolia altura no celular. */
+.differential-card { display: flex; flex-direction: column; }
+.dc-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 18px; }
+.dc-kind { font-size: var(--fs-12); font-weight: 600; letter-spacing: .14em; text-transform: uppercase; color: var(--text-subtle); }
+.dc-head .differential-icon { width: 40px; height: 40px; margin-bottom: 0; border-radius: 10px; border: 1px solid var(--border-hairline); flex: none; }
+.dc-head .differential-icon svg { width: 22px; height: 22px; }
+.dc-proof {
+  margin-top: 18px; padding-top: 14px; border-top: 1px solid var(--border-hairline);
+  font-size: var(--fs-14); font-weight: 500; color: var(--text-muted); text-decoration: none;
+  transition: color 180ms var(--ease-settle);
+}
+.dc-proof span { display: inline-block; margin-left: .35em; transition: transform 180ms var(--ease-settle); }   /* o espaco dentro do inline-block colapsa */
+.dc-proof:hover, .dc-proof:focus-visible { color: var(--brand-green); }
+.dc-proof:hover span { transform: translateX(3px); }
+@media (max-width: 640px) {
+  .differential-card { padding: 26px 22px; }
+  .dc-head { margin-bottom: 14px; }
+}
+@media (prefers-reduced-motion: reduce) { .dc-proof, .dc-proof span { transition: none; } }
 @media (max-width: 1024px) {
   .differentials-grid { grid-template-columns: repeat(2, 1fr); }
 }
