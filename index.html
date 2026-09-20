@@ -28,7 +28,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Spectral:wght@400;500;600;700&family=Hanken+Grotesk:wght@400;500;600;700&display=swap">
 <link rel="icon" type="image/svg+xml" href="/assets/img/logo.svg">
-<link rel="stylesheet" href="/assets/css/styles.css?v=202609201911">
+<link rel="stylesheet" href="/assets/css/styles.css?v=202609201928">
 <noscript><style>.reveal,.reveal-stagger [class*="-card"],.blog-highlight.reveal .blog-feature-image,.blog-highlight.reveal .blog-feature-content{opacity:1!important;transform:none!important;filter:none!important}</style></noscript>
 <script type="application/ld+json">
 {"@context":"https://schema.org","@type":"MedicalClinic","name":"Axis FitoMed","url":"https://axisfitomed.com.br/","description":"Associação médica de cannabis medicinal com rigor científico, em Curitiba, Paraná.","email":"contato@axisfitomed.com.br","medicalSpecialty":"Cannabis medicinal e medicina endocanabinoide","areaServed":{"@type":"City","name":"Curitiba"},"address":{"@type":"PostalAddress","addressLocality":"Curitiba","addressRegion":"PR","addressCountry":"BR"},"logo":"https://axisfitomed.com.br/assets/img/logo.svg","@id":"https://axisfitomed.com.br/#clinica","openingHoursSpecification":{"@type":"OpeningHoursSpecification","dayOfWeek":["Monday","Tuesday","Wednesday","Thursday","Friday"],"opens":"08:00","closes":"18:00"}}
@@ -161,22 +161,26 @@
 <!-- Em destaque -->
 <section class="stats reveal reveal-stagger ground-raised aura aura-top seam-top" aria-labelledby="stats-title">
   <div class="container">
-    <div class="kicker"><span class="kicker__rule"></span><span class="kicker__label">Compromissos</span></div>
-    <h2 id="stats-title" class="stats-title">Três compromissos, antes de qualquer prescrição</h2>
-    <!-- Tres fatos sem contagem. Cada um ja esta afirmado em outro lugar do site
-         (Termos de Uso, faixa final, secao do CoA) — aqui so ganham a frente. -->
+    <div class="kicker"><span class="kicker__rule"></span><h2 id="stats-title" class="stats-kicker">A Axis em números</h2></div>
+    <!-- Numeral na display face; a linha-fio abaixo se preenche no ritmo da
+         contagem (--count, escrito pelo JS a cada quadro). O "+" e cinza: numero
+         nao clica. As guardas do contador (aba oculta, reduced-motion) estao em
+         main.js e escrevem o valor final direto. -->
     <div class="stats-grid">
-      <article class="stat-card fact">
-        <h3 class="fact-title">Não vendemos produto.</h3>
-        <p class="fact-body">Avaliamos e prescrevemos; a compra é sua, na farmácia ou pela importação autorizada.</p>
+      <article class="stat-card">
+        <div class="stat-number" data-target="3">3</div>
+        <div class="stat-bar" aria-hidden="true"></div>
+        <p class="stat-label">Médicos especialistas com RQE</p>
       </article>
-      <article class="stat-card fact">
-        <h3 class="fact-title">Podemos dizer não.</h3>
-        <p class="fact-body">A avaliação decide se a cannabis medicinal é apropriada para o seu caso — e às vezes não é.</p>
+      <article class="stat-card">
+        <div class="stat-number" data-target="10" data-suffix="+">10+</div>
+        <div class="stat-bar" aria-hidden="true"></div>
+        <p class="stat-label">Anos de experiência clínica</p>
       </article>
-      <article class="stat-card fact">
-        <h3 class="fact-title">Formulação caso a caso.</h3>
-        <p class="fact-body">Isolado, broad ou full-spectrum, definido na consulta — nunca por prateleira.</p>
+      <article class="stat-card">
+        <div class="stat-number" data-target="100" data-suffix="+">100+</div>
+        <div class="stat-bar" aria-hidden="true"></div>
+        <p class="stat-label">Pacientes em tratamento</p>
       </article>
     </div>
   </div>
@@ -504,7 +508,8 @@
     <div class="pf-top">
       <div class="pf-col pf-col--brand">
         <a class="brand" href="/" aria-label="Axis FitoMed — início"><img class="pf-mark" src="/assets/img/logo.svg" alt="" width="256" height="256"></a>
-        <p class="pf-rt">Responsável técnico:<br>Dr. Marco Aurélio Frasson · CRM-PR 47986</p>
+        <p class="pf-tagline">Cannabis medicinal com rigor clínico.</p>
+        <p class="pf-rt">Responsável técnico<br>Dr. Marco Aurélio Frasson · CRM-PR 47986</p>
       </div>
       <div class="pf-col pf-col--nav">
         <h3>Navegar</h3>
@@ -515,6 +520,7 @@
           <li><a href="/servicos">Serviços</a></li>
           <li><a href="/ciencia">Ciência</a></li>
           <li><a href="/blog">Blog</a></li>
+          <li><a href="/contato">Contato</a></li>
         </ul>
       </div>
       <div class="pf-col pf-col--inst">
@@ -523,26 +529,25 @@
           <li><a href="/privacidade">Política de Privacidade</a></li>
           <li><a href="/termos">Termos de Uso</a></li>
         </ul>
-        <p class="pf-note">Conforme Anvisa</p>
-        <p class="pf-note">Uso sob prescrição médica</p>
       </div>
       <div class="pf-col pf-col--contato">
         <h3>Contato</h3>
         <ul>
-          <li><a href="mailto:contato@axisfitomed.com.br">contato@axisfitomed.com.br</a></li>
+          <li><a class="pf-mail" href="mailto:contato@axisfitomed.com.br">contato@axisfitomed.com.br</a></li>
         </ul>
         <p class="pf-note">Seg–Sex, 8h–18h</p>
+        <p class="pf-note">Curitiba · PR</p>
       </div>
     </div>
     <div class="pf-bottom">
       <span>© 2026 Axis FitoMed. Todos os direitos reservados.</span>
-      <span>Cannabis medicinal · uso sob prescrição médica.</span>
+      <span>Conforme Anvisa · uso sob prescrição médica.</span>
     </div>
     <div class="pf-wordmark" aria-hidden="true"><span>Axis FitoMed</span></div>
   </div>
 </footer>
 
-<script src="/assets/js/main.js?v=202609201911"></script>
+<script src="/assets/js/main.js?v=202609201928"></script>
 <script defer src="/_vercel/insights/script.js"></script>
 </body>
 </html>

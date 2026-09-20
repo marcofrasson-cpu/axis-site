@@ -102,6 +102,7 @@
       el.innerHTML = affix(el.dataset.prefix || '') + parseInt(el.dataset.target, 10) +
         affix(el.dataset.suffix || '');
       el.dataset.done = '1';
+      if (el.parentElement) el.parentElement.style.setProperty('--count', '1');   // linha cheia
     };
     var animateCounter = function (el) {
       // rAF nao roda em aba que nao esta em primeiro plano: a contagem ficaria
@@ -122,6 +123,7 @@
         var eased = 1 - Math.pow(1 - progress, 3);
         var current = Math.round(target * eased);
         el.innerHTML = affix(prefix) + current + affix(suffix);
+        if (el.parentElement) el.parentElement.style.setProperty('--count', eased.toFixed(3));   // a linha acompanha
         if (progress < 1) requestAnimationFrame(tick);
         else settleCounter(el);
       };
