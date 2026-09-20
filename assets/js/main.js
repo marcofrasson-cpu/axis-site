@@ -685,6 +685,9 @@
   if (!orb) return;
   var frame = orb.querySelector('.orb-frame'), stage = orb.querySelector('.orb-stage'), facts = orb.querySelector('.orb-facts');
   var W = 1200, H = 490, CX = 600, CY = 620, R = { outer: 492, inner: 372 };
+  var knockRects = [].slice.call(orb.querySelectorAll('.orb-knock')), knocks = [];
+  var flow = orb.querySelector('.orb-flow'), ctx = flow && flow.getContext ? flow.getContext('2d') : null;
+  var scale = 1, dots = [];
   function layout() {
     var w = frame.clientWidth; if (!w) return;
     var narrow = w < 640;            // angulos de data-angle-m, avatar menor (CSS)
@@ -705,9 +708,127 @@
     });
     var core = orb.querySelector('.orb-core');
     if (core) { core.style.left = Math.round(CX * s) + 'px'; core.style.top = Math.round(393 * s) + 'px'; }
+    scale = s;
+    // O quadro cresce se algum medico (ancorado pela foto, texto pendente)
+    // ultrapassar o palco — entre 640 e 1000px os laterais ficam baixos no arco.
+    var sr0 = stage.getBoundingClientRect(), need = H * s;
+    orb.querySelectorAll('.orb-doc').forEach(function (d) { need = Math.max(need, d.getBoundingClientRect().bottom - sr0.top + 6); });
+    frame.style.height = Math.round(need) + 'px';
+    // Recortes: uniao das caixas de nome e CRM de cada medico, com folga, em px
+    // do palco (para o canvas) e em unidades do viewBox (px / s, para a mascara
+    // do SVG). O arco some atras do texto em qualquer largura.
+    var sr = stage.getBoundingClientRect();
+    knocks = [];
+    orb.querySelectorAll('.orb-doc').forEach(function (doc, i) {
+      var a = doc.querySelector('.orb-name'), b = doc.querySelector('.orb-rqe');
+      if (!a || !b) return;
+      var ra = a.getBoundingClientRect(), rb = b.getBoundingClientRect();
+      var x1 = Math.min(ra.left, rb.left) - sr.left - 8, x2 = Math.max(ra.right, rb.right) - sr.left + 8;
+      var y1 = Math.min(ra.top, rb.top) - sr.top - 5, y2 = Math.max(ra.bottom, rb.bottom) - sr.top + 5;
+      knocks.push({ x: x1, y: y1, w: x2 - x1, h: y2 - y1 });
+      var rect = knockRects[i];
+      if (rect) { rect.setAttribute('x', x1 / s); rect.setAttribute('y', y1 / s); rect.setAttribute('width', (x2 - x1) / s); rect.setAttribute('height', (y2 - y1) / s); }
+    });
+    if (ctx) {
+      var dpr = Math.min(window.devicePixelRatio || 1, 2);
+      flow.width = Math.round(W * s * dpr); flow.height = Math.round(H * s * dpr);
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      seed(w < 640);
+    }
   }
+
+  // ---- Moleculas nos arcos: o fluxo do heroi, em orbita ----
+  // Pontos saem das duas pontas de cada arco e convergem no apice (como as
+  // curvas do heroi convergem na marca), com um rastro curto. Nao passam por
+  // cima do texto (mesmos recortes da mascara). So animam com a secao em tela;
+  // sob prefers-reduced-motion o canvas fica vazio — os arcos ja descrevem o espaco.
+  var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var running = false, raf = 0;
+  function seed(narrow) {
+    dots = [];
+    [{ r: 'outer', n: narrow ? 8 : 14 }, { r: 'inner', n: narrow ? 6 : 10 }].forEach(function (ring) {
+      for (var i = 0; i < ring.n; i++) {
+        dots.push({ ring: ring.r, left: i % 2 === 0, t: Math.random(), speed: 0.0009 + Math.random() * 0.0012, trail: [] });
+      }
+    });
+  }
+  function inKnock(x, y) {
+    for (var k = 0; k < knocks.length; k++) {
+      var q = knocks[k];
+      if (x >= q.x && x <= q.x + q.w && y >= q.y && y <= q.y + q.h) return true;
+    }
+    return false;
+  }
+  function drawFlow() {
+    var s = scale, w = W * s, h = H * s;
+    ctx.clearRect(0, 0, w, h);
+    for (var i = 0; i < dots.length; i++) {
+      var d = dots[i];
+      d.t += d.speed;
+      if (d.t > 1) { d.t = 0; d.trail = []; }
+      var th = d.left ? Math.PI - d.t * Math.PI / 2 : d.t * Math.PI / 2;
+      var r = R[d.ring] * s;
+      var x = CX * s + r * Math.cos(th), y = CY * s - r * Math.sin(th);
+      // entra e some suave nas pontas do trajeto
+      var a = Math.min(1, d.t / 0.12) * Math.min(1, (1 - d.t) / 0.15);
+      d.trail.push({ x: x, y: y }); if (d.trail.length > 7) d.trail.shift();
+      for (var j = 0; j < d.trail.length; j++) {
+        var p = d.trail[j];
+        if (inKnock(p.x, p.y)) continue;
+        var f = (j + 1) / d.trail.length;   // 1 = ponto atual
+        var size = 1 + f * 1.6;
+        ctx.fillStyle = 'rgba(168, 236, 202, ' + (0.8 * a * f * f).toFixed(3) + ')';
+        ctx.fillRect(p.x - size / 2, p.y - size / 2, size, size);
+      }
+    }
+  }
+  function loop() { if (!running) return; drawFlow(); raf = requestAnimationFrame(loop); }
+  function start() { if (running || reduced || !ctx) return; running = true; raf = requestAnimationFrame(loop); }
+  function stop() { running = false; if (raf) cancelAnimationFrame(raf); raf = 0; }
+
   layout();
   if ('ResizeObserver' in window) new ResizeObserver(layout).observe(frame); else window.addEventListener('resize', layout);
   window.addEventListener('load', layout);
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(layout);
+  if (ctx && !reduced) {
+    if ('IntersectionObserver' in window) {
+      new IntersectionObserver(function (es) { es.forEach(function (e) { if (e.isIntersecting) start(); else stop(); }); }, { threshold: 0.05 }).observe(orb);
+    } else start();
+    document.addEventListener('visibilitychange', function () { if (document.visibilityState === 'visible') { if (!running) start(); } else stop(); });
+  }
+})();
+
+// ========== Titulos em revelacao por palavra (reveal-text, porte em vanilla) ==========
+// Cada palavra de h1/h2 entra com blur + subida, escalonada (45ms), uma vez, ao
+// entrar em tela. Marcacao inline (.hl, .accent, <br>) fica: so os nos de texto
+// sao envolvidos. O texto continua inteiro no DOM. Sob prefers-reduced-motion
+// nao envolve nada. Fora: o kicker do contador e os titulos das paginas legais.
+(function () {
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  var heads = [].slice.call(document.querySelectorAll('h1, h2')).filter(function (h) {
+    return !h.classList.contains('stats-kicker') && !h.closest('.lg-doc');
+  });
+  if (!heads.length) return;
+  function wrap(node, st) {
+    if (node.nodeType === 3) {
+      var parts = node.nodeValue.split(/(\s+)/), frag = document.createDocumentFragment();
+      parts.forEach(function (p) {
+        if (!p) return;
+        if (/^\s+$/.test(p)) { frag.appendChild(document.createTextNode(p)); return; }
+        var w = document.createElement('span'); w.className = 'rt-w'; w.style.setProperty('--i', st.i++); w.textContent = p;
+        frag.appendChild(w);
+      });
+      node.parentNode.replaceChild(frag, node);
+    } else if (node.nodeType === 1 && node.tagName !== 'BR') {
+      [].slice.call(node.childNodes).forEach(function (c) { wrap(c, st); });
+    }
+  }
+  heads.forEach(function (h) { var st = { i: 0 }; [].slice.call(h.childNodes).forEach(function (c) { wrap(c, st); }); h.classList.add('rt'); });
+  var show = function (h) { h.classList.add('rt-in'); };
+  if (!('IntersectionObserver' in window)) { heads.forEach(show); return; }
+  var io = new IntersectionObserver(function (es) {
+    es.forEach(function (e) { if (e.isIntersecting) { show(e.target); io.unobserve(e.target); } });
+  }, { threshold: 0.2, rootMargin: '0px 0px -8% 0px' });
+  heads.forEach(function (h) { io.observe(h); });
 })();
 

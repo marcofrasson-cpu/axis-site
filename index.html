@@ -28,7 +28,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Spectral:wght@400;500;600;700&family=Hanken+Grotesk:wght@400;500;600;700&display=swap">
 <link rel="icon" type="image/svg+xml" href="/assets/img/logo.svg">
-<link rel="stylesheet" href="/assets/css/styles.css?v=202609201957">
+<link rel="stylesheet" href="/assets/css/styles.css?v=202609202002">
 <noscript><style>.reveal,.reveal-stagger [class*="-card"],.blog-highlight.reveal .blog-feature-image,.blog-highlight.reveal .blog-feature-content{opacity:1!important;transform:none!important;filter:none!important}</style></noscript>
 <script type="application/ld+json">
 {"@context":"https://schema.org","@type":"MedicalClinic","name":"Axis FitoMed","url":"https://axisfitomed.com.br/","description":"Associação médica de cannabis medicinal com rigor científico, em Curitiba, Paraná.","email":"contato@axisfitomed.com.br","medicalSpecialty":"Cannabis medicinal e medicina endocanabinoide","areaServed":{"@type":"City","name":"Curitiba"},"address":{"@type":"PostalAddress","addressLocality":"Curitiba","addressRegion":"PR","addressCountry":"BR"},"logo":"https://axisfitomed.com.br/assets/img/logo.svg","@id":"https://axisfitomed.com.br/#clinica","openingHoursSpecification":{"@type":"OpeningHoursSpecification","dayOfWeek":["Monday","Tuesday","Wednesday","Thursday","Friday"],"opens":"08:00","closes":"18:00"}}
@@ -432,9 +432,22 @@
       <div class="orb-frame">
         <div class="orb-stage">
           <svg class="orb-arcs" viewBox="0 0 1200 490" preserveAspectRatio="none" aria-hidden="true">
-            <path class="orb-arc" pathLength="1" d="M 133.4 490 A 492 492 0 0 1 1066.6 490"/>
-            <path class="orb-arc orb-arc--inner" pathLength="1" d="M 269.6 490 A 372 372 0 0 1 930.4 490"/>
+            <defs>
+              <!-- Recortes onde ha texto (nome e CRM de cada medico): o JS mede as
+                   caixas e posiciona os retangulos. Arco nunca cruza fonte. -->
+              <mask id="orbKnock" maskUnits="userSpaceOnUse" x="0" y="0" width="1200" height="490">
+                <rect width="1200" height="490" fill="#fff"/>
+                <rect class="orb-knock" fill="#000" rx="4"/><rect class="orb-knock" fill="#000" rx="4"/><rect class="orb-knock" fill="#000" rx="4"/>
+              </mask>
+            </defs>
+            <g mask="url(#orbKnock)">
+              <path class="orb-arc" pathLength="1" d="M 133.4 490 A 492 492 0 0 1 1066.6 490"/>
+              <path class="orb-arc orb-arc--inner" pathLength="1" d="M 269.6 490 A 372 372 0 0 1 930.4 490"/>
+            </g>
           </svg>
+          <!-- Moleculas do heroi, em orbita: pontos percorrem os dois arcos das
+               pontas ao apice (canvas, ver main.js). Fica sob fotos e pilulas. -->
+          <canvas class="orb-flow" aria-hidden="true"></canvas>
       <div class="orb-item orb-doc" data-ring="outer" data-angle="144" data-angle-m="112" style="--i:0">
         <picture>
           <source type="image/avif" srcset="/assets/img/equipe/marco-720.avif">
@@ -544,7 +557,7 @@
   </div>
 </footer>
 
-<script src="/assets/js/main.js?v=202609201957"></script>
+<script src="/assets/js/main.js?v=202609202002"></script>
 <script defer src="/_vercel/insights/script.js"></script>
 </body>
 </html>
