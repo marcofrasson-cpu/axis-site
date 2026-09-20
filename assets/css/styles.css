@@ -1619,14 +1619,17 @@ body { overflow-x: clip; }
    A transicao real esta no bloco HEADER (pill) — esta declaracao era duplicata. */
 
 /* Numero duotone: corpo creme + prefixo/sufixo (+) verde */
-/* Tres compromissos: titulo curto na display face, uma linha de explicacao.
+/* Tres compromissos. Convencao do site: display face so em h1/h2; titulo de
+   card e UI ficam na Hanken (como .card h3, .differential-card h3, .team-info h3).
+   Aqui o titulo fica um degrau acima do h3 de card (20, nao 16) porque nao ha
+   icone e e ele que carrega a coluna. A explicacao a 14, como nos Pilares.
    A hairline entre colunas (.stat-card + .stat-card) e a unica estrutura. */
 .fact-title {
-  font-family: var(--font-display); font-weight: 600;
-  font-size: clamp(22px, 2.2vw, 28px); line-height: 1.15; letter-spacing: -.015em;
-  color: var(--text-primary); margin: 0 0 12px;
+  font-family: var(--font-body); font-weight: 600;
+  font-size: var(--fs-20); line-height: 1.25; letter-spacing: -.01em;
+  color: var(--text-primary); margin: 0 0 10px;
 }
-.fact-body { font-size: var(--fs-16); line-height: 1.55; color: var(--text-muted); margin: 0; max-width: 34ch; }
+.fact-body { font-size: var(--fs-14); line-height: 1.6; color: var(--text-muted); margin: 0; max-width: 36ch; }
 
 
 /* ---- Reduced-motion: mata TODO gesto novo (marca do hero fica isenta) ---- */
