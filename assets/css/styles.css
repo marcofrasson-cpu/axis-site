@@ -1440,26 +1440,6 @@ button { font: inherit; cursor: pointer; background: none; border: none; color: 
 .stats .stat-card { padding: 6px 36px; }
 .stats .stat-card:first-child { padding-left: 0; }
 .stats .stat-card + .stat-card { border-left: 1px solid var(--border-hairline); }
-/* aura verde so atras da coluna do +100 */
-.stats .stat-card--accent::after {
-  content: "";
-  position: absolute;
-  inset: -20% -10% -20% -10%;
-  z-index: -1;
-  background: radial-gradient(60% 60% at 50% 45%, rgba(95, 200, 155, 0.10), transparent 70%);
-  pointer-events: none;
-}
-.stats .stat-number {
-  font-weight: 700;            /* era 800 — Inter so tem ate 700 (evita faux-bold borrado) */
-  color: var(--text-primary);
-  letter-spacing: -0.03em;
-  margin-bottom: 0;
-}
-.stats .stat-label {
-  margin-top: 14px;
-  padding-top: 14px;
-  border-top: 1px solid var(--border-hairline);
-}
 @media (max-width: 768px) {
   .stats .stat-card { padding: 22px 0; }
   .stats .stat-card:first-child { padding-top: 0; }
@@ -1639,7 +1619,14 @@ body { overflow-x: clip; }
    A transicao real esta no bloco HEADER (pill) — esta declaracao era duplicata. */
 
 /* Numero duotone: corpo creme + prefixo/sufixo (+) verde */
-.stats .stat-affix { color: var(--brand-green); font-weight: 500; }
+/* Tres compromissos: titulo curto na display face, uma linha de explicacao.
+   A hairline entre colunas (.stat-card + .stat-card) e a unica estrutura. */
+.fact-title {
+  font-family: var(--font-display); font-weight: 600;
+  font-size: clamp(22px, 2.2vw, 28px); line-height: 1.15; letter-spacing: -.015em;
+  color: var(--text-primary); margin: 0 0 12px;
+}
+.fact-body { font-size: var(--fs-16); line-height: 1.55; color: var(--text-muted); margin: 0; max-width: 34ch; }
 
 
 /* ---- Reduced-motion: mata TODO gesto novo (marca do hero fica isenta) ---- */
@@ -1657,7 +1644,6 @@ body { overflow-x: clip; }
   .differentials.reveal-stagger.is-visible .differential-icon svg path { animation: none !important; }
   .differential-icon svg path { stroke-dashoffset: 0 !important; }
   .steps-timeline::before { transition: none !important; transform: scaleX(1) !important; }
-  .stats .stat-card--accent::after { animation: none !important; }
 }
 
 /* ==================== Full-spectrum (extrato completo) ==================== */
