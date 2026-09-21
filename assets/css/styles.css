@@ -521,7 +521,7 @@ button { font: inherit; cursor: pointer; background: none; border: none; color: 
 .bm-stage.is-lit .bm-spot { opacity: 1; }
 @media (hover: none), (prefers-reduced-motion: reduce) { .bm-spot { display: none; } }
 
-.bm-figure { position: relative; aspect-ratio: 200 / 480; height: clamp(440px, 64vh, 640px); margin-inline: auto; }   /* era 400/56vh/540: a figura sumia no card */
+.bm-figure { position: relative; aspect-ratio: 200 / 480; height: clamp(380px, 48vh, 500px); margin-inline: auto; }   /* cabe na primeira tela do desktop (1440x900) com titulo e condicoes */
 
 /* ---- Mapa do corpo: contorno humano (traçado da figura) ---- */
 .bm-figure--line { aspect-ratio: 635 / 1350; }
@@ -3255,11 +3255,63 @@ body { overflow-x: clip; }
 .bm-hub-dot { fill: #5fc89b; }
 .bm-hub { transform-box: fill-box; transform-origin: center; animation: bmHub 3.4s ease-in-out infinite; }
 @keyframes bmHub { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.08); } }
+/* Marcador = ponto + rotulo da regiao: fica evidente onde clicar e o que e.
+   O ponto centra na coordenada; o rotulo pende para a direita (ou esquerda,
+   .bm-marker--l). Selecao: ponto cheio com anel branco e rotulo aceso. */
+.bm-marker { width: auto; height: 44px; padding: 0 var(--sp-8); gap: 6px; display: inline-flex; align-items: center; transform: translate(calc(-1 * (var(--sp-8) + 6px)), -50%); }
+.bm-marker--l { flex-direction: row-reverse; transform: translate(calc(-100% + var(--sp-8) + 6px), -50%); }
+.bm-marker--head { width: auto; height: 44px; }
 .bm-marker-dot {
-  width: 13px; height: 13px; border-radius: 0; box-shadow: none;
-  clip-path: polygon(50% 0, 100% 25%, 100% 75%, 50% 100%, 0 75%, 0 25%);
+  width: 12px; height: 12px; border-radius: var(--r-circle); clip-path: none;
+  background: rgba(95,200,155,.55); box-shadow: 0 0 0 1.5px rgba(95,200,155,.5), 0 0 0 5px rgba(8,17,28,.55);
 }
-.bm-marker.is-on .bm-marker-dot { box-shadow: none; transform: scale(1.35); }
+.bm-marker-label { font-size: var(--fs-12); font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--text-muted); text-shadow: 0 1px 2px rgba(8,17,28,.9); transition: color 200ms ease; }
+.bm-marker:hover .bm-marker-label, .bm-marker.is-on .bm-marker-label { color: var(--text-primary); }
+.bm-marker.is-on .bm-marker-dot { background: var(--brand-green); box-shadow: 0 0 0 2px #fff, 0 0 0 6px rgba(8,17,28,.6); transform: scale(1.15); }
+/* lista de regioes */
+.bm-tabs { display: flex; flex-wrap: wrap; gap: var(--sp-8); margin-top: var(--sp-12); }
+.bm-tab {
+  font: inherit; font-size: var(--fs-14); font-weight: 500; color: var(--text-muted); cursor: pointer;
+  padding: 7px 14px; border: 1px solid var(--border-hairline); border-radius: var(--r-pill); background: transparent;
+  transition: color 160ms ease, border-color 160ms ease, background 160ms ease;
+}
+.bm-tab:hover { color: var(--text-primary); border-color: var(--border-strong); }
+.bm-tab.is-on { background: var(--brand-green); border-color: var(--brand-green); color: var(--brand-navy); font-weight: 600; }
+.bm-tab:focus-visible { outline: 2px solid var(--brand-green); outline-offset: 2px; }
+/* selos: tres aparencias distintas (cheio · contorno · tracejado) */
+.bm-ev--forte { color: var(--brand-navy); background: var(--brand-green); }
+.bm-ev--media { color: var(--brand-green-hover); background: transparent; border: 1px solid rgba(95,200,155,.55); }
+.bm-ev--prelim { color: var(--text-muted); background: transparent; border: 1px dashed var(--border-strong); }
+/* condicao expansivel: nivel explicado, referencias e data */
+.bm-list { display: grid; gap: 0; border-top: 1px solid var(--border-hairline); }
+.bm-cond-item { border-bottom: 1px solid var(--border-hairline); }
+.bm-cond-item summary {
+  list-style: none; cursor: pointer; display: flex; align-items: center; gap: var(--sp-12); padding: 11px 2px;
+  font-family: var(--font-body); font-size: var(--fs-16); color: var(--lead-color);
+}
+.bm-cond-item summary::-webkit-details-marker { display: none; }
+.bm-cond-item summary::before { content: ""; width: 7px; height: 7px; border-radius: var(--r-circle); background: var(--brand-green); flex: none; }
+.bm-cond-item summary::after {
+  content: ""; flex: none; width: 8px; height: 8px; margin: -3px 4px 0 2px;
+  border-right: 1.5px solid var(--text-subtle); border-bottom: 1.5px solid var(--text-subtle); transform: rotate(45deg); transition: transform 200ms ease;
+}
+.bm-cond-item[open] summary::after { transform: rotate(225deg); margin-top: 3px; }
+.bm-cond-item summary:hover .bm-cond { color: var(--text-primary); }
+.bm-cond-body { padding: 0 2px var(--sp-12) 19px; font-family: var(--font-body); font-size: var(--fs-14); line-height: 1.6; color: var(--text-muted); }
+.bm-cond-body p { margin: 0 0 var(--sp-8); }
+.bm-refs-t { font-size: var(--fs-12); font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--text-subtle); margin-top: var(--sp-12) !important; }
+.bm-refs { list-style: none; display: grid; gap: 6px; margin: 0 0 var(--sp-8); padding: 0; }
+.bm-refs li { display: flex; flex-direction: column; gap: 1px; }
+.bm-refs a { color: var(--text-primary); text-decoration: underline; text-underline-offset: 3px; text-decoration-color: var(--border-strong); }
+.bm-refs a:hover { text-decoration-color: var(--brand-green); }
+.bm-refs span { font-size: var(--fs-12); color: var(--text-subtle); }
+.bm-rev { font-size: var(--fs-12); color: var(--text-subtle); margin: 0 !important; }
+/* mapa mais perto do titulo; intro curta e sem serifa */
+.bodymap { padding: var(--sp-32) 0 var(--space-section); }   /* primeira secao da pagina: o header ja da ar em cima */
+.bodymap .section-intro { font-family: var(--font-body); font-size: var(--fs-16); line-height: 1.55; color: var(--text-muted); margin: var(--sp-12) 0 0; max-width: 56ch; }
+.bodymap .section-title { max-width: 22ch; }
+.bm-stage { margin-top: var(--sp-20); }
+@media (max-width: 640px) { .bm-marker-label { display: none; } .bm-marker { padding: 0; transform: translate(-50%, -50%); } }
 @media (prefers-reduced-motion: reduce) { .bm-hub { animation: none; } }
 
 /* ==================== Mobile: costura, vao e rodape ==================== */

@@ -354,7 +354,12 @@
     bmSize();
     window.addEventListener('resize', bmSize);
     window.addEventListener('load', bmSize);
+    var bmTabs = [].slice.call(document.querySelectorAll('.bm-tab'));
     var bmActivate = function (cat) {
+      bmTabs.forEach(function (t) {
+        var on = t.getAttribute('data-cat') === cat;
+        t.classList.toggle('is-on', on); t.setAttribute('aria-selected', on ? 'true' : 'false');
+      });
       bmMarkers.forEach(function (m) {
         var on = m.getAttribute('data-cat') === cat;
         m.classList.toggle('is-on', on);
@@ -376,6 +381,8 @@
       m.addEventListener('click', function () { bmActivate(cat); });
       m.addEventListener('mouseenter', function () { if (bmHover) bmActivate(cat); });
     });
+    bmTabs.forEach(function (t) { t.addEventListener('click', function () { bmActivate(t.getAttribute('data-cat')); }); });
+    bmActivate('dor');
   }
 })();
 
