@@ -3130,7 +3130,7 @@ body { overflow-x: clip; }
 @keyframes psBounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(5px); } }
 /* toque: cartoes fixos em grade (o JS decide por pointer: coarse), texto no topo */
 .ps[data-ps-small="true"] { height: 260vh; }
-.ps[data-ps-small="true"] .ps-card { width: 28vw; height: 12vh; padding: var(--sp-8); gap: var(--sp-4); }
+.ps[data-ps-small="true"] .ps-card { width: 28vw; height: var(--ps-ch, 12vh); padding: var(--sp-8); gap: var(--sp-4); }
 .ps[data-ps-small="true"] .ps-card h3 { font-size: 10px; -webkit-line-clamp: 3; }
 .ps[data-ps-small="true"] .ps-meta span { font-size: 8px; padding: 2px 5px; }
 .ps[data-ps-small="true"] .ps-card .ps-by { display: none; }

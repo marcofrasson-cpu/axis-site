@@ -850,14 +850,15 @@
 
   var VERT = 'attribute vec2 position; varying vec2 vUv; void main(){ vUv = position * 0.5 + 0.5; gl_Position = vec4(position, 0.0, 1.0); }';
   var FRAG = [
-    'precision highp float; varying vec2 vUv; uniform vec2 u_res; uniform float u_time;',
+    'precision highp float; varying vec2 vUv; uniform vec2 u_res; uniform float u_time; uniform vec2 u_c; uniform float u_s;',
     'float hash21(vec2 p){ p = fract(p * vec2(123.34, 456.21)); p += dot(p, p + 45.32); return fract(p.x * p.y); }',
     'float noise(vec2 p){ vec2 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f);',
     '  return mix(mix(hash21(i), hash21(i + vec2(1.0, 0.0)), f.x), mix(hash21(i + vec2(0.0, 1.0)), hash21(i + vec2(1.0, 1.0)), f.x), f.y); }',
     'void main(){',
-    '  float ratio = u_res.x / u_res.y;',
-    '  vec2 uv = (vUv - 0.5) * vec2(ratio, 1.0); uv.y += 0.34;',   // o buraco fica a 84% da altura: o texto mora em cima, livre do disco
-    '  float dist = 22.0 + 6.0 * max(0.0, 1.2 - ratio);',                  // retrato: camera mais longe
+    // Centro (u_c, px do canvas) e escala (u_s, px por unidade) vem do JS,
+    // medidos a partir do fim do texto: o disco nunca sobe ate ele.
+    '  vec2 uv = (gl_FragCoord.xy - u_c) / u_s;',
+    '  float dist = 22.0;',
     // Camera orbita devagar (±17°) e sobe e desce (±0.35): a lente muda de
     // forma a olho nu. Antes era um balanco de 0.06 a 22 de distancia — parado.
     '  float orb = sin(u_time * 0.2) * 0.35; float bob = sin(u_time * 0.27) * 0.4;',
@@ -918,13 +919,27 @@
   var buf = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, buf);
   gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 1, -1, -1, 1, 1, 1]), gl.STATIC_DRAW);
   var pos = gl.getAttribLocation(prog, 'position'); gl.enableVertexAttribArray(pos); gl.vertexAttribPointer(pos, 2, gl.FLOAT, false, 0, 0);
-  var U = { res: gl.getUniformLocation(prog, 'u_res'), time: gl.getUniformLocation(prog, 'u_time') };
+  var U = { res: gl.getUniformLocation(prog, 'u_res'), time: gl.getUniformLocation(prog, 'u_time'),
+            c: gl.getUniformLocation(prog, 'u_c'), s: gl.getUniformLocation(prog, 'u_s') };
+  var copy = stage.querySelector('.container');
 
+  // Geometria a partir do texto (medida em captura: o apice do arco lensado
+  // fica 0.31 unidade acima do centro; a sombra, 0.275). O arco comeca 40px
+  // abaixo do fim do texto; a unidade (370–560px, 38.5% da largura) fixa o
+  // tamanho do buraco — sombra de ~300px no desktop, ~200 no celular. O hero
+  // fica exatamente da altura que o buraco precisa.
   function resize() {
     var r = stage.getBoundingClientRect();
-    var dpr = Math.min(window.devicePixelRatio || 1, 2) * 0.5;   // meia resolucao: 96 passos por pixel
+    var textBottom = copy ? copy.getBoundingClientRect().bottom - r.top : r.height * 0.45;
+    var unit = Math.max(370, Math.min(560, r.width * 0.385));
+    var centerTop = textBottom + 44 + 0.36 * unit;
+    var need = Math.round(centerTop + 0.36 * unit);
+    if (Math.abs(need - r.height) > 1) { stage.style.minHeight = need + 'px'; r = stage.getBoundingClientRect(); }
+    var dpr = Math.min(window.devicePixelRatio || 1, 2) * 0.5;   // meia resolucao: 128 passos por pixel
     canvas.width = Math.max(1, Math.round(r.width * dpr)); canvas.height = Math.max(1, Math.round(r.height * dpr));
     gl.viewport(0, 0, canvas.width, canvas.height);
+    gl.uniform2f(U.c, canvas.width / 2, canvas.height - centerTop * dpr);
+    gl.uniform1f(U.s, unit * dpr);
     if (reduced) draw(0);
   }
   function draw(t) { gl.uniform2f(U.res, canvas.width, canvas.height); gl.uniform1f(U.time, t * 0.001); gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4); }
@@ -1085,8 +1100,22 @@
   var DESK = [], xs = [-38, -19, 0, 19, 38], ys = [-26, 0, 34];   // linha de cima livre do header
   ys.forEach(function (y) { xs.forEach(function (x) { if (!(y === 0 && Math.abs(x) < 30)) DESK.push({ x: x, y: y }); }); });
   // No toque: 3 colunas x 4 linhas, abaixo do texto.
+  // No toque a grade nasce do fim do texto, medido (offsetTop ignora o scale
+  // do .ps-copy): no iPhone o texto descia mais que os vh fixos e os cartoes
+  // subiam por cima. A altura do cartao encolhe se as quatro linhas nao couberem.
   var SMALL = [];
-  for (var r = 0; r < 4; r++) [-32, 0, 32].forEach(function (x) { SMALL.push({ x: x, y: -2 + r * 14.5 }); });
+  function measureSmall() {
+    var copy = ps.querySelector('.ps-copy'), last = copy && copy.lastElementChild;
+    var H = stage.clientHeight || window.innerHeight;
+    var top = last ? last.offsetTop + last.offsetHeight + 14 : H * 0.45;
+    var gap = H * 0.022, rowH = Math.max(56, Math.min(H * 0.12, (H - top - 16 - 3 * gap) / 4));
+    ps.style.setProperty('--ps-ch', Math.round(rowH) + 'px');
+    SMALL = [];
+    for (var r = 0; r < 4; r++) {
+      var cy = top + rowH / 2 + r * (rowH + gap);
+      [-32, 0, 32].forEach(function (x) { SMALL.push({ x: x, y: (cy / H - 0.5) * 100 }); });
+    }
+  }
 
   var cards = papers.map(function (paper, i) {
     var el = document.createElement('div'); el.className = 'ps-card';
@@ -1108,7 +1137,7 @@
 
   var small = false, p = 0, spread = false;
   var ptr = { x: 0, y: 0, cx: 0, cy: 0 }, raf = 0, inView = false;
-  function readSmall() { small = coarse.matches; ps.dataset.psSmall = String(small); }
+  function readSmall() { small = coarse.matches; ps.dataset.psSmall = String(small); measureSmall(); }
   function progress() {
     var r = ps.getBoundingClientRect(), travel = r.height - window.innerHeight;
     var raw = travel > 0 ? Math.min(1, Math.max(0, -r.top / travel)) : 1;
@@ -1145,7 +1174,8 @@
   readSmall(); paint();
   if (coarse.addEventListener) coarse.addEventListener('change', function () { readSmall(); schedule(); });
   window.addEventListener('scroll', schedule, { passive: true });
-  window.addEventListener('resize', schedule);
+  window.addEventListener('resize', function () { measureSmall(); schedule(); });
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(function () { measureSmall(); schedule(); });
   if (!reduced) {
     window.addEventListener('pointermove', function (e) {
       if (!spread || small || !inView) return;
