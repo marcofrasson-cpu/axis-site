@@ -536,6 +536,8 @@ button { font: inherit; cursor: pointer; background: none; border: none; color: 
 @keyframes bmContourBreathe { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.012); } }
 .bm-svg { width: 100%; height: 100%; display: block; overflow: visible; transform-origin: 50% 42%; animation: bmContourBreathe 6s ease-in-out infinite; }
 @media (prefers-reduced-motion: reduce) { .bm-svg { animation: none; } }
+@media (max-width: 560px) { .team-grid { grid-template-columns: 1fr; } }
+@media (prefers-reduced-motion: reduce) { .team-photo, .team-veil { transition: none; } }
 
 .bm-marker {
   position: absolute; transform: translate(-50%, -50%);
@@ -992,29 +994,24 @@ button { font: inherit; cursor: pointer; background: none; border: none; color: 
 
 .team-section { padding: var(--space-section) 0; }
 
-.team-row-medicos {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 24px;
+.team-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--sp-32) var(--sp-20); }
+/* team-02: sem caixa — a foto e o cartao; o texto assenta abaixo, alinhado a esquerda */
+.team-card { display: flex; flex-direction: column; gap: var(--sp-20); }
+.team-media { position: relative; overflow: hidden; border-radius: var(--r-surface); }
+/* veu de credenciais: sobe no hover (ponteiro fino); no toque fica sempre, discreto */
+.team-veil {
+  position: absolute; inset: 0; display: flex; align-items: flex-end; justify-content: flex-start; flex-wrap: wrap; gap: var(--sp-8);
+  padding: var(--sp-12); background: linear-gradient(180deg, rgba(8,17,28,0) 55%, rgba(8,17,28,.78) 100%);
+  opacity: 0; transition: opacity 300ms var(--ease-settle);
 }
-
-.team-row-consultor {
-  display: flex;
-  justify-content: center;
-  margin-top: 32px;
+.team-card:hover .team-veil, .team-card:focus-within .team-veil { opacity: 1; }
+@media (hover: none) { .team-veil { opacity: 1; } }
+.team-chip {
+  font-size: var(--fs-12); font-weight: 600; letter-spacing: .04em; color: var(--text-primary);
+  padding: 5px 10px; border-radius: var(--r-pill); background: rgba(13,27,42,.72); border: 1px solid var(--border-strong);
+  -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px);
 }
-.team-row-consultor .team-card {
-  width: calc((100% - 48px) / 3);  /* mesma largura de 1 card da linha de cima */
-}
-
-.team-card {
-  background: var(--bg-card);
-  border: 1px solid var(--border-hairline);
-  border-radius: var(--r-surface);
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-}
+.team-chip--role { color: var(--oil-hi); border-color: rgba(245,192,107,.32); text-transform: uppercase; letter-spacing: .1em; }
 
 .team-photo {
   width: 100%;
@@ -1025,7 +1022,9 @@ button { font: inherit; cursor: pointer; background: none; border: none; color: 
   object-position: 50% 22%;
   filter: saturate(.92) contrast(1.04);   /* aproxima as 3 temperaturas */
   display: block;
+  transition: transform 600ms var(--ease-settle);
 }
+.team-card:hover .team-photo { transform: scale(1.03); }
 
 .team-photo-placeholder {
   display: flex;
@@ -1037,27 +1036,16 @@ button { font: inherit; cursor: pointer; background: none; border: none; color: 
   letter-spacing: 0.1em;
 }
 
-.team-info { padding: 22px 24px 24px; }
-/* cargo formal da diretoria — âmbar, distinto da especialidade verde */
-.team-role {
-  display: inline-flex; align-items: center; margin-bottom: 12px;
-  font-family: var(--font-body); font-size: var(--fs-12); font-weight: 700;
-  letter-spacing: .12em; text-transform: uppercase; color: var(--oil-hi);
-  border: 1px solid rgba(245, 192, 107, .32); border-radius: var(--r-pill); padding: 4px 11px;
-}
-.team-info h3 {
-  font-size: var(--fs-16);
-  font-weight: 600;
-  letter-spacing: -0.01em;
-  margin-bottom: 4px;
-}
-.team-specialty { font-size: var(--fs-14); color: var(--text-muted); margin-bottom: 4px; }
-.team-crm { font-size: var(--fs-12); color: var(--text-subtle); margin-bottom: 12px; letter-spacing: 0.02em; }
+.team-info { padding: 0; display: flex; flex-direction: column; gap: var(--sp-4); }
+.team-info h3 { font-size: var(--fs-20); font-weight: 600; letter-spacing: -0.01em; line-height: 1.25; }
+.team-specialty { font-size: var(--fs-14); color: var(--text-muted); }
+.team-meta { font-size: var(--fs-12); color: var(--text-subtle); letter-spacing: .02em; font-variant-numeric: tabular-nums; }
+.team-bio { margin-top: var(--sp-8); }
 .team-bio { font-size: var(--fs-14); color: var(--text-muted); line-height: 1.6; }
 
+@media (max-width: 1100px) { .team-grid { grid-template-columns: repeat(2, 1fr); } }
 @media (max-width: 900px) {
-  .team-row-medicos { grid-template-columns: 1fr; gap: 20px; }
-  .team-row-consultor .team-card { width: 100%; }
+  .team-grid { gap: var(--sp-32) var(--sp-20); }
 }
 
 /* ---------- FAQ accordion ---------- */
