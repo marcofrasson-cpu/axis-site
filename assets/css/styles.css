@@ -3240,8 +3240,11 @@ body { overflow-x: clip; }
 .bm-marker:hover .bm-marker-dot { background: rgba(95,200,155,.9); transform: scale(1.15); }
 .bm-marker.is-on .bm-marker-dot { background: var(--brand-green); box-shadow: 0 0 0 4px rgba(95,200,155,.2); transform: scale(1.4); }
 /* cabecalho em duas colunas */
-.bm-head { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: var(--sp-20) var(--sp-56); align-items: end; }
-.bm-head-r { display: flex; flex-direction: column; gap: var(--sp-20); padding-bottom: 4px; }
+/* eyebrow em cima; a intro comeca na linha do titulo (padding-top = altura do
+   eyebrow + margem), nunca acima dele */
+.bm-head { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: var(--sp-20) var(--sp-56); align-items: start; }
+.bm-head-r { display: flex; flex-direction: column; gap: var(--sp-20); padding-top: calc(var(--fs-12) * 1.2 + 12px + 6px); }
+@media (max-width: 900px) { .bm-head-r { padding-top: 0; } }
 @media (max-width: 900px) { .bm-head { grid-template-columns: 1fr; } }
 /* lista de regioes */
 .bm-tabs { display: flex; flex-wrap: wrap; gap: var(--sp-8); margin-top: 0; }
@@ -3319,3 +3322,32 @@ body { overflow-x: clip; }
 }
 /* depois da regra de 2 colunas (1100px): a cascata decide, nao a especificidade */
 @media (max-width: 560px) { .team-grid { grid-template-columns: 1fr; } }
+
+/* ==================== Pilares: banda cinematografica ==================== */
+.df { position: relative; overflow: hidden; isolation: isolate; background: var(--brand-navy); }
+.df > .container { position: relative; z-index: 1; }
+.df-bg {
+  position: absolute; inset: 0; z-index: -2; width: 100%; height: 100%; object-fit: cover; object-position: 50% 40%;
+  opacity: 0; transform: scale(1.04);
+  transition: opacity 600ms var(--ease-settle), transform 1200ms var(--ease-settle);
+}
+.df.is-visible .df-bg { opacity: 1; transform: none; }
+/* veu: radial escurece o meio (onde estao titulo e cards); linear dissolve topo e base em navy */
+.df-veil {
+  position: absolute; inset: 0; z-index: -1; pointer-events: none;
+  background:
+    radial-gradient(90% 70% at 50% 50%, rgba(8,17,28,.72) 0%, rgba(8,17,28,.60) 50%, rgba(8,17,28,.30) 100%),
+    linear-gradient(180deg, var(--brand-navy) 0%, rgba(13,27,42,.35) 16%, rgba(13,27,42,.35) 84%, var(--brand-navy) 100%);
+}
+/* os cards e o hub ficam opacos sobre a foto: superficie limpa, sem malha */
+.df .differential-card { background: rgba(26,42,63,.92); -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px); }
+.df .dc-hub-card { background: rgba(26,42,63,.92); }
+/* hub: aneis concentricos finos a partir da marca — tudo converge ao centro */
+.df .hub-visual { background: var(--ground-deep); }
+.df .hub-dots {
+  background-image: repeating-radial-gradient(circle at 50% 50%, rgba(255,255,255,.07) 0 1px, transparent 1px 44px);
+  background-size: auto; opacity: 1;
+  -webkit-mask-image: radial-gradient(70% 70% at 50% 50%, #000 10%, transparent 100%);
+  mask-image: radial-gradient(70% 70% at 50% 50%, #000 10%, transparent 100%);
+}
+@media (prefers-reduced-motion: reduce) { .df-bg { opacity: 1; transform: none; transition: none; } }

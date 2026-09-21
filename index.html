@@ -28,7 +28,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Spectral:wght@400;500;600;700&family=Hanken+Grotesk:wght@400;500;600;700&display=swap">
 <link rel="icon" type="image/svg+xml" href="/assets/img/logo.svg">
-<link rel="stylesheet" href="/assets/css/styles.css?v=202609211400">
+<link rel="stylesheet" href="/assets/css/styles.css?v=202609211409">
 <noscript><style>.reveal,.reveal-stagger [class*="-card"],.blog-highlight.reveal .blog-feature-image,.blog-highlight.reveal .blog-feature-content{opacity:1!important;transform:none!important;filter:none!important}</style></noscript>
 <script type="application/ld+json">
 {"@context":"https://schema.org","@type":"MedicalClinic","name":"Axis FitoMed","url":"https://axisfitomed.com.br/","description":"Associação médica de cannabis medicinal com rigor científico, em Curitiba, Paraná.","email":"contato@axisfitomed.com.br","medicalSpecialty":"Cannabis medicinal e medicina endocanabinoide","areaServed":{"@type":"City","name":"Curitiba"},"address":{"@type":"PostalAddress","addressLocality":"Curitiba","addressRegion":"PR","addressCountry":"BR"},"logo":"https://axisfitomed.com.br/assets/img/logo.svg","@id":"https://axisfitomed.com.br/#clinica","openingHoursSpecification":{"@type":"OpeningHoursSpecification","dayOfWeek":["Monday","Tuesday","Wednesday","Thursday","Friday"],"opens":"08:00","closes":"18:00"}}
@@ -184,7 +184,16 @@
 </section>
 
 <!-- Diferenciais -->
-<section class="differentials reveal reveal-stagger ground-deep lattice" aria-labelledby="differentials-title">
+<!-- Pilares: banda cinematografica — macro mineral (a mesma do hero do CRC)
+     full-bleed atras da secao inteira, sob um veu que dissolve em navy no topo
+     e na base e segura o texto. Mesmo padrao da .qa e do .pc. -->
+<section class="differentials df reveal reveal-stagger" aria-labelledby="differentials-title">
+  <picture>
+    <source type="image/avif" srcset="/assets/img/pilares-macro-1600.avif 1600w, /assets/img/pilares-macro.avif 2400w" sizes="100vw">
+    <source type="image/webp" srcset="/assets/img/pilares-macro-1600.webp 1600w, /assets/img/pilares-macro.webp 2400w" sizes="100vw">
+    <img class="df-bg" src="/assets/img/pilares-macro.jpg" alt="" loading="lazy" decoding="async" width="2400" height="1371">
+  </picture>
+  <div class="df-veil" aria-hidden="true"></div>
   <div class="container">
     <div class="kicker"><span class="kicker__rule"></span><span class="kicker__label">O Diferencial Axis</span></div>
     <h2 id="differentials-title" class="section-title">Quatro <span class="hl">pilares</span> que sustentam nossa prática clínica</h2>
@@ -607,7 +616,7 @@
   </div>
 </footer>
 
-<script src="/assets/js/main.js?v=202609211400"></script>
+<script src="/assets/js/main.js?v=202609211409"></script>
 <script defer src="/_vercel/insights/script.js"></script>
 </body>
 </html>
