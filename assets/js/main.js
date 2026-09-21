@@ -707,12 +707,14 @@
       el.style.left = Math.round(x) + 'px'; el.style.top = Math.round(y) + 'px';
     });
     var core = orb.querySelector('.orb-core');
-    if (core) { core.style.left = Math.round(CX * s) + 'px'; core.style.top = Math.round(393 * s) + 'px'; }
+    // no estreito o bloco do medico central (nome, especialidade, CRM) desce ate
+    // o A: a marca vai mais para baixo (445 em vez de 393)
+    if (core) { core.style.left = Math.round(CX * s) + 'px'; core.style.top = Math.round((narrow ? 445 : 393) * s) + 'px'; }
     scale = s;
     // O quadro cresce se algum medico (ancorado pela foto, texto pendente)
     // ultrapassar o palco — entre 640 e 1000px os laterais ficam baixos no arco.
     var sr0 = stage.getBoundingClientRect(), need = H * s;
-    orb.querySelectorAll('.orb-doc').forEach(function (d) { need = Math.max(need, d.getBoundingClientRect().bottom - sr0.top + 6); });
+    orb.querySelectorAll('.orb-doc, .orb-core').forEach(function (d) { need = Math.max(need, d.getBoundingClientRect().bottom - sr0.top + 6); });
     frame.style.height = Math.round(need) + 'px';
     // Recortes: uniao das caixas de nome e CRM de cada medico, com folga, em px
     // do palco (para o canvas) e em unidades do viewBox (px / s, para a mascara
@@ -720,11 +722,10 @@
     var sr = stage.getBoundingClientRect();
     knocks = [];
     orb.querySelectorAll('.orb-doc').forEach(function (doc, i) {
-      var a = doc.querySelector('.orb-name'), b = doc.querySelector('.orb-rqe');
-      if (!a || !b) return;
-      var ra = a.getBoundingClientRect(), rb = b.getBoundingClientRect();
-      var x1 = Math.min(ra.left, rb.left) - sr.left - 8, x2 = Math.max(ra.right, rb.right) - sr.left + 8;
-      var y1 = Math.min(ra.top, rb.top) - sr.top - 5, y2 = Math.max(ra.bottom, rb.bottom) - sr.top + 5;
+      var parts = [].slice.call(doc.querySelectorAll('.orb-name, .orb-spec, .orb-rqe')).map(function (n) { return n.getBoundingClientRect(); });
+      if (!parts.length) return;
+      var x1 = Math.min.apply(null, parts.map(function (r) { return r.left; })) - sr.left - 8, x2 = Math.max.apply(null, parts.map(function (r) { return r.right; })) - sr.left + 8;
+      var y1 = Math.min.apply(null, parts.map(function (r) { return r.top; })) - sr.top - 5, y2 = Math.max.apply(null, parts.map(function (r) { return r.bottom; })) - sr.top + 5;
       knocks.push({ x: x1, y: y1, w: x2 - x1, h: y2 - y1 });
       var rect = knockRects[i];
       if (rect) { rect.setAttribute('x', x1 / s); rect.setAttribute('y', y1 / s); rect.setAttribute('width', (x2 - x1) / s); rect.setAttribute('height', (y2 - y1) / s); }
