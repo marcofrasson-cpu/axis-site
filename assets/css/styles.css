@@ -1474,11 +1474,9 @@ button { font: inherit; cursor: pointer; background: none; border: none; color: 
   inset: 0;
   z-index: 0;
   pointer-events: none;
-  background-image:
-    radial-gradient(rgba(95, 200, 155, 0.05) 1.4px, transparent 1.5px),
-    radial-gradient(rgba(95, 200, 155, 0.05) 1.4px, transparent 1.5px);
-  background-size: 44px 44px, 44px 44px;
-  background-position: 0 0, 22px 22px;
+  /* textura navy tom sobre tom (grao + linhas topograficas), no lugar da grade de pontos */
+  background-image: url(/assets/img/texture-navy.webp);
+  background-size: 640px 640px; opacity: .9;
   -webkit-mask-image: radial-gradient(78% 70% at 50% 42%, #000 38%, transparent 100%);
   mask-image: radial-gradient(78% 70% at 50% 42%, #000 38%, transparent 100%);
 }
@@ -2719,59 +2717,34 @@ body { overflow-x: clip; }
 }
 
 .pc-steps { list-style: none; margin: clamp(34px, 4vw, 48px) 0 0; padding: 0; }
-.pc-step {
-  /* trilho aproximado do texto: 44px deixava 31px de vão e o trilho boiava
-     solto ao lado da massa tipográfica */
-  position: relative; padding: 0 0 clamp(20px, 2.2vw, 26px) 34px;
-  opacity: 0; transform: translateY(14px);
-  transition: opacity var(--reveal-dur) var(--ease-settle), transform var(--reveal-dur) var(--ease-settle);
-}
+/* Stepper (porte em vanilla): indicador de 24px com o numero; ao passar vira
+   check verde; o separador entre etapas acende quando a etapa esta feita.
+   Estados por data-state (inactive · active · completed), escritos pelo JS. */
+.pc-step { position: relative; padding: 0 0 var(--sp-20) 40px; }
 .pc-step:last-child { padding-bottom: 0; }
-.pc.is-visible .pc-step { opacity: 1; transform: none; }
-/* trilho por segmento (entre um no e o proximo): nunca sobra ponta solta */
-/* 2px em vez de 1px: um fio de 1px desaparecia ao lado de um título de 23px */
-/* top: 15px, nao 22px. O no vai de y=1 a y=17; comecar a linha em 22 deixava
-   5px de vao entre a bolinha e o trilho em TODA etapa — a quebra visivel.
-   15 faz a linha nascer 2px por baixo da borda do no, que a cobre. */
-.pc-step::before, .pc-step::after {
-  content: ""; position: absolute; left: 7px; top: 15px; bottom: -3px; width: 2px; border-radius: var(--r-pill);
-}
-.pc-step::before { background: var(--border-hairline); }
-.pc-step::after {
-  background: var(--brand-green); transform: scaleY(0); transform-origin: top center;
-  transition: transform var(--reveal-dur) var(--ease-settle);
-}
-.pc-step:nth-child(2)::after { background: linear-gradient(180deg, var(--brand-green), var(--oil-hi)); }
+.pc-step::before, .pc-step::after { content: ""; position: absolute; left: 11px; top: 30px; bottom: 6px; width: 2px; border-radius: var(--r-pill); }
+.pc-step::before { background: rgba(255,255,255,.10); }
+.pc-step::after { background: var(--brand-green); transform: scaleY(0); transform-origin: top center; transition: transform 400ms var(--ease-settle); }
+.pc-step[data-state="completed"]::after { transform: scaleY(1); }
 .pc-step:last-child::before, .pc-step:last-child::after { display: none; }
-.pc.is-visible .pc-step::after { transform: scaleY(1); }
-
-.pc-node {
-  /* 16px com borda de 2px: proporcional ao peso do título que ele marca */
-  position: absolute; left: 0; top: 1px; width: 16px; height: 16px; border-radius: var(--r-circle);
-  background: var(--ground-deepest); border: 2px solid rgba(95,200,155,.32);
-  transition: border-color 180ms var(--ease-settle), box-shadow 180ms var(--ease-settle);
+.pc-ind {
+  position: absolute; left: 0; top: 0; width: 24px; height: 24px; border-radius: var(--r-circle);
+  display: grid; place-items: center; background: rgba(255,255,255,.10); color: var(--text-muted);
+  font-size: var(--fs-12); font-weight: 600; font-variant-numeric: tabular-nums;
+  transition: background 200ms ease, color 200ms ease, box-shadow 200ms ease;
 }
-.pc.is-visible .pc-node { border-color: var(--brand-green); box-shadow: 0 0 0 5px rgba(95,200,155,.10); }
-.pc.is-visible .pc-step:last-child .pc-node { border-color: var(--oil-hi); box-shadow: 0 0 0 5px rgba(245,192,107,.11); }
-
-/* coreografia total <= 880ms: a luz do trilho vai na frente do texto */
-.pc.is-visible .pc-step:nth-child(1), .pc.is-visible .pc-step:nth-child(1) .pc-node { transition-delay: 60ms; }
-.pc.is-visible .pc-step:nth-child(2), .pc.is-visible .pc-step:nth-child(2) .pc-node { transition-delay: 210ms; }
-.pc.is-visible .pc-step:nth-child(3), .pc.is-visible .pc-step:nth-child(3) .pc-node { transition-delay: 360ms; }
-.pc.is-visible .pc-step:nth-child(1)::after { transition-delay: 180ms; }
-.pc.is-visible .pc-step:nth-child(2)::after { transition-delay: 330ms; }
-
-.pc-num {
-  display: block; font-family: var(--font-display); font-size: var(--fs-14); font-weight: 500;
-  /* .2em separava os dígitos e "01" lia como "0 1" */
-  letter-spacing: .04em; color: var(--brand-green); margin-bottom: 8px;
-}
-.pc-step:last-child .pc-num { color: var(--oil-hi); }
+.pc-ind-n, .pc-ind-ok { grid-area: 1 / 1; transition: transform 200ms var(--ease-settle), opacity 200ms ease; }
+.pc-ind-ok { width: 14px; height: 14px; transform: scale(0); opacity: 0; }
+.pc-step[data-state="active"] .pc-ind, .pc-step[data-state="completed"] .pc-ind { background: var(--brand-green); color: var(--brand-navy); }
+.pc-step[data-state="active"] .pc-ind { box-shadow: 0 0 0 4px rgba(95,200,155,.18); }
+.pc-step[data-state="completed"] .pc-ind-n { transform: scale(0); opacity: 0; }
+.pc-step[data-state="completed"] .pc-ind-ok { transform: scale(1); opacity: 1; }
 .pc-step h3 {
-  font-family: var(--font-display); font-weight: 600;
-  font-size: clamp(19px, 1.7vw, 23px); line-height: 1.2; letter-spacing: -.015em;
-  color: var(--text-primary); margin: 0 0 7px;
+  font-family: var(--font-body); font-weight: 600;
+  font-size: var(--fs-20); line-height: 1.2; letter-spacing: -.01em;
+  color: var(--text-muted); margin: 0 0 6px; transition: color 200ms ease;
 }
+.pc-step[data-state="active"] h3, .pc-step[data-state="completed"] h3 { color: var(--text-primary); }
 .pc-step p {
   font-family: var(--font-body);
   font-size: var(--fs-16); line-height: 1.6; color: var(--lead-color); margin: 0; max-width: 42ch;
@@ -2794,10 +2767,7 @@ body { overflow-x: clip; }
 }
 @media (prefers-reduced-motion: reduce) {
   .pc-bg { opacity: 1 !important; transform: none !important; transition: none !important; }
-  .pc-step  { opacity: 1 !important; transform: none !important; transition: none !important; }
-  .pc-step::after { transform: scaleY(1) !important; transition: none !important; }
-  .pc-node { transition: none !important; border-color: var(--brand-green) !important; }
-  .pc-step:last-child .pc-node { border-color: var(--oil-hi) !important; }
+  .pc-step::after, .pc-ind, .pc-ind-n, .pc-ind-ok, .pc-step h3 { transition: none !important; }
 }
 
 /* ==================== Mobile: mata gaps exagerados + transicoes ==================== */
@@ -2997,8 +2967,8 @@ body { overflow-x: clip; }
 }
 .hub-visual { position: relative; aspect-ratio: 564 / 410; background: var(--ground-deep); isolation: isolate; }
 .hub-dots {
-  position: absolute; inset: 0; opacity: .22;
-  background-image: radial-gradient(circle, rgba(226,232,240,.9) 1px, transparent 1px); background-size: 32px 32px;
+  position: absolute; inset: 0; opacity: 1;
+  background-image: url(/assets/img/texture-navy.webp); background-size: 640px 640px;
 }
 .hub-fade { position: absolute; inset: 0; background: linear-gradient(180deg, var(--ground-deep) 0%, transparent 18%, transparent 82%, var(--ground-deep) 100%); }
 .hub-lines { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
@@ -3242,8 +3212,8 @@ body { overflow-x: clip; }
    Pontilhado no card (como o hub dos Pilares), nucleo hexagonal no torax (o SEC) com vias curvas para cada regiao
    — no lugar do esqueleto de linhas retas — e marcadores hexagonais. */
 .bm-dots {
-  position: absolute; inset: 0; z-index: 0; pointer-events: none; opacity: .14;
-  background-image: radial-gradient(circle, rgba(226,232,240,.9) 1px, transparent 1px); background-size: 28px 28px;
+  position: absolute; inset: 0; z-index: 0; pointer-events: none; opacity: 1;
+  background-image: url(/assets/img/texture-navy.webp); background-size: 640px 640px;
   -webkit-mask-image: radial-gradient(70% 80% at 30% 50%, #000 20%, transparent 100%);
   mask-image: radial-gradient(70% 80% at 30% 50%, #000 20%, transparent 100%);
 }
@@ -3255,23 +3225,16 @@ body { overflow-x: clip; }
 .bm-hub-dot { fill: #5fc89b; }
 .bm-hub { transform-box: fill-box; transform-origin: center; animation: bmHub 3.4s ease-in-out infinite; }
 @keyframes bmHub { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.08); } }
-/* Marcador = ponto + rotulo da regiao: fica evidente onde clicar e o que e.
-   O ponto centra na coordenada; o rotulo pende para a direita (ou esquerda,
-   .bm-marker--l). Selecao: ponto cheio com anel branco e rotulo aceso. */
-.bm-marker { width: auto; height: 44px; padding: 0 var(--sp-8); gap: 6px; display: inline-flex; align-items: center; transform: translate(calc(-1 * (var(--sp-8) + 6px)), -50%); }
-.bm-marker--l { flex-direction: row-reverse; transform: translate(calc(-100% + var(--sp-8) + 6px), -50%); }
-.bm-marker--head { width: auto; height: 44px; }
+/* Marcador: ponto centrado na coordenada, sem rotulo (a lista de regioes
+   nomeia). Selecao: ponto cheio maior com anel suave + pulso. */
+.bm-marker { width: 44px; height: 44px; padding: 0; transform: translate(-50%, -50%); display: grid; place-items: center; }
+.bm-marker--head { width: 26px; height: 26px; }
 .bm-marker-dot {
   width: 10px; height: 10px; border-radius: var(--r-circle); clip-path: none;
-  background: rgba(95,200,155,.7); box-shadow: 0 0 0 1px rgba(95,200,155,.35);
+  background: rgba(95,200,155,.6); box-shadow: 0 0 0 1px rgba(95,200,155,.35);
 }
-.bm-marker-label { font-size: 13px; font-weight: 500; letter-spacing: 0; text-transform: none; color: var(--text-muted); text-shadow: 0 1px 2px rgba(8,17,28,.8); transition: color 200ms ease; }
-.bm-marker:hover .bm-marker-label { color: var(--text-primary); }
-.bm-marker.is-on .bm-marker-label { color: var(--text-primary); font-weight: 600; }
-.bm-marker.is-on .bm-marker-dot { background: var(--brand-green); box-shadow: 0 0 0 3px rgba(95,200,155,.22); transform: none; }
-/* sem pulso no marcador ativo nem respiracao no nucleo: a selecao ja e clara */
-.bm-marker.is-on::after { display: none; }
-.bm-hub { animation: none; }
+.bm-marker:hover .bm-marker-dot { background: rgba(95,200,155,.9); transform: scale(1.15); }
+.bm-marker.is-on .bm-marker-dot { background: var(--brand-green); box-shadow: 0 0 0 4px rgba(95,200,155,.2); transform: scale(1.4); }
 /* cabecalho em duas colunas */
 .bm-head { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: var(--sp-20) var(--sp-56); align-items: end; }
 .bm-head-r { display: flex; flex-direction: column; gap: var(--sp-20); padding-bottom: 4px; }
@@ -3319,7 +3282,7 @@ body { overflow-x: clip; }
 .bodymap .section-intro { font-family: var(--font-body); font-size: var(--fs-16); line-height: 1.55; color: var(--text-muted); margin: 0; max-width: 46ch; }
 .bodymap .section-title { max-width: 16ch; margin-bottom: 0; }
 .bm-stage { margin-top: var(--sp-20); }
-@media (max-width: 640px) { .bm-marker-label { display: none; } .bm-marker { padding: 0; transform: translate(-50%, -50%); } }
+
 @media (prefers-reduced-motion: reduce) { .bm-hub { animation: none; } }
 
 /* ==================== Mobile: costura, vao e rodape ==================== */

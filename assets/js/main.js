@@ -1221,3 +1221,22 @@
     });
   }, { passive: true });
 })();
+
+// ========== Trilha do percurso (stepper) ==========
+// O estado de cada etapa segue o scroll: a etapa que cruza o meio da tela e a
+// atual, as anteriores ficam feitas (check), as seguintes a seguir. Sem
+// IntersectionObserver, ou com a lista inteira em tela, a primeira e a atual.
+(function () {
+  var list = document.querySelector('.pc-steps[data-stepper]');
+  if (!list) return;
+  var steps = [].slice.call(list.querySelectorAll('.pc-step'));
+  var set = function (idx) {
+    steps.forEach(function (st, i) { st.dataset.state = i < idx ? 'completed' : (i === idx ? 'active' : 'inactive'); });
+  };
+  set(0);
+  if (!('IntersectionObserver' in window)) return;
+  var io = new IntersectionObserver(function (es) {
+    es.forEach(function (e) { if (e.isIntersecting) set(steps.indexOf(e.target)); });
+  }, { rootMargin: '-45% 0px -45% 0px', threshold: 0 });
+  steps.forEach(function (st) { io.observe(st); });
+})();
