@@ -857,8 +857,10 @@
     '  float ratio = u_res.x / u_res.y;',
     '  vec2 uv = (vUv - 0.5) * vec2(ratio, 1.0); uv.y += 0.34;',   // o buraco fica a 84% da altura: o texto mora em cima, livre do disco
     '  float dist = 22.0 + 6.0 * max(0.0, 1.2 - ratio);',                  // retrato: camera mais longe
-    '  float bob = sin(u_time * 0.12) * 0.06;',
-    '  vec3 ro = vec3(0.0, 2.2 + bob, -dist); vec3 ta = vec3(0.0);',
+    // Camera orbita devagar (±17°) e sobe e desce (±0.35): a lente muda de
+    // forma a olho nu. Antes era um balanco de 0.06 a 22 de distancia — parado.
+    '  float orb = sin(u_time * 0.2) * 0.35; float bob = sin(u_time * 0.27) * 0.4;',
+    '  vec3 ro = vec3(sin(orb) * dist, 2.2 + bob, -cos(orb) * dist); vec3 ta = vec3(0.0);',
     '  vec3 fw = normalize(ta - ro); vec3 rt = normalize(cross(vec3(0.0, 1.0, 0.0), fw)); vec3 up = cross(fw, rt);',
     '  vec3 v = normalize(fw * 1.6 + uv.x * rt + uv.y * up); vec3 p = ro;',
     '  vec3 col = vec3(0.0); float occ = 0.0; bool captured = false;',
@@ -873,8 +875,12 @@
     '      if (hr > 2.1 && hr < 6.8) {',
     '        float edge = smoothstep(2.1, 2.6, hr) * (1.0 - smoothstep(5.0, 6.8, hr));',
     '        float ang = atan(hp.z, hp.x);',
-    '        float band = 0.55 + 0.45 * noise(vec2(ang * 4.0 + u_time * 0.35, hr * 3.0));',
-    '        band *= 0.7 + 0.3 * noise(vec2(hr * 9.0 - u_time * 0.6, ang * 2.0));',
+    // Rotacao diferencial: o interior gira mais rapido (kepleriano), as
+    // bandas se cisalham — e o que da a sensacao de disco girando.
+    '        float w = 0.5 + 3.0 / hr;',
+    '        float band = 0.35 + 0.65 * noise(vec2(ang * 4.0 + u_time * w, hr * 3.0));',
+    '        band *= 0.6 + 0.8 * noise(vec2(ang * 9.0 + u_time * w * 1.6, hr * 1.2));',   // estrias que giram
+    '        band *= 0.7 + 0.3 * noise(vec2(hr * 9.0 - u_time * 0.3, ang * 2.0 + u_time * w * 0.5));',
     '        vec3 tang = normalize(vec3(-hp.z, 0.0, hp.x));',
     '        float dop = 1.0 + 0.55 * dot(tang, -normalize(v));',
     '        float heat = smoothstep(6.8, 2.1, hr);',
