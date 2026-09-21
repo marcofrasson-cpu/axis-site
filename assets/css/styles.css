@@ -1248,11 +1248,16 @@ button { font: inherit; cursor: pointer; background: none; border: none; color: 
    tela morta. */
 .ciencia-hero {
   position: relative; isolation: isolate; overflow: hidden; text-align: center;
-  padding: var(--space-hero-top) 0 var(--space-hero-bottom);
-  /* o buraco negro vive abaixo do texto: a secao ganha altura para ele */
-  min-height: clamp(560px, 82vh, 820px);
+  /* O header e sticky e transparente (so a pilula tem fundo) e ocupa
+     --header-box no fluxo: o hero sobe por baixo dele para o campo de estrelas
+     ir ate o topo da tela; o padding devolve a distancia do texto. */
+  margin-top: calc(-1 * var(--header-box));
+  padding: calc(var(--header-box) + var(--space-hero-top)) 0 var(--space-hero-bottom);
+  /* o buraco negro vive abaixo do texto: a secao ganha altura para ele
+     (mais o header-box, para a geometria nao mudar) */
+  min-height: calc(clamp(560px, 82vh, 820px) + var(--header-box));
 }
-@media (max-width: 700px) { .ciencia-hero { min-height: clamp(640px, 92vh, 860px); } }
+@media (max-width: 700px) { .ciencia-hero { min-height: calc(clamp(640px, 92vh, 860px) + var(--header-box)); } }
 .ciencia-hero .container { position: relative; z-index: 1; text-shadow: 0 1px 2px rgba(8,17,28,.85), 0 2px 14px rgba(8,17,28,.5); }
 .bh-field {
   position: absolute; inset: 0; z-index: -1; width: 100%; height: 100%; display: block; pointer-events: none;
@@ -2777,7 +2782,9 @@ body { overflow-x: clip; }
   .pf-bottom { margin-top: var(--sp-32); }
   /* heros: cortar respiro extra no mobile */
   .ab-hero { padding-top: 16px; }
-  .ciencia-hero { padding-top: 16px; }
+  /* main > section:first-child (acima) poe 18px; o hero de /ciencia sobe por
+     baixo do header e precisa devolver o header-box (ver regra base) */
+  main > .ciencia-hero:first-child, .ciencia-hero { padding-top: calc(var(--header-box) + 16px); }
   .page-hero { padding: 20px 0 20px; }
   .bl-top { padding-bottom: 22px; }
   /* secao full-spectrum e stats: menos padding vertical */
