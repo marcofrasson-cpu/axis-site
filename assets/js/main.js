@@ -1240,3 +1240,33 @@
   }, { rootMargin: '-45% 0px -45% 0px', threshold: 0 });
   steps.forEach(function (st) { io.observe(st); });
 })();
+
+// ========== Paralaxe por camadas (Osmo parallax-scrolling, porte em vanilla) ==========
+// Para cada [data-parallax], o progresso da secao na tela (-1 = abaixo, 0 = no
+// meio, +1 = acima) vira translateY em cada [data-parallax-layer=fator]:
+// y = progresso * fator * altura da secao. Fatores maiores = fundo (move mais),
+// menores = frente. Um rAF por scroll; nada alem de transform.
+(function () {
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  var sections = [].slice.call(document.querySelectorAll('[data-parallax]'));
+  if (!sections.length) return;
+  var items = sections.map(function (sec) {
+    return { el: sec, layers: [].slice.call(sec.querySelectorAll('[data-parallax-layer]')).map(function (l) { return { el: l, f: parseFloat(l.getAttribute('data-parallax-layer')) || 0 }; }) };
+  });
+  var raf = 0;
+  function paint() {
+    raf = 0;
+    var vh = window.innerHeight;
+    items.forEach(function (it) {
+      var r = it.el.getBoundingClientRect();
+      if (r.bottom < 0 || r.top > vh) return;
+      var center = r.top + r.height / 2;
+      var p = (vh / 2 - center) / (vh / 2 + r.height / 2);   // -1..1
+      it.layers.forEach(function (l) { l.el.style.transform = 'translate3d(0,' + (p * l.f * r.height).toFixed(1) + 'px,0)'; });
+    });
+  }
+  function schedule() { if (!raf) raf = requestAnimationFrame(paint); }
+  window.addEventListener('scroll', schedule, { passive: true });
+  window.addEventListener('resize', schedule);
+  paint();
+})();
