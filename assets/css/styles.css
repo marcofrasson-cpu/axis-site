@@ -2533,7 +2533,7 @@ body { overflow-x: clip; }
 
 /* ==================== Footer — wordmark gigante (estilo Popcorn) ==================== */
 .pf { position: relative; overflow: hidden; background: linear-gradient(to bottom, var(--brand-navy) 0, var(--ground-deepest) 180px); border-top: none; padding: var(--sp-56) 0 0; margin-top: 0; }
-.pf-top { display: grid; grid-template-columns: 1.6fr 1.35fr 1.15fr 1fr; gap: var(--sp-56) var(--sp-32); align-items: start; }
+.pf-top { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--sp-56) var(--sp-32); align-items: start; }   /* era 1.6/1.35/1.15/1: a marca sobrava e as tres colunas se apertavam */
 /* 6 destinos em coluna unica deixavam o "Navegar" 150px mais alto que os
    vizinhos. Em 3+3 o rodape fecha parelho. */
 .pf-col--nav ul { grid-template-columns: 1fr 1fr; column-gap: 20px; }
@@ -2542,7 +2542,7 @@ body { overflow-x: clip; }
 /* A marca era filha solta do grid e um grid-row:2 nas colunas a jogava sozinha
    pra primeira linha. Agora ela e uma coluna como as outras. */
 .pf-col--brand .pf-mark { margin-bottom: var(--sp-20); }
-.pf-rt { font-size: var(--fs-14); line-height: 1.55; color: var(--text-muted); max-width: 30ch; margin: 0; }
+.pf-rt { font-size: var(--fs-14); line-height: 1.55; color: var(--text-muted); max-width: 36ch; margin: 0; }   /* 30ch deixava "47986" orfao */
 /* so no desktop: no @media 860px o grid vira 2 colunas e o grid-row fixo
    empilharia as tres colunas na mesma faixa */
 .pf-mark { width: 64px; height: 64px; }
@@ -3147,13 +3147,11 @@ body { overflow-x: clip; }
   .ps-card { pointer-events: auto; }
 }
 
-/* ==================== Botões: vidro líquido ====================
-   Porte do liquid-glass-button (21st.dev). Fundo transparente, aro de vidro
-   feito de sombras internas (::after), e uma camada atras (::before) com
-   backdrop-filter num filtro SVG — turbulencia + deslocamento + desfoque —
-   que refrata o que passa por baixo (o filtro vive em main.js, injetado no
-   body). O filtro SVG so vale no Chrome/Edge; Safari e Firefox ficam com aro
-   e tint, sem refracao. O primario mantem o verde como tint: a cor age. */
+/* ==================== Botões: vidro ====================
+   Porte do liquid-glass-button (21st.dev), sem o filtro SVG de refracao: no
+   Safari ele borrava e manchava o botao com o fundo. Fica o vidro classico —
+   desfoque + saturacao do que passa por baixo (::before) e o aro de sombras
+   internas (::after). O primario mantem o verde como tint: a cor age. */
 .btn {
   position: relative; isolation: isolate;
   background: transparent; border-color: transparent; color: var(--text-primary);
@@ -3161,7 +3159,7 @@ body { overflow-x: clip; }
 }
 .btn::before {
   content: ""; position: absolute; inset: 0; z-index: -1; border-radius: inherit; overflow: hidden;
-  -webkit-backdrop-filter: url(#axis-glass); backdrop-filter: url(#axis-glass);
+  -webkit-backdrop-filter: blur(16px) saturate(150%); backdrop-filter: blur(16px) saturate(150%);
 }
 .btn::after {
   content: ""; position: absolute; inset: 0; border-radius: inherit; pointer-events: none;
@@ -3175,7 +3173,7 @@ body { overflow-x: clip; }
 .btn:hover { transform: scale(1.05); }
 .btn:active { transform: scale(.99); }
 .btn-primary, .btn-primary:hover { background: transparent; border-color: transparent; color: #fff; }
-.btn-primary::before { background: rgba(95,200,155,.18); }
+.btn-primary::before { background: rgba(95,200,155,.24); }
 .btn-primary::after { box-shadow:
     0 0 8px rgba(0,0,0,.03), 0 2px 6px rgba(0,0,0,.08),
     inset 3px 3px .5px -3.5px rgba(255,255,255,.09), inset -3px -3px .5px -3.5px rgba(255,255,255,.85),
@@ -3183,7 +3181,7 @@ body { overflow-x: clip; }
     inset 0 0 6px 6px rgba(95,200,155,.14), inset 0 0 2px 2px rgba(255,255,255,.06),
     0 0 14px rgba(95,200,155,.18); }
 .btn-ghost, .btn-ghost:hover { background: transparent; border-color: transparent; }
-.btn-ghost::before { background: rgba(255,255,255,.04); }
+.btn-ghost::before { background: rgba(255,255,255,.06); }
 @media (prefers-reduced-motion: reduce) { .btn, .btn:hover, .btn:active { transform: none; } }
 
 /* ==================== FAQ (faqs-01 em vanilla) ==================== */
@@ -3222,8 +3220,7 @@ body { overflow-x: clip; }
 @media (max-width: 560px) { .faq-more { flex-direction: column; align-items: flex-start; } }
 
 /* ==================== Mapa do corpo: figura refeita ====================
-   Pontilhado no card (como o hub dos Pilares), contorno com camada de brilho
-   suave, nucleo hexagonal no torax (o SEC) com vias curvas para cada regiao
+   Pontilhado no card (como o hub dos Pilares), nucleo hexagonal no torax (o SEC) com vias curvas para cada regiao
    — no lugar do esqueleto de linhas retas — e marcadores hexagonais. */
 .bm-dots {
   position: absolute; inset: 0; z-index: 0; pointer-events: none; opacity: .14;
@@ -3231,7 +3228,8 @@ body { overflow-x: clip; }
   -webkit-mask-image: radial-gradient(70% 80% at 30% 50%, #000 20%, transparent 100%);
   mask-image: radial-gradient(70% 80% at 30% 50%, #000 20%, transparent 100%);
 }
-.bm-contour-glow { fill: none; stroke: #5fc89b; stroke-width: 70; opacity: .16; filter: blur(5px); animation: bmContourBreathe 6s ease-in-out infinite; transform-box: view-box; transform-origin: 318px 560px; }
+/* (a camada de brilho do contorno saiu: no Chrome, um traco de 70 unidades
+   nesse path fazia o grupo inteiro nao renderizar no desktop) */
 .bm-rail path { stroke: rgba(95,200,155,.30); stroke-width: 1.4; }
 .bm-flow.f3 { animation-delay: 1.8s; }
 .bm-hub polygon { fill: rgba(95,200,155,.12); stroke: #5fc89b; stroke-width: 1.8; stroke-linejoin: round; }
@@ -3243,4 +3241,33 @@ body { overflow-x: clip; }
   clip-path: polygon(50% 0, 100% 25%, 100% 75%, 50% 100%, 0 75%, 0 25%);
 }
 .bm-marker.is-on .bm-marker-dot { box-shadow: none; transform: scale(1.35); }
-@media (prefers-reduced-motion: reduce) { .bm-contour-glow, .bm-hub { animation: none; } }
+@media (prefers-reduced-motion: reduce) { .bm-hub { animation: none; } }
+
+/* ==================== Mobile: costura, vao e rodape ==================== */
+@media (max-width: 768px) {
+  /* Hero → contador: no iOS a soma radial (.aura-top) + no verde (.seam-top)
+     + rampa curta lia como uma caixa clara com borda dura. Fica so a rampa,
+     mais longa, e uma aura larga e fraca. */
+  .stats.seam-top::after { display: none; }
+  .stats.aura-top::before { background: radial-gradient(100% 50% at 50% 0%, rgba(95, 200, 155, 0.05), transparent 75%); }
+  .stats.ground-raised { background: linear-gradient(180deg, var(--brand-navy) 0, var(--ground-raised) 160px, var(--ground-raised) calc(100% - 120px), var(--brand-navy) 100%); }
+  /* Contador → pilares: 116px embaixo contra 68 em cima. O padding de baixo
+     sai; o vao vem so da proxima secao (56) — simetrico. */
+  .stats { padding-bottom: 0; }
+  /* Rodape condensado: marca menor, tagline no corpo, listas justas, links
+     de 33px (era 45), Institucional em uma linha, wordmark que cabe na largura. */
+  .pf { padding-top: var(--sp-20); }
+  .pf-top { gap: var(--sp-20) var(--sp-20); }
+  .pf-mark { width: 44px; height: 44px; }
+  .pf-col--brand .pf-mark { margin-bottom: var(--sp-12); }
+  .pf-tagline { font-size: var(--fs-16); margin-bottom: var(--sp-8); }
+  .pf-col h3 { margin-bottom: var(--sp-4); }
+  .pf-col ul { gap: 0; }
+  .pf-col ul li a { padding-block: 6px; }
+  .pf-col--nav ul { gap: 0 var(--sp-20); }
+  .pf-col--contato .pf-note { margin-top: var(--sp-4); }
+  .pf-bottom { margin-top: var(--sp-20); padding: var(--sp-12) 0; }
+  /* 5.95 = largura de "Axis FitoMed" em em (Spectral 700, medida): a fonte
+     vira o que cabe entre as margens de 20px */
+  .pf-wordmark { margin-top: var(--sp-20); font-size: min(12.4vw, calc((100vw - 40px) / 5.95)); }
+}

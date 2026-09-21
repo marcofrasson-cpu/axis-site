@@ -289,11 +289,22 @@
         nhMark(null);
       };
       nhNodes.forEach(function (node) {
+        // No toque a sequencia e pointerdown → focus → click. O focus mostrava
+        // e o click, vendo o no ativo, escondia: precisava de dois toques. O
+        // estado que o click alterna e o de ANTES do toque (pointerdown), e o
+        // focus so mostra quando vem do teclado.
+        var ptr = '', wasOn = false;
+        node.addEventListener('pointerdown', function (e) { ptr = e.pointerType; wasOn = (nhActive === node); });
         node.addEventListener('pointerenter', function (e) { if (e.pointerType !== 'touch') nhShow(node); });
         node.addEventListener('pointerleave', function (e) { if (e.pointerType !== 'touch') nhHide(node); });
-        node.addEventListener('focus', function () { nhShow(node); });
+        node.addEventListener('focus', function () { if (ptr !== 'touch') nhShow(node); });
         node.addEventListener('blur', function () { nhHide(node); });
-        node.addEventListener('click', function (e) { e.preventDefault(); if (nhActive === node) nhHide(node); else nhShow(node); });
+        node.addEventListener('click', function (e) {
+          e.preventDefault();
+          var on = ptr ? wasOn : (nhActive === node);
+          ptr = ''; wasOn = false;
+          if (on) nhHide(node); else nhShow(node);
+        });
         node.addEventListener('keydown', function (e) {
           if (e.key === 'Enter' || e.key === ' ' || e.key === 'Spacebar') { e.preventDefault(); if (nhActive === node) nhHide(node); else nhShow(node); }
         });
@@ -1186,21 +1197,4 @@
   if ('IntersectionObserver' in window) {
     new IntersectionObserver(function (es) { inView = es[0].isIntersecting; if (inView) schedule(); }, { rootMargin: '20% 0px' }).observe(ps);
   } else inView = true;
-})();
-
-// ========== Filtro de vidro liquido (botoes) ==========
-// O backdrop-filter dos .btn aponta para #axis-glass: turbulencia fractal,
-// desfocada, desloca o que esta atras do botao (refracao) e desfoca de novo.
-// Injetado uma vez no body — um filtro serve a todos os botoes da pagina.
-(function () {
-  if (document.getElementById('axis-glass')) return;
-  var svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-  svg.setAttribute('aria-hidden', 'true'); svg.setAttribute('focusable', 'false');
-  svg.style.cssText = 'position:absolute;width:0;height:0;overflow:hidden;pointer-events:none';
-  svg.innerHTML = '<filter id="axis-glass" x="0%" y="0%" width="100%" height="100%" color-interpolation-filters="sRGB">'
-    + '<feTurbulence type="fractalNoise" baseFrequency="0.05 0.05" numOctaves="1" seed="1" result="t"/>'
-    + '<feGaussianBlur in="t" stdDeviation="2" result="b"/>'
-    + '<feDisplacementMap in="SourceGraphic" in2="b" scale="70" xChannelSelector="R" yChannelSelector="B" result="d"/>'
-    + '<feGaussianBlur in="d" stdDeviation="4"/></filter>';
-  document.body.appendChild(svg);
 })();
