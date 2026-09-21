@@ -78,9 +78,7 @@
   /* Ambar — o oleo full-spectrum (unica cor quente do site) */
   --oil-hi: #f5c06b;
   --oil: #e8a13c;
-  /* Malha hexagonal de fundo (vetorial, tom sobre tom) — usada nos Pilares, no hub e no mapa do corpo */
-  --hex-mesh: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='84' height='145.5' viewBox='0 0 84 145.5'><g fill='none' stroke='rgba(255,255,255,0.045)' stroke-width='0.7'><path d='M42 0.5 L83.5 24.5 L83.5 72.5 L42 96.5 L0.5 72.5 L0.5 24.5 Z'/><path d='M42 96.5 L42 145 M0.5 72.5 L42 96.5 L83.5 72.5'/><path d='M42 96.5 L83.5 120.5 L83.5 145 M42 96.5 L0.5 120.5 L0.5 145'/></g></svg>");
-}
+  }
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 html {
@@ -1470,19 +1468,7 @@ button { font: inherit; cursor: pointer; background: none; border: none; color: 
 /* Lattice molecular esparso — SO no trough dos diferenciais */
 .lattice { position: relative; overflow: hidden; }
 .lattice > .container { position: relative; z-index: 1; }
-.lattice::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-  pointer-events: none;
-  /* Malha hexagonal vetorial (o hexagono da marca), tom sobre tom, nitida em
-     qualquer densidade; dissolve para as bordas. Token: --hex-mesh. */
-  background-image: var(--hex-mesh);
-  background-size: 84px 145.5px;
-  -webkit-mask-image: radial-gradient(70% 60% at 50% 40%, #000 20%, transparent 100%);
-  mask-image: radial-gradient(70% 60% at 50% 40%, #000 20%, transparent 100%);
-}
+
 
 /* Indicacoes ja tem ::before proprio — so aquece e re-ancora + guarda z-index */
 .indications-preview { overflow: hidden; }
@@ -2969,11 +2955,7 @@ body { overflow-x: clip; }
   background: var(--bg-card); overflow: hidden;
 }
 .hub-visual { position: relative; aspect-ratio: 564 / 410; background: var(--ground-deep); isolation: isolate; }
-.hub-dots {
-  position: absolute; inset: 0; background-image: var(--hex-mesh); background-size: 84px 145.5px; opacity: .7;
-  -webkit-mask-image: radial-gradient(80% 80% at 50% 50%, #000 30%, transparent 100%);
-  mask-image: radial-gradient(80% 80% at 50% 50%, #000 30%, transparent 100%);
-}
+.hub-dots { position: absolute; inset: 0; }
 .hub-fade { position: absolute; inset: 0; background: linear-gradient(180deg, var(--ground-deep) 0%, transparent 18%, transparent 82%, var(--ground-deep) 100%); }
 .hub-lines { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
 .hub-rail path { stroke: var(--border-strong); stroke-width: 1; }
@@ -3215,12 +3197,6 @@ body { overflow-x: clip; }
 /* ==================== Mapa do corpo: figura refeita ====================
    Pontilhado no card (como o hub dos Pilares), nucleo hexagonal no torax (o SEC) com vias curvas para cada regiao
    — no lugar do esqueleto de linhas retas — e marcadores hexagonais. */
-.bm-dots {
-  position: absolute; inset: 0; z-index: 0; pointer-events: none; opacity: .7;
-  background-image: var(--hex-mesh); background-size: 84px 145.5px;
-  -webkit-mask-image: radial-gradient(70% 80% at 30% 50%, #000 20%, transparent 100%);
-  mask-image: radial-gradient(70% 80% at 30% 50%, #000 20%, transparent 100%);
-}
 /* (a camada de brilho do contorno saiu: no Chrome, um traco de 70 unidades
    nesse path fazia o grupo inteiro nao renderizar no desktop) */
 .bm-rail path { stroke: rgba(95,200,155,.30); stroke-width: 1.4; }
