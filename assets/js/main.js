@@ -832,3 +832,106 @@
   heads.forEach(function (h) { io.observe(h); });
 })();
 
+// ========== Buraco negro (hero de /ciencia, WebGL puro) ==========
+// Raio por pixel, integrado passo a passo sob uma gravidade que dobra a luz
+// (newtoniana reforcada — nao e relatividade, e o gesto dela). O disco de
+// acrecao e um anel no plano y=0 entre dois raios, nos verdes da paleta, com
+// bandas de ruido girando e o lado que vem na direcao da camera mais claro
+// (doppler). Raio que cai no horizonte = sombra. Meia resolucao; anima so com
+// o hero em tela; sob prefers-reduced-motion desenha um quadro e para.
+(function () {
+  var stage = document.querySelector('.ciencia-hero');
+  var canvas = stage && stage.querySelector('.bh-field');
+  if (!stage || !canvas) return;
+  var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var gl = canvas.getContext('webgl', { antialias: false, alpha: false, powerPreference: 'low-power' });
+  if (!gl) return;
+
+  var VERT = 'attribute vec2 position; varying vec2 vUv; void main(){ vUv = position * 0.5 + 0.5; gl_Position = vec4(position, 0.0, 1.0); }';
+  var FRAG = [
+    'precision highp float; varying vec2 vUv; uniform vec2 u_res; uniform float u_time;',
+    'float hash21(vec2 p){ p = fract(p * vec2(123.34, 456.21)); p += dot(p, p + 45.32); return fract(p.x * p.y); }',
+    'float noise(vec2 p){ vec2 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f);',
+    '  return mix(mix(hash21(i), hash21(i + vec2(1.0, 0.0)), f.x), mix(hash21(i + vec2(0.0, 1.0)), hash21(i + vec2(1.0, 1.0)), f.x), f.y); }',
+    'void main(){',
+    '  float ratio = u_res.x / u_res.y;',
+    '  vec2 uv = (vUv - 0.5) * vec2(ratio, 1.0); uv.y += 0.34;',   // o buraco fica a 84% da altura: o texto mora em cima, livre do disco
+    '  float dist = 22.0 + 6.0 * max(0.0, 1.2 - ratio);',                  // retrato: camera mais longe
+    '  float bob = sin(u_time * 0.12) * 0.06;',
+    '  vec3 ro = vec3(0.0, 2.2 + bob, -dist); vec3 ta = vec3(0.0);',
+    '  vec3 fw = normalize(ta - ro); vec3 rt = normalize(cross(vec3(0.0, 1.0, 0.0), fw)); vec3 up = cross(fw, rt);',
+    '  vec3 v = normalize(fw * 1.6 + uv.x * rt + uv.y * up); vec3 p = ro;',
+    '  vec3 col = vec3(0.0); float occ = 0.0; bool captured = false;',
+    '  for (int i = 0; i < 128; i++) {',
+    '    float r2 = dot(p, p); float r = sqrt(r2);',
+    '    if (r < 1.0) { captured = true; break; }',
+    '    float dt = 0.06 + 0.035 * r;',
+    '    vec3 a = -p * (1.35 / (r2 * r));',
+    '    vec3 pn = p + v * dt;',
+    '    if (p.y * pn.y < 0.0) {',
+    '      float t = p.y / (p.y - pn.y); vec3 hp = mix(p, pn, t); float hr = length(hp.xz);',
+    '      if (hr > 2.1 && hr < 6.8) {',
+    '        float edge = smoothstep(2.1, 2.6, hr) * (1.0 - smoothstep(5.0, 6.8, hr));',
+    '        float ang = atan(hp.z, hp.x);',
+    '        float band = 0.55 + 0.45 * noise(vec2(ang * 4.0 + u_time * 0.35, hr * 3.0));',
+    '        band *= 0.7 + 0.3 * noise(vec2(hr * 9.0 - u_time * 0.6, ang * 2.0));',
+    '        vec3 tang = normalize(vec3(-hp.z, 0.0, hp.x));',
+    '        float dop = 1.0 + 0.55 * dot(tang, -normalize(v));',
+    '        float heat = smoothstep(6.8, 2.1, hr);',
+    '        vec3 c = mix(vec3(0.08, 0.30, 0.24), vec3(0.37, 0.78, 0.60), heat);',
+    '        c = mix(c, vec3(0.86, 0.98, 0.92), pow(heat, 4.0) * 0.6);',
+    '        c *= band * dop * 1.25;',
+    '        col += c * edge * (1.0 - occ); occ += edge * 0.55;',
+    '      }',
+    '    }',
+    '    v = normalize(v + a * dt); p = pn;',
+    '    if (r > 40.0) break;',
+    '  }',
+    '  if (captured) { col += vec3(0.02, 0.04, 0.07) * (1.0 - occ); }',
+    '  else {',
+    '    vec3 d = normalize(v); vec2 sp = d.xy * 90.0 + d.z * 13.0;',
+    '    float s = pow(hash21(floor(sp)), 60.0) * smoothstep(0.85, 1.0, 1.0 - length(fract(sp) - 0.5) * 1.4);',
+    '    vec3 bg = vec3(0.045, 0.095, 0.15) + vec3(0.02, 0.07, 0.05) * noise(d.xy * 2.0 + 3.0);',
+    '    col += (bg + vec3(0.7, 0.85, 0.8) * s * 1.4) * (1.0 - occ);',
+    '  }',
+    '  col = col / (1.0 + col * 0.6);',
+    '  gl_FragColor = vec4(col, 1.0); }'
+  ].join('\n');
+
+  function shader(type, src) {
+    var sh = gl.createShader(type); gl.shaderSource(sh, src); gl.compileShader(sh);
+    if (!gl.getShaderParameter(sh, gl.COMPILE_STATUS)) { console.warn('bh-field shader:', gl.getShaderInfoLog(sh)); return null; }
+    return sh;
+  }
+  var vs = shader(gl.VERTEX_SHADER, VERT), fs = shader(gl.FRAGMENT_SHADER, FRAG);
+  if (!vs || !fs) return;
+  var prog = gl.createProgram(); gl.attachShader(prog, vs); gl.attachShader(prog, fs); gl.linkProgram(prog);
+  if (!gl.getProgramParameter(prog, gl.LINK_STATUS)) return;
+  gl.useProgram(prog);
+  var buf = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 1, -1, -1, 1, 1, 1]), gl.STATIC_DRAW);
+  var pos = gl.getAttribLocation(prog, 'position'); gl.enableVertexAttribArray(pos); gl.vertexAttribPointer(pos, 2, gl.FLOAT, false, 0, 0);
+  var U = { res: gl.getUniformLocation(prog, 'u_res'), time: gl.getUniformLocation(prog, 'u_time') };
+
+  function resize() {
+    var r = stage.getBoundingClientRect();
+    var dpr = Math.min(window.devicePixelRatio || 1, 2) * 0.5;   // meia resolucao: 96 passos por pixel
+    canvas.width = Math.max(1, Math.round(r.width * dpr)); canvas.height = Math.max(1, Math.round(r.height * dpr));
+    gl.viewport(0, 0, canvas.width, canvas.height);
+    if (reduced) draw(0);
+  }
+  function draw(t) { gl.uniform2f(U.res, canvas.width, canvas.height); gl.uniform1f(U.time, t * 0.001); gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4); }
+  var running = false, frame = 0;
+  function loop(t) { if (!running) return; draw(t); frame = requestAnimationFrame(loop); }
+  function start() { if (running || reduced) return; running = true; frame = requestAnimationFrame(loop); }
+  function stop() { running = false; if (frame) cancelAnimationFrame(frame); frame = 0; }
+
+  resize();
+  if ('ResizeObserver' in window) new ResizeObserver(resize).observe(stage); else window.addEventListener('resize', resize);
+  if (!reduced) {
+    if ('IntersectionObserver' in window) {
+      new IntersectionObserver(function (es) { es.forEach(function (e) { if (e.isIntersecting) start(); else stop(); }); }, { threshold: 0.05 }).observe(stage);
+    } else start();
+    document.addEventListener('visibilitychange', function () { if (document.visibilityState === 'visible') { if (!running) start(); } else stop(); });
+  }
+})();

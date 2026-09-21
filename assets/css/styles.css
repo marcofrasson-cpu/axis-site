@@ -1246,7 +1246,19 @@ button { font: inherit; cursor: pointer; background: none; border: none; color: 
    leitura preservada. Esta pagina tinha classe propria (.ciencia-hero) e por
    isso escapava do padrao — era a origem do texto colado na esquerda com meia
    tela morta. */
-.ciencia-hero { padding: var(--space-hero-top) 0 var(--space-hero-bottom); text-align: center; }
+.ciencia-hero {
+  position: relative; isolation: isolate; overflow: hidden; text-align: center;
+  padding: var(--space-hero-top) 0 var(--space-hero-bottom);
+  /* o buraco negro vive abaixo do texto: a secao ganha altura para ele */
+  min-height: clamp(560px, 82vh, 820px);
+}
+@media (max-width: 700px) { .ciencia-hero { min-height: clamp(640px, 92vh, 860px); } }
+.ciencia-hero .container { position: relative; z-index: 1; text-shadow: 0 1px 2px rgba(8,17,28,.85), 0 2px 14px rgba(8,17,28,.5); }
+.bh-field {
+  position: absolute; inset: 0; z-index: -1; width: 100%; height: 100%; display: block; pointer-events: none;
+  -webkit-mask-image: linear-gradient(180deg, #000 0%, #000 82%, transparent 100%);
+  mask-image: linear-gradient(180deg, #000 0%, #000 82%, transparent 100%);
+}
 .ciencia-hero .section-eyebrow {
   display: inline-flex; align-items: center; gap: 9px;
   color: var(--brand-green); font-size: var(--fs-12); font-weight: 600;
