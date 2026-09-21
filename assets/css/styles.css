@@ -24,12 +24,21 @@
      banda padrao, e banda full-bleed com foto. */
   --space-hero-top: 52px;
   --space-hero-bottom: 36px;
-  --space-section: 96px;
-  --space-section-tight: 64px;   /* a banda padrao no mobile */
+  --space-section: var(--sp-96);
+  --space-section-tight: var(--sp-56);   /* a banda padrao no mobile */
   /* Nao e 168 fixo: e o clamp que .qa e .manifesto ja usam. Fixo faria
      .finale e .qa baterem so em 1400px+ e divergirem abaixo disso. */
   --space-band: clamp(88px, 12vw, 168px);
-  --gap-title-lead: 20px;
+  /* Escala de espaco — sete degraus e nada fora deles (medida na home em 1440
+     e 390): 4 micro (icone↔texto, h3→p) · 8 irmaos inline (chips) · 12 vao
+     interno (kicker, linha de lista, gap de CTAs) · 20 titulo→lead, kicker→
+     titulo, card no mobile, gap de grade · 32 lead→conteudo, card no desktop ·
+     56 titulo→grade, CTA de grupo, rodape, secao no mobile · 96 secao.
+     Nomeados pelo valor, nao pelo papel: a migracao aparece no call site.
+     A banda full-bleed (--space-band) e o registro acima da escala. Paginas
+     internas migram por contato. */
+  --sp-4: 4px; --sp-8: 8px; --sp-12: 12px; --sp-20: 20px; --sp-32: 32px; --sp-56: 56px; --sp-96: 96px;
+  --gap-title-lead: var(--sp-20);
   /* O header mede 98px de caixa e o pill 62px. O token unico que existia aqui
      valia 64px e servia de "offset do header" num lugar e de "altura do pill"
      no outro — 64 nao era o valor certo de nenhum dos dois, era so o numero que
@@ -139,19 +148,19 @@ a { color: inherit; text-decoration: none; }
 button { font: inherit; cursor: pointer; background: none; border: none; color: inherit; }
 :focus-visible { outline: 2px solid var(--brand-green); outline-offset: 3px; border-radius: 4px; }
 
-.container { max-width: var(--max-width); margin: 0 auto; padding: 0 24px; }
+.container { max-width: var(--max-width); margin: 0 auto; padding: 0 var(--sp-20); }
 @media (max-width: 768px) {
-  .container { padding: 0 20px; }
+  .container { padding: 0 var(--sp-20); }
 }
 /* Safety: garante padding lateral no header mesmo se .container for sobrescrito */
 .site-header > .container {
-  padding-left: 24px;
-  padding-right: 24px;
+  padding-left: var(--sp-20);
+  padding-right: var(--sp-20);
 }
 @media (max-width: 768px) {
   .site-header > .container {
-    padding-left: 20px;
-    padding-right: 20px;
+    padding-left: var(--sp-20);
+    padding-right: var(--sp-20);
   }
 }
 
@@ -165,7 +174,7 @@ button { font: inherit; cursor: pointer; background: none; border: none; color: 
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 16px;
+  gap: var(--sp-12);
 }
 .brand {
   display: inline-flex;
@@ -179,10 +188,10 @@ button { font: inherit; cursor: pointer; background: none; border: none; color: 
 .brand-mark { width: 28px; height: 28px; flex-shrink: 0; }
 
 /* Nav: lockup do logo +50% (escopo header, footer mantém menor) */
-.site-header .brand { gap: 14px; font-size: var(--fs-20); font-weight: 700; }
+.site-header .brand { gap: var(--sp-12); font-size: var(--fs-20); font-weight: 700; }
 .site-header .brand-mark { width: 42px; height: 42px; }
 @media (max-width: 768px) {
-  .site-header .brand { gap: 10px; font-size: var(--fs-16); }
+  .site-header .brand { gap: var(--sp-8); font-size: var(--fs-16); }
   .site-header .brand-mark { width: 36px; height: 36px; }
 }
 .brand-text {
@@ -199,7 +208,7 @@ button { font: inherit; cursor: pointer; background: none; border: none; color: 
 }
 .nav-links a {
   display: inline-block;
-  padding: 6px 12px;
+  padding: var(--sp-8) var(--sp-12);
   font-size: var(--fs-14);
   color: var(--text-muted);
   border-radius: var(--radius-sm);
@@ -216,10 +225,11 @@ button { font: inherit; cursor: pointer; background: none; border: none; color: 
   height: 40px;
   align-items: center;
   justify-content: center;
-  border-radius: var(--radius-sm);
+  border-radius: 999px;
   color: var(--text-primary);
 }
-.nav-toggle:hover { background: rgba(255,255,255,0.05); }
+/* so em ponteiro fino: no toque o :hover ficava preso e virava um quadrado claro atras do icone */
+@media (hover: hover) { .nav-toggle:hover { background: rgba(255,255,255,0.05); } }
 
 /* ---------- Buttons ---------- */
 
@@ -228,7 +238,7 @@ button { font: inherit; cursor: pointer; background: none; border: none; color: 
   align-items: center;
   justify-content: center;
   gap: 8px;
-  padding: 11px 22px;
+  padding: var(--sp-12) var(--sp-20);
   border-radius: 6px;
   font-size: var(--fs-14);
   font-weight: 500;
@@ -249,7 +259,7 @@ button { font: inherit; cursor: pointer; background: none; border: none; color: 
   color: var(--text-primary);
 }
 .btn-ghost:hover { background: rgba(255,255,255,0.04); border-color: var(--brand-green); }
-.btn-sm { padding: 8px 14px; font-size: var(--fs-14); }
+.btn-sm { padding: var(--sp-8) var(--sp-12); font-size: var(--fs-14); }
 .hero-title .accent { color: var(--brand-green); }
 
 /* ---------- Stats (Em destaque) ---------- */
@@ -300,7 +310,7 @@ button { font: inherit; cursor: pointer; background: none; border: none; color: 
 .step-icon {
   width: 64px;
   height: 64px;
-  margin-bottom: 24px;
+  margin-bottom: var(--sp-20);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -401,7 +411,7 @@ button { font: inherit; cursor: pointer; background: none; border: none; color: 
 
 .section-heading {
   text-align: center;
-  margin-bottom: 48px;
+  margin-bottom: var(--sp-56);
 }
 .section-eyebrow {
   display: inline-block;
@@ -455,7 +465,7 @@ button { font: inherit; cursor: pointer; background: none; border: none; color: 
   color: var(--brand-green);
   font-weight: 600;
   font-size: var(--fs-14);
-  margin-bottom: 16px;
+  margin-bottom: var(--sp-12);
 }
 .card h3 {
   font-size: var(--fs-16);
@@ -637,13 +647,13 @@ button { font: inherit; cursor: pointer; background: none; border: none; color: 
   color: var(--text-primary);
   line-height: 1.2;
   letter-spacing: -0.015em;
-  margin-bottom: 24px;
+  margin-bottom: var(--sp-20);
   max-width: 420px;
 }
 .indications-split {
   display: grid;
   grid-template-columns: 5fr 7fr;
-  gap: 64px;
+  gap: var(--sp-56);
   align-items: center;
   position: relative;
 }
@@ -659,10 +669,10 @@ button { font: inherit; cursor: pointer; background: none; border: none; color: 
 .indications-bento {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 16px;
+  gap: var(--sp-20);
 }
 .bento-card {
-  padding: 24px 22px;
+  padding: var(--sp-20);
   background: linear-gradient(160deg, #14253a 0%, #0f1d2e 100%);
   border: 1px solid var(--border-hairline);
   border-radius: 14px;
@@ -683,14 +693,14 @@ button { font: inherit; cursor: pointer; background: none; border: none; color: 
   justify-content: center;
   background: var(--bg-card-hover);
   border-radius: 10px;
-  margin-bottom: 16px;
+  margin-bottom: var(--sp-12);
 }
 .bento-icon svg { width: 24px; height: 24px; }
 .bento-card h3 {
   font-size: var(--fs-16);
   font-weight: 700;
   color: var(--text-primary);
-  margin-bottom: 6px;
+  margin-bottom: var(--sp-4);
   line-height: 1.25;
 }
 .bento-card p {
@@ -705,7 +715,7 @@ button { font: inherit; cursor: pointer; background: none; border: none; color: 
 @media (max-width: 1100px) {
   .indications-split {
     grid-template-columns: 1fr;
-    gap: 40px;
+    gap: var(--sp-32);
   }
   .indications-preview .section-title,
   .indications-intro-text { max-width: 100%; }
@@ -713,7 +723,7 @@ button { font: inherit; cursor: pointer; background: none; border: none; color: 
 }
 @media (max-width: 720px) {
   .indications-bento { grid-template-columns: repeat(2, 1fr); gap: 12px; }
-  .bento-card { padding: 20px 18px; }
+  .bento-card { padding: var(--sp-20); }
 }
 /* Ate 720px: indice editorial em linhas (icone | area + quadros | numero), nao
    seis cartoes de 370px empilhados. O icone se desenha quando a secao acende. */
@@ -721,18 +731,18 @@ button { font: inherit; cursor: pointer; background: none; border: none; color: 
   .indications-bento { display: block; counter-reset: ind; border-top: 1px solid var(--border-hairline); }
   .bento-card {
     counter-increment: ind;
-    display: grid; grid-template-columns: 24px 1fr auto; column-gap: 14px; align-items: start;
-    padding: 15px 0; border: 0; border-bottom: 1px solid var(--border-hairline); border-radius: 0; background: none;
+    display: grid; grid-template-columns: 24px 1fr auto; column-gap: var(--sp-12); align-items: start;
+    padding: var(--sp-12) 0; border: 0; border-bottom: 1px solid var(--border-hairline); border-radius: 0; background: none;
   }
   .bento-card:hover { transform: none; }
-  .bento-icon { width: 24px; height: 24px; background: none; border-radius: 0; margin: 1px 0 0; }
+  .bento-icon { width: 24px; height: 24px; background: none; border-radius: 0; margin: 0; }
   .bento-icon svg { width: 24px; height: 24px; }
-  .bento-card h3 { grid-column: 2; margin-bottom: 3px; }
+  .bento-card h3 { grid-column: 2; margin-bottom: var(--sp-4); }
   .bento-card p { grid-column: 2; }
   .bento-card::after {
     content: counter(ind, decimal-leading-zero); grid-column: 3; grid-row: 1 / span 2;
     font-size: var(--fs-12); font-weight: 600; letter-spacing: .06em; color: var(--text-subtle);
-    font-variant-numeric: tabular-nums; padding-top: 3px;
+    font-variant-numeric: tabular-nums; padding-top: var(--sp-4);
   }
   .bento-icon :is(path, circle) { stroke-dasharray: 140; stroke-dashoffset: 140; transition: stroke-dashoffset 900ms var(--ease-settle); }
   .indications-preview.is-visible .bento-icon :is(path, circle) { stroke-dashoffset: 0; }
@@ -837,7 +847,7 @@ button { font: inherit; cursor: pointer; background: none; border: none; color: 
   margin-top: 56px;
 }
 .differential-card {
-  padding: 36px 28px;
+  padding: var(--sp-32);
   background: var(--bg-card);
   border: 1px solid var(--border-hairline);
   border-radius: 12px;
@@ -876,12 +886,12 @@ button { font: inherit; cursor: pointer; background: none; border: none; color: 
    e no pe a prova — para onde cada pilar aponta. O bloco de icone de 56px
    que ficava sozinho acima do titulo engolia altura no celular. */
 .differential-card { display: flex; flex-direction: column; }
-.dc-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 18px; }
+.dc-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: var(--sp-20); }
 .dc-kind { font-size: var(--fs-12); font-weight: 600; letter-spacing: .14em; text-transform: uppercase; color: var(--text-subtle); }
 .dc-head .differential-icon { width: 40px; height: 40px; margin-bottom: 0; border-radius: 10px; border: 1px solid var(--border-hairline); flex: none; }
 .dc-head .differential-icon svg { width: 22px; height: 22px; }
 .dc-proof {
-  margin-top: 18px; padding-top: 14px; border-top: 1px solid var(--border-hairline);
+  margin-top: var(--sp-20); padding-top: var(--sp-12); border-top: 1px solid var(--border-hairline);
   font-size: var(--fs-14); font-weight: 500; color: var(--text-muted); text-decoration: none;
   transition: color 180ms var(--ease-settle);
 }
@@ -889,8 +899,8 @@ button { font: inherit; cursor: pointer; background: none; border: none; color: 
 .dc-proof:hover, .dc-proof:focus-visible { color: var(--brand-green); }
 .dc-proof:hover span { transform: translateX(3px); }
 @media (max-width: 640px) {
-  .differential-card { padding: 26px 22px; }
-  .dc-head { margin-bottom: 14px; }
+  .differential-card { padding: var(--sp-20); }
+  .dc-head { margin-bottom: var(--sp-12); }
 }
 @media (prefers-reduced-motion: reduce) { .dc-proof, .dc-proof span { transition: none; } }
 @media (max-width: 1024px) {
@@ -971,7 +981,7 @@ button { font: inherit; cursor: pointer; background: none; border: none; color: 
 .team-preview-cta {
   display: flex;
   justify-content: center;
-  margin-top: 48px;
+  margin-top: var(--sp-56);
 }
 
 /* ---------- Equipe (team cards padronizados) ---------- */
@@ -1221,8 +1231,8 @@ button { font: inherit; cursor: pointer; background: none; border: none; color: 
   .container,
   header .container,
   .site-header .container {
-    padding-left: 18px !important;
-    padding-right: 18px !important;
+    padding-left: var(--sp-20) !important;
+    padding-right: var(--sp-20) !important;
   }
 }
 
@@ -1486,7 +1496,7 @@ button { font: inherit; cursor: pointer; background: none; border: none; color: 
 
 /* ---- 4. Stats vira "data ribbon" (sem caixas, dividido, numero clinico) ---- */
 .stats .stats-grid { gap: 0; }
-.stats .stat-card { padding: 6px 36px; }
+.stats .stat-card { padding: var(--sp-4) var(--sp-32); }
 .stats .stat-card:first-child { padding-left: 0; }
 .stats .stat-card + .stat-card { border-left: 1px solid var(--border-hairline); }
 @media (max-width: 768px) {
@@ -1587,7 +1597,7 @@ button { font: inherit; cursor: pointer; background: none; border: none; color: 
    Os medicos orbitam a marca. Entrada uma vez, quando a secao acende (.is-visible
    do reveal): os arcos se tracam, os itens aparecem em ordem. Sem sombra, sem
    flutuacao — hairline e fundo separam os planos. */
-.orb { position: relative; margin-top: clamp(8px, 2vw, 24px); }
+.orb { position: relative; margin-top: clamp(var(--sp-8), 2vw, var(--sp-20)); }
 .orb-frame { position: relative; width: 100%; overflow: hidden; }
 .orb-stage { position: absolute; left: 50%; top: 0; transform: translateX(-50%); }
 .orb-arcs {
@@ -1624,22 +1634,22 @@ button { font: inherit; cursor: pointer; background: none; border: none; color: 
   transition: transform 180ms var(--ease-settle);
 }
 .orb-doc:hover .orb-avatar { transform: scale(1.04); }
-.orb-name { margin-top: 10px; font-size: var(--fs-14); font-weight: 600; line-height: 1.25; color: var(--text-primary); max-width: 180px; }
-.orb-rqe { margin-top: 3px; font-size: var(--fs-12); line-height: 1.3; color: var(--text-subtle); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.orb-name { margin-top: var(--sp-8); font-size: var(--fs-14); font-weight: 600; line-height: 1.25; color: var(--text-primary); max-width: 180px; }
+.orb-rqe { margin-top: var(--sp-4); font-size: var(--fs-12); line-height: 1.3; color: var(--text-subtle); font-variant-numeric: tabular-nums; white-space: nowrap; }
 .orb-core { width: 96px; height: 96px; }
 .orb-core svg { width: 100%; height: 100%; display: block; }
 .orb-facts { position: absolute; inset: 0; pointer-events: none; }
 .orb-fact {
   display: inline-flex; align-items: center; gap: 8px; white-space: nowrap; pointer-events: auto;
   font-size: var(--fs-14); font-weight: 500; letter-spacing: .01em; color: var(--text-muted);
-  padding: 8px 14px 8px 12px; border: 1px solid var(--border-hairline); border-radius: 999px;
+  padding: var(--sp-8) var(--sp-12); border: 1px solid var(--border-hairline); border-radius: 999px;
   background: var(--ground-raised);
 }
 .orb-fact svg { width: 16px; height: 16px; flex: none; color: var(--brand-green); }   /* o traco desenha */
 /* Abaixo de 1000px de quadro os fatos nao cabem no arco interno (raio escalado
    de ~230px para pilulas de 150–200px): descem para uma fileira. Quem decide e
    o JS, pela largura do quadro (.orb--facts-row), para casar com a geometria. */
-.orb--facts-row .orb-facts { position: static; display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin-top: 14px; }
+.orb--facts-row .orb-facts { position: static; display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin-top: var(--sp-12); }
 .orb--facts-row .orb-fact { position: static; transform: none; }
 @media (max-width: 640px) {
   .orb-doc { --orb-av: 56px; }
@@ -1686,19 +1696,20 @@ body { overflow-x: clip; }
    cinza e menor: numero nao clica. Escopado em .stats: /servicos tem o proprio
    .sv-stats .stat-number. */
 .stats-kicker { margin: 0; font-family: var(--font-body); font-size: var(--fs-12); font-weight: 600; letter-spacing: .14em; text-transform: uppercase; color: var(--text-muted); }
-.stats .stats-grid { margin-top: 36px; }
+.stats .stats-grid { margin-top: var(--sp-32); }
 .stats .stat-number {
   font-family: var(--font-display); font-weight: 600;
   font-size: clamp(48px, 5vw, 72px); line-height: 1; letter-spacing: -.02em;
   color: var(--text-primary); font-variant-numeric: tabular-nums;
 }
 .stats .stat-affix { font-size: .5em; font-weight: 500; color: var(--text-subtle); margin-left: .06em; vertical-align: .34em; }
-.stats .stat-label { margin: 12px 0 0; font-size: var(--fs-14); line-height: 1.45; color: var(--text-muted); max-width: 18ch; }
+.stats .stat-number { margin-bottom: 0; }   /* o .stat-number legado poe 16px; o rotulo ja traz o vao */
+.stats .stat-label { margin: var(--sp-12) 0 0; font-size: var(--fs-14); line-height: 1.45; color: var(--text-muted); max-width: 18ch; }
 @media (max-width: 768px) {
   .stats .stats-grid { margin-top: 20px; }
   .stats .stat-card {
-    display: grid; grid-template-columns: 104px 1fr; align-items: center; column-gap: 16px;
-    padding: 14px 0; border-left: 0; border-top: 1px solid var(--border-hairline);
+    display: grid; grid-template-columns: 104px 1fr; align-items: center; column-gap: var(--sp-12);
+    padding: var(--sp-12) 0; border-left: 0; border-top: 1px solid var(--border-hairline);
   }
   .stats .stat-card:first-child { border-top: 0; padding-top: 4px; }
   .stats .stat-number { font-size: 40px; }
@@ -1770,7 +1781,7 @@ body { overflow-x: clip; }
 .nav {
   position: relative;
   height: auto;
-  padding: 8px 8px 8px 22px;
+  padding: var(--sp-8) var(--sp-8) var(--sp-8) var(--sp-20);
   border-radius: 999px;
   /* Camada de tint OPACA sob o gloss. So blur nao mata o que passa por baixo:
      titulo serif e tom de pele da secao Equipe liam atraves da pilula. */
@@ -1803,24 +1814,24 @@ body { overflow-x: clip; }
 @supports not (backdrop-filter: blur(1px)) {
   .site-header .nav { background: rgba(10, 21, 34, .97); }
 }
-.nav-btn { padding: 10px 20px; font-size: var(--fs-14); white-space: nowrap; border-radius: 999px; }
+.nav-btn { padding: var(--sp-8) var(--sp-20); font-size: var(--fs-14); white-space: nowrap; border-radius: 999px; }
 
 @media (max-width: 860px) {
   .nav-links { display: none; }
   .nav-toggle { display: inline-flex; }
   .nav-btn { display: none; }
-  .nav { padding: 8px 8px 8px 18px; }
+  .nav { padding: var(--sp-8) var(--sp-8) var(--sp-8) var(--sp-20); }
   .nav.open .nav-links {
     display: flex; flex-direction: column;
     position: absolute; top: calc(100% + 10px); left: 0; right: 0;
-    background: rgba(16, 31, 49, 0.97);
-    backdrop-filter: saturate(150%) blur(16px);
-    -webkit-backdrop-filter: saturate(150%) blur(16px);
-    border: 1px solid var(--border-hairline);
-    border-radius: 18px; padding: 10px; gap: 2px;
+    /* Opaco de verdade. Era rgba .97 + backdrop-filter aninhado no da pilula:
+       no iOS o painel saia translucido e o texto da pagina lia atraves. */
+    background: var(--ground-raised);
+    border: 1px solid var(--border-strong);
+    border-radius: 18px; padding: var(--sp-8); gap: var(--sp-4);
     box-shadow: 0 4px 16px rgba(0, 0, 0, 0.45);
   }
-  .nav.open .nav-links a { padding: 13px 14px; border-radius: 10px; font-size: var(--fs-16); }
+  .nav.open .nav-links a { padding: var(--sp-12) var(--sp-12); border-radius: 10px; font-size: var(--fs-16); }
 }
 .fo-lockup .brand-mark { width: 46px; height: 46px; }
 
@@ -1925,7 +1936,7 @@ body { overflow-x: clip; }
 /* .section-intro faltava: era o lead sem teto do bodymap em servicos.html */
 .section-heading p, .indications-intro-text, .section-intro { max-width: 58ch; }
 
-.kicker { display: flex; align-items: center; gap: 12px; margin-bottom: 18px; }
+.kicker { display: flex; align-items: center; gap: 12px; margin-bottom: var(--sp-20); }
 .kicker--center { justify-content: center; }
 .kicker__rule { width: 32px; height: 1px; background: var(--border-strong); flex: none; }
 .kicker__label {
@@ -1941,7 +1952,7 @@ body { overflow-x: clip; }
 .section-heading--left h2 {
   font-family: var(--font-display); font-weight: 600;
   font-size: clamp(28px, 3.4vw, 42px); line-height: 1.1; letter-spacing: -0.02em;
-  color: var(--text-primary); text-wrap: balance; margin: 16px 0 0;
+  color: var(--text-primary); text-wrap: balance; margin: var(--sp-20) 0 0;
 }
 
 /* Faixa de credibilidade */
@@ -2215,7 +2226,7 @@ body { overflow-x: clip; }
 }
 .nh-grid {
   position: relative; z-index: 1;
-  display: grid; grid-template-columns: 1.05fr 0.95fr; gap: 44px; align-items: center;
+  display: grid; grid-template-columns: 1.05fr 0.95fr; gap: var(--sp-56); align-items: center;
   /* Tela cheia: o header e sticky, entao ocupa lugar no fluxo e o hero desconta
      a caixa dele. Antes eram 78vh - 64px, o que deixava ~164px da secao
      seguinte espiando por baixo em 900px de altura. */
@@ -2241,10 +2252,10 @@ body { overflow-x: clip; }
   background: var(--border-strong); border-radius: 0; box-shadow: none;
 }
 /* +8px: o titulo subia junto quando o padding vertical da pilula sumiu */
-.nh-title { font-size: clamp(38px, 5.2vw, 64px); line-height: 1.05; letter-spacing: -0.03em; font-weight: 700; margin-top: 30px; }
+.nh-title { font-size: clamp(38px, 5.2vw, 64px); line-height: 1.05; letter-spacing: -0.03em; font-weight: 700; margin-top: var(--sp-32); }
 .nh-title .accent { color: var(--brand-green); }
 .nh-sub { margin-top: 20px; font-size: var(--fs-lead); color: var(--lead-color); max-width: 50ch; }
-.nh-ctas { margin-top: 32px; display: flex; gap: 14px; flex-wrap: wrap; }
+.nh-ctas { margin-top: 32px; display: flex; gap: var(--sp-12); flex-wrap: wrap; }
 .nh-visual { position: relative; }
 .nh-visual svg { width: 100%; height: auto; display: block; overflow: visible; }
 
@@ -2285,7 +2296,7 @@ body { overflow-x: clip; }
   position: absolute; left: 0; top: 0; z-index: 6; pointer-events: none;
   transform: translate(-50%, calc(-100% - 14px));
   min-width: 116px; max-width: 210px;
-  padding: 10px 14px; border-radius: 12px;
+  padding: var(--sp-8) var(--sp-12); border-radius: 12px;
   background: linear-gradient(180deg, rgba(18, 34, 52, 0.97), rgba(10, 21, 34, 0.97));
   border: 1px solid rgba(255, 255, 255, 0.12);
   box-shadow: 0 3px 12px rgba(0, 0, 0, 0.45);
@@ -2295,15 +2306,15 @@ body { overflow-x: clip; }
 .nh-tip.below { transform: translate(-50%, 14px); }
 .nh-tip.is-on { opacity: 1; }
 .nh-tip-t { display: block; font-family: var(--font-display); font-weight: 600; font-size: var(--fs-16); letter-spacing: -0.01em; color: var(--text-primary); }
-.nh-tip-d { display: block; margin-top: 3px; font-size: var(--fs-12); line-height: 1.42; color: var(--text-muted); }
+.nh-tip-d { display: block; margin-top: var(--sp-4); font-size: var(--fs-12); line-height: 1.42; color: var(--text-muted); }
 
 /* Legenda do mapa: os nove dominios que o sistema endocanabinoide regula, em
    texto, sempre visiveis. O tooltip continua sendo o detalhe; a legenda e o
    argumento — e ele nao pode depender de hover. */
 .nh-legend {
-  list-style: none; margin: 20px auto 10px; padding: 0;
+  list-style: none; margin: var(--sp-20) auto var(--sp-8); padding: 0;
   display: flex; flex-wrap: wrap; justify-content: center;
-  gap: 7px 18px;
+  gap: var(--sp-8) var(--sp-20);
   font-family: var(--font-body);
   font-size: var(--fs-12); letter-spacing: .06em; text-transform: uppercase;
   color: var(--text-subtle); max-width: 460px;
@@ -2349,11 +2360,11 @@ body { overflow-x: clip; }
 .nh-inner > *:nth-child(5) { animation-delay: .49s; }
 
 /* Faixa de credibilidade — confiança médica acima da dobra */
-.nh-trust { list-style: none; margin: 30px 0 0; padding: 0; display: flex; flex-wrap: wrap; gap: 10px; }
+.nh-trust { list-style: none; margin: var(--sp-32) 0 0; padding: 0; display: flex; flex-wrap: wrap; gap: var(--sp-8); }
 .nh-trust li {
   display: inline-flex; align-items: center; gap: 8px;
   font-size: var(--fs-14); font-weight: 500; letter-spacing: .01em; color: var(--text-muted);
-  padding: 8px 14px 8px 12px; border: 1px solid var(--border-hairline); border-radius: 999px;
+  padding: var(--sp-8) var(--sp-12); border: 1px solid var(--border-hairline); border-radius: 999px;
   background: linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.01));
 }
 .nh-trust svg { width: 16px; height: 16px; flex: none; color: var(--brand-green); }
@@ -2361,20 +2372,20 @@ body { overflow-x: clip; }
 .nh-visual { animation: nhFade 1.1s ease .3s both; }
 
 @media (max-width: 900px) {
-  .nh-grid { grid-template-columns: 1fr; text-align: center; gap: 6px; min-height: auto; padding: 6px 20px 8px; }
+  .nh-grid { grid-template-columns: 1fr; text-align: center; gap: var(--sp-8); min-height: auto; padding: var(--sp-8) var(--sp-20); }
   .nh-sub { margin-inline: auto; }
   /* CTAs lado a lado (uma linha só), capados p/ não esticar no tablet */
-  .nh-ctas { justify-content: center; gap: 10px; max-width: 400px; margin-inline: auto; }
-  .nh-ctas .btn { flex: 1 1 0; min-width: 0; padding-inline: 14px; }
+  .nh-ctas { justify-content: center; gap: var(--sp-12); max-width: 400px; margin-inline: auto; }
+  .nh-ctas .btn { flex: 1 1 0; min-width: 0; padding-inline: var(--sp-12); }
   /* Credenciais: linha compacta (sem 3 pílulas empilhadas) */
-  .nh-trust { justify-content: center; gap: 7px 18px; max-width: 480px; margin: 22px auto 0; }
-  .nh-trust li { border: 0; background: none; padding: 0; font-size: var(--fs-12); gap: 6px; }
+  .nh-trust { justify-content: center; gap: var(--sp-8) var(--sp-20); max-width: 480px; margin: var(--sp-20) auto 0; }
+  .nh-trust li { border: 0; background: none; padding: 0; font-size: var(--fs-12); gap: var(--sp-8); }
   .nh-trust svg { width: 15px; height: 15px; }
   /* Sem order:-1: o diagrama vinha antes do h1 e comia metade da primeira dobra
      no celular — quem chegava pelo Instagram via a constelacao antes de saber o
      que a Axis faz. Agora a tese vem primeiro e o mapa ilustra depois dela. */
-  .nh-visual { max-width: 300px; margin: 18px auto 0; }
-  .nh-legend { margin: 16px auto 8px; font-size: var(--fs-12); max-width: 340px; gap: 6px 14px; }
+  .nh-visual { max-width: 300px; margin: var(--sp-20) auto 0; }
+  .nh-legend { margin: var(--sp-12) auto var(--sp-8); font-size: var(--fs-12); max-width: 340px; gap: var(--sp-8) var(--sp-12); }
   /* era display:none — sumia com o "Toque nos pontos" no unico lugar onde ele importa */
   .nh-hint { font-size: var(--fs-12); }
 }
@@ -2493,8 +2504,8 @@ body { overflow-x: clip; }
 }
 
 /* ==================== Footer — wordmark gigante (estilo Popcorn) ==================== */
-.pf { position: relative; overflow: hidden; background: linear-gradient(to bottom, var(--brand-navy) 0, var(--ground-deepest) 180px); border-top: none; padding: 72px 0 0; margin-top: 0; }
-.pf-top { display: grid; grid-template-columns: 1.6fr 1.35fr 1.15fr 1fr; gap: 56px 48px; align-items: start; }
+.pf { position: relative; overflow: hidden; background: linear-gradient(to bottom, var(--brand-navy) 0, var(--ground-deepest) 180px); border-top: none; padding: var(--sp-56) 0 0; margin-top: 0; }
+.pf-top { display: grid; grid-template-columns: 1.6fr 1.35fr 1.15fr 1fr; gap: var(--sp-56) var(--sp-32); align-items: start; }
 /* 6 destinos em coluna unica deixavam o "Navegar" 150px mais alto que os
    vizinhos. Em 3+3 o rodape fecha parelho. */
 .pf-col--nav ul { grid-template-columns: 1fr 1fr; column-gap: 20px; }
@@ -2502,31 +2513,31 @@ body { overflow-x: clip; }
 .pf-mail { white-space: nowrap; }
 /* A marca era filha solta do grid e um grid-row:2 nas colunas a jogava sozinha
    pra primeira linha. Agora ela e uma coluna como as outras. */
-.pf-col--brand .pf-mark { margin-bottom: 18px; }
+.pf-col--brand .pf-mark { margin-bottom: var(--sp-20); }
 .pf-rt { font-size: var(--fs-14); line-height: 1.55; color: var(--text-muted); max-width: 30ch; margin: 0; }
 /* so no desktop: no @media 860px o grid vira 2 colunas e o grid-row fixo
    empilharia as tres colunas na mesma faixa */
 .pf-mark { width: 64px; height: 64px; }
-.pf-tagline { margin: 0 0 14px; font-family: var(--font-display); font-weight: 500; font-size: var(--fs-20); line-height: 1.3; letter-spacing: -.01em; color: var(--text-primary); max-width: 22ch; }
-.pf-col h3 { font-size: var(--fs-14); font-weight: 600; color: var(--text-primary); margin-bottom: 16px; }
+.pf-tagline { margin: 0 0 var(--sp-12); font-family: var(--font-display); font-weight: 500; font-size: var(--fs-20); line-height: 1.3; letter-spacing: -.01em; color: var(--text-primary); max-width: 22ch; }
+.pf-col h3 { font-size: var(--fs-14); font-weight: 600; color: var(--text-primary); margin-bottom: var(--sp-12); }
 .pf-col ul { list-style: none; display: grid; gap: 12px; margin: 0; padding: 0; }
 /* alvo de toque: os links do rodapé mediam 19px de altura — abaixo do piso de
    24px da WCAG 2.2. O padding vai no <li> (ritmo uniforme entre itens de texto
    e de link) e o <a> cobre esse padding com margin negativa, sem espaçar em
    dobro. Sem :has() — suporte irregular é risco desnecessário aqui. */
 .pf-col ul li { padding: 0; }
-.pf-col ul li a { display: inline-block; padding-block: 1px; }
+.pf-col ul li a { display: inline-block; padding-block: 0; }
 .pf-col li { color: var(--text-muted); font-size: var(--fs-14); line-height: 1.5; }
 .pf-col a { color: var(--text-muted); font-size: var(--fs-14); transition: color 120ms ease; }
 .pf-col a:hover { color: var(--brand-green); }
 /* "Conforme Anvisa" e "Uso sob prescricao medica" sao afirmacoes, nao destinos */
-.pf-note { font-size: var(--fs-14); line-height: 1.5; color: var(--text-subtle); margin: 0 0 10px; }
+.pf-note { font-size: var(--fs-14); line-height: 1.5; color: var(--text-subtle); margin: 0 0 var(--sp-8); }
 .pf-note:last-child { margin-bottom: 0; }
 .pf-col--contato .pf-note { margin-top: 12px; }
 .pf-bottom {
   position: relative; z-index: 1; border-top: 1px solid var(--border-hairline);
-  margin-top: 44px; padding: 22px 0 26px; display: flex; justify-content: space-between;
-  flex-wrap: wrap; gap: 10px; color: var(--text-subtle); font-size: var(--fs-12);
+  margin-top: var(--sp-32); padding: var(--sp-20) 0; display: flex; justify-content: space-between;
+  flex-wrap: wrap; gap: var(--sp-8); color: var(--text-subtle); font-size: var(--fs-12);
 }
 /* Estava fora do .container e centralizado na viewport — por isso o "A" nao
    nascia na mesma vertical do "Navegar", e o corte vinha da borda da tela.
@@ -2545,7 +2556,7 @@ body { overflow-x: clip; }
   color: rgba(241, 245, 249, .055);
 }
 @media (max-width: 860px) {
-  .pf-top { grid-template-columns: 1fr 1fr; gap: 30px 24px; }
+  .pf-top { grid-template-columns: 1fr 1fr; gap: var(--sp-32) var(--sp-20); }
   /* seletor por classe, nao por posicao: a marca entrou como 1a coluna e o
      :nth-of-type(1) antigo passaria a mirar ela em vez do "Navegar" */
   .pf-col--brand { grid-column: 1 / -1; }
@@ -2555,7 +2566,7 @@ body { overflow-x: clip; }
   .pf-mail { overflow-wrap: normal; }
   /* alvo de toque de 40px no celular: o padding fica no <a>, o ritmo da lista nao muda */
   .pf-col ul { gap: 4px; }
-  .pf-col ul li a { padding-block: 10px; }   /* 21px de linha + 20 = 41px de alvo */
+  .pf-col ul li a { padding-block: var(--sp-12); }   /* 21px de linha + 20 = 41px de alvo */
   /* o e-mail precisa da largura inteira: Contato desce para a linha propria */
   .pf-col--contato { grid-column: 1 / -1; }
 }
@@ -2747,8 +2758,8 @@ body { overflow-x: clip; }
   /* 1a secao nao gruda gap gigante embaixo do header flutuante */
   main > section:first-child { padding-top: 18px; }
   /* footer mais colado */
-  .pf { padding-top: 40px; }
-  .pf-bottom { margin-top: 28px; }
+  .pf { padding-top: var(--sp-32); }
+  .pf-bottom { margin-top: var(--sp-32); }
   /* heros: cortar respiro extra no mobile */
   .ab-hero { padding-top: 16px; }
   .ciencia-hero { padding-top: 16px; }
@@ -2768,21 +2779,21 @@ body { overflow-x: clip; }
 .qa-copy { max-width: 46ch; }
 .qa-eyebrow {
   display: block; font-family: var(--font-body); font-size: var(--fs-12); font-weight: 600;
-  letter-spacing: .16em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 18px;
+  letter-spacing: .16em; text-transform: uppercase; color: var(--text-muted); margin-bottom: var(--sp-20);
 }
 .qa-title {
   font-family: var(--font-display); font-weight: 600; font-size: clamp(30px, 4vw, 52px);
   line-height: 1.08; letter-spacing: -.025em; color: var(--text-primary); margin: 0 0 20px;
 }
 .qa-title .amber { color: var(--oil); }      /* "Certificado de Analise": a cor do frasco */
-.qa-body { font-family: var(--font-display); font-size: clamp(16px, 1.4vw, 20px); line-height: 1.6; color: var(--lead-color); margin: 0 0 24px; }
+.qa-body { font-family: var(--font-display); font-size: clamp(16px, 1.4vw, 20px); line-height: 1.6; color: var(--lead-color); margin: 0 0 var(--sp-32); }
 /* Um so gap entre titulo e lead: media 20 no .qa, 24 no .indications-preview
    e 18 no .finale. O eyebrow -> h2 (18px) ja e consistente e nao muda. */
 .qa h2 + p, .indications-preview h2 + p, .finale h2 + p,
 .section-heading h2 + p { margin-top: var(--gap-title-lead); }
-.qa-list { list-style: none; display: grid; gap: 0; margin: 0 0 24px; max-width: 34ch; }
+.qa-list { list-style: none; display: grid; gap: 0; margin: 0 0 var(--sp-32); max-width: 34ch; }
 .qa-list li {
-  display: flex; align-items: center; gap: 12px; padding: 12px 2px;
+  display: flex; align-items: center; gap: 12px; padding: var(--sp-12) 0;
   border-bottom: 1px solid var(--border-hairline);
   font-family: var(--font-body); font-size: var(--fs-16); color: var(--lead-color);
 }
@@ -2793,7 +2804,7 @@ body { overflow-x: clip; }
   /* usa o recorte quadrado resina-macro-m.jpg (via <picture>): resina cheia, sem topo morto.
      A landscape numa caixa portrait mostrava a altura inteira (topo escuro) — object-position
      vertical não corta. O quadrado resolve: cover recorta topo/base e a resina domina. */
-  .qa { padding: 0 0 52px; }
+  .qa { padding: 0 0 var(--sp-56); }
   .qa-bg { object-position: 50% 46%; }
   .qa-veil { background: linear-gradient(180deg, rgba(8,17,28,.10) 0%, rgba(8,17,28,.48) 24%, rgba(8,17,28,.88) 50%, rgba(8,17,28,.96) 100%); }
   /* a resina aparece no topo (14vh, era 26vh: sobrava) e o texto assenta sobre
@@ -2864,7 +2875,7 @@ body { overflow-x: clip; }
      sendo o argumento. Este é o convite. */
   font-size: clamp(31px, 3.9vw, 48px);
   line-height: 1.08; letter-spacing: -.025em; color: var(--text-primary);
-  margin: 0 0 18px; text-wrap: balance;
+  margin: 0 0 var(--sp-20); text-wrap: balance;
 }
 .fin-title .hl { color: var(--brand-green-hover); }  /* CTA de fecho: verde claro,
    porque o verde base sobre a foto cai pra 3.22:1 */
@@ -2872,7 +2883,7 @@ body { overflow-x: clip; }
   font-family: var(--font-display); font-size: clamp(16.5px, 1.35vw, 19px);
   line-height: 1.62; color: var(--lead-color); max-width: 48ch; margin: 0 auto 32px;
 }
-.fin-ctas { display: flex; justify-content: center; gap: 14px; flex-wrap: wrap; }
+.fin-ctas { display: flex; justify-content: center; gap: var(--sp-12); flex-wrap: wrap; }
 
 /* assentamento único, não Ken Burns infinito. Dispara pelo .is-visible que o
    IntersectionObserver já aplica — zero JS novo. Sem :has(), fica estática. */
@@ -2890,7 +2901,7 @@ body { overflow-x: clip; }
 }
 
 @media (max-width: 820px) {
-  .finale { padding: 72px 0 88px; }
+  .finale { padding: var(--sp-56) 0; }
   .fin-bg { object-position: 52% 40%; }
   /* em retrato sobra pouca imagem nas laterais: o linear assume o trabalho pesado */
   .fin-veil {
@@ -2902,15 +2913,15 @@ body { overflow-x: clip; }
   .fin-glow { background: radial-gradient(58% 34% at 50% 38%, rgba(245,192,107,.16), transparent 76%); }
 }
 @media (max-width: 720px) {
-  .finale { padding: 60px 0 76px; }
+  .finale { padding: var(--sp-56) 0; }
   .fin-title { font-size: clamp(26px, 7.2vw, 33px); }
-  .fin-body { font-size: var(--fs-16); margin-bottom: 26px; }
+  .fin-body { font-size: var(--fs-16); margin-bottom: var(--sp-32); }
   .fin-ctas { flex-direction: column; align-items: center; }
 }
 /* CTA do fecho: pill de vidro (Apple) — translucida, fio claro na borda de
    cima, o campo verde desfocado atras. O verde chapado virava um bloco. */
 .fin-ctas .btn-primary {
-  padding: 14px 30px; border-radius: 999px; font-size: var(--fs-16); font-weight: 500; color: #fff;
+  padding: var(--sp-12) var(--sp-32); border-radius: 999px; font-size: var(--fs-16); font-weight: 500; color: #fff;
   background: rgba(95,200,155,.16); border: 1px solid rgba(255,255,255,.22); text-shadow: none;
   box-shadow: inset 0 1px 0 rgba(255,255,255,.30), inset 0 -1px 0 rgba(0,0,0,.16), 0 10px 30px rgba(0,0,0,.28);
   -webkit-backdrop-filter: blur(18px) saturate(160%); backdrop-filter: blur(18px) saturate(160%);
