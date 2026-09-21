@@ -676,7 +676,7 @@
 })();
 
 // ========== Equipe em orbita (home) ==========
-// Palco de referencia 1200x490, centro dos arcos em (600,620), raios 492 e 372.
+// Palco de referencia 1200x450, centro dos arcos em (600,580), raios 492 e 372.
 // Escala so a geometria (posicoes, altura do palco); o texto fica no tamanho da
 // escala tipografica. Abaixo de 640px os angulos sao os de data-angle-m e os
 // fatos saem do arco (o CSS os poe em fileira).
@@ -684,14 +684,14 @@
   var orb = document.querySelector('.orb');
   if (!orb) return;
   var frame = orb.querySelector('.orb-frame'), stage = orb.querySelector('.orb-stage'), facts = orb.querySelector('.orb-facts');
-  var W = 1200, H = 490, CX = 600, CY = 620, R = { outer: 492, inner: 372 };
+  var W = 1200, H = 450, CX = 600, CY = 580, R = { outer: 492, inner: 372 };   // era 490/620: subiu 40, menos vazio sob o titulo
   var knockRects = [].slice.call(orb.querySelectorAll('.orb-knock')), knocks = [];
   var flow = orb.querySelector('.orb-flow'), ctx = flow && flow.getContext ? flow.getContext('2d') : null;
   var scale = 1, dots = [];
   function layout() {
     var w = frame.clientWidth; if (!w) return;
     var narrow = w < 640;            // angulos de data-angle-m, avatar menor (CSS)
-    var factsRow = w < 1000;         // fatos saem do arco e vao para a fileira
+    var factsRow = true;             // fatos sempre na fileira abaixo do A (antes: so < 1000px)
     orb.classList.toggle('orb--facts-row', factsRow);
     var s = Math.min(1, Math.max(0.6, w / W));
     frame.style.height = Math.round(H * s) + 'px';
@@ -709,7 +709,7 @@
     var core = orb.querySelector('.orb-core');
     // no estreito o bloco do medico central (nome, especialidade, CRM) desce ate
     // o A: a marca vai mais para baixo (445 em vez de 393)
-    if (core) { core.style.left = Math.round(CX * s) + 'px'; core.style.top = Math.round((narrow ? 445 : 393) * s) + 'px'; }
+    if (core) { core.style.left = Math.round(CX * s) + 'px'; core.style.top = Math.round((narrow ? 405 : 353) * s) + 'px'; }
     scale = s;
     // O quadro cresce se algum medico (ancorado pela foto, texto pendente)
     // ultrapassar o palco — entre 640 e 1000px os laterais ficam baixos no arco.

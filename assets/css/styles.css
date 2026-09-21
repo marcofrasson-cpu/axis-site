@@ -1617,7 +1617,7 @@ button { font: inherit; cursor: pointer; background: none; border: none; color: 
    Os medicos orbitam a marca. Entrada uma vez, quando a secao acende (.is-visible
    do reveal): os arcos se tracam, os itens aparecem em ordem. Sem sombra, sem
    flutuacao — hairline e fundo separam os planos. */
-.orb { position: relative; margin-top: clamp(var(--sp-8), 2vw, var(--sp-20)); }
+.orb { position: relative; margin-top: 0; }   /* o vao ate o titulo ja vem do h2 (56) */
 .orb-frame { position: relative; width: 100%; overflow: hidden; }
 .orb-stage { position: absolute; left: 50%; top: 0; transform: translateX(-50%); }
 .orb-arcs {
@@ -1642,13 +1642,13 @@ button { font: inherit; cursor: pointer; background: none; border: none; color: 
    avatar (opaco) e o texto pende abaixo, no vao entre os arcos. No desktop o
    texto cabe no vao e nenhum arco toca fonte; no mobile so o interno passa sob
    o CRM, e ai a mascara (JS) recorta. */
-.orb-doc { --orb-av: 84px; transform: translate(-50%, calc(var(--orb-av) / -2)); }
+.orb-doc { --orb-av: 108px; transform: translate(-50%, calc(var(--orb-av) / -2)); }
 .orb-item, .orb-fact { opacity: 0; transition: opacity 280ms var(--ease-settle); transition-delay: calc(var(--i, 0) * 40ms + 200ms); }
 .team-preview.is-visible .orb-item, .team-preview.is-visible .orb-fact { opacity: 1; }
 .orb-doc { display: flex; flex-direction: column; align-items: center; text-align: center; }
 .orb-doc picture { display: block; line-height: 0; }
 .orb-avatar {
-  width: 84px; height: 84px; border-radius: var(--r-circle); object-fit: cover; object-position: 50% 22%;
+  width: 108px; height: 108px; border-radius: var(--r-circle); object-fit: cover; object-position: 50% 22%;   /* era 84 */
   padding: 3px; border: 1px solid var(--border-strong); background: var(--ground-raised);
   filter: saturate(.92) contrast(1.04);   /* como o .team-photo: aproxima as tres temperaturas */
   transition: transform 180ms var(--ease-settle);
@@ -1670,7 +1670,7 @@ button { font: inherit; cursor: pointer; background: none; border: none; color: 
 /* Abaixo de 1000px de quadro os fatos nao cabem no arco interno (raio escalado
    de ~230px para pilulas de 150–200px): descem para uma fileira. Quem decide e
    o JS, pela largura do quadro (.orb--facts-row), para casar com a geometria. */
-.orb--facts-row .orb-facts { position: static; display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin-top: var(--sp-12); }
+.orb--facts-row .orb-facts { position: static; display: flex; flex-wrap: wrap; justify-content: center; gap: var(--sp-8); margin-top: var(--sp-20); }
 /* Os fatos pendem do arco interno (borda de cima no arco) em vez de centrar
    nele: abre espaco para o bloco do medico do apice, que ganhou a linha da
    especialidade e encostava na pilula do meio. */
