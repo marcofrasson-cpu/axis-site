@@ -935,3 +935,122 @@
     document.addEventListener('visibilitychange', function () { if (document.visibilityState === 'visible') { if (!running) start(); } else stop(); });
   }
 })();
+
+// ========== Glyph Portal (abertura de /sobre) ==========
+// Porte em vanilla do Glyph Portal © 2026 Christian Katzmann, MIT (origem:
+// UsefulPortal.astro em ktzm.dk). Uma camera guiada pelo scroll atravessa a
+// palavra: o clip (texto SVG) escala do tamanho da palavra ate o miolo da
+// letra escolhida — a de maior quadrado opaco, medido num canvas — encher a
+// tela; o campo verde cresce 16%; a legenda some; o conteudo entra no fim.
+// Escala fica no clipPath e a translacao no texto (limites de pintura de texto
+// e zoom do WebKit). Sob prefers-reduced-motion: nada pina, tudo visivel.
+(function () {
+  var gp = document.querySelector('.gp');
+  if (!gp) return;
+  var pin = gp.querySelector('.gp-pin'), field = gp.querySelector('.gp-field'), art = gp.querySelector('.gp-art');
+  var clip = gp.querySelector('#gpClip'), glyph = gp.querySelector('.gp-glyph'), probe = gp.querySelector('.gp-vh');
+  if (!pin || !field || !art || !clip || !glyph) return;
+  var text = glyph.textContent.trim() || 'AXIS', LEN = 2.4;
+  var motion = window.matchMedia('(prefers-reduced-motion: reduce)');
+  var canvas = document.createElement('canvas'), ctx = canvas.getContext('2d', { willReadFrequently: true });
+  var W = 1, H = 1, travel = 1, startScale = 1, endScale = 1, center = { x: 0, y: 0 }, target = null, bounds = null;
+  var ready = false, dirty = true, active = true, raf = 0;
+  function clamp(n, a, b) { return Math.min(b, Math.max(a, n)); }
+  function smooth(a, b, n) { var t = clamp((n - a) / (b - a), 0, 1); return t * t * (3 - 2 * t); }
+
+  // Maior quadrado opaco da letra, em tempo linear (funciona em O, S e A —
+  // um chute pela haste nao). Desenha a 300px e devolve em unidades de 100px.
+  function interior(ch, font) {
+    ctx.font = font; var m = ctx.measureText(ch), pad = 8;
+    var left = Math.ceil(m.actualBoundingBoxLeft), ascent = Math.ceil(m.actualBoundingBoxAscent);
+    canvas.width = Math.max(1, Math.ceil(m.actualBoundingBoxLeft + m.actualBoundingBoxRight) + pad * 2);
+    canvas.height = Math.max(1, Math.ceil(m.actualBoundingBoxAscent + m.actualBoundingBoxDescent) + pad * 2);
+    ctx.font = font; ctx.fontKerning = 'none'; ctx.fillStyle = '#000';
+    ctx.fillText(ch, pad + left, pad + ascent);
+    var w = canvas.width, h = canvas.height, px = ctx.getImageData(0, 0, w, h).data;
+    var rows = new Uint16Array(w + 1), size = 0, bx = 0, by = 0;
+    for (var y = 0; y < h; y++) {
+      var diag = 0;
+      for (var x = 0; x < w; x++) {
+        var above = rows[x + 1];
+        rows[x + 1] = px[(y * w + x) * 4 + 3] > 245 ? Math.min(above, rows[x], diag) + 1 : 0;
+        diag = above;
+        if (rows[x + 1] > size) { size = rows[x + 1]; bx = x; by = y; }
+      }
+    }
+    if (size < 3) return null;
+    return { x: (bx + 1 - size / 2 - pad - left) / 3, y: (by + 1 - size / 2 - pad - ascent) / 3, radius: (size / 2 - 1) / 3 };
+  }
+  function readInk() {
+    var cs = getComputedStyle(glyph), fam = cs.fontFamily, wt = cs.fontWeight;
+    ctx.font = wt + ' 100px ' + fam; ctx.fontKerning = 'none';
+    var m = ctx.measureText(text);
+    bounds = { x: -m.actualBoundingBoxLeft, y: -m.actualBoundingBoxAscent,
+      width: m.actualBoundingBoxLeft + m.actualBoundingBoxRight, height: m.actualBoundingBoxAscent + m.actualBoundingBoxDescent };
+    if (!bounds.width || !bounds.height) return false;
+    center = { x: bounds.x + bounds.width / 2, y: bounds.y + bounds.height / 2 };
+    var best = null;
+    for (var i = 0; i < text.length; i++) {
+      ctx.font = wt + ' 100px ' + fam; ctx.fontKerning = 'none';
+      var adv = ctx.measureText(text.slice(0, i)).width;
+      var f = interior(text[i], wt + ' 300px ' + fam);
+      if (f) { f.x += adv; if (!best || f.radius > best.radius || (f.radius === best.radius && Math.abs(f.x - center.x) < Math.abs(best.x - center.x))) best = f; }
+    }
+    target = best;
+    return true;
+  }
+  function layout() {
+    if (!gp.clientWidth) return;
+    W = pin.clientWidth;
+    var svh = probe ? probe.offsetHeight : window.innerHeight;
+    H = Math.max(1, Math.min(window.innerHeight, svh || window.innerHeight));
+    if (motion.matches) H = Math.min(H * 0.75, 480);
+    gp.style.setProperty('--gp-h', H + 'px'); travel = H * LEN;
+    art.setAttribute('viewBox', '0 0 ' + W + ' ' + H);
+    if (!ready) ready = readInk();
+    if (!ready) return;
+    startScale = Math.min(W * 0.84 / bounds.width, H * 0.38 / bounds.height);
+    endScale = target ? Math.max(startScale, Math.hypot(W, H) / (target.radius * 1.35)) : startScale;
+    gp.style.setProperty('--gp-word-bottom', Math.round(H * 0.46 + bounds.height * startScale / 2) + 'px');
+    gp.dataset.gpReady = 'true';
+    gp.dataset.gpMotion = (!motion.matches && target) ? 'on' : 'off';
+  }
+  function position() { return clamp(-gp.getBoundingClientRect().top / travel, 0, 1); }
+  function paint(progress) {
+    var isStatic = motion.matches || !target;
+    var p = isStatic ? 0 : progress, t = clamp(p / 0.78, 0, 1);
+    var eased = t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+    var scale = Math.exp(Math.log(startScale) + Math.log(endScale / startScale) * eased);
+    var blend = endScale === startScale ? 0 : (1 / scale - 1 / startScale) / (1 / endScale - 1 / startScale);
+    var tx = target ? target.x : center.x, ty = target ? target.y : center.y;
+    var cx = center.x + (tx - center.x) * blend, cy = center.y + (ty - center.y) * blend;
+    var roll = -4 * smooth(0.06, 0.5, t) * (1 - smooth(0.62, 0.92, t));
+    var rad = roll * Math.PI / 180, dx = W / 2 / scale, dy = (H * 0.46 + H * 0.04 * eased) / scale;
+    clip.setAttribute('transform', 'scale(' + scale + ') rotate(' + roll + ')');
+    glyph.setAttribute('transform', 'translate(' + (Math.cos(rad) * dx + Math.sin(rad) * dy - cx) + ' ' + (-Math.sin(rad) * dx + Math.cos(rad) * dy - cy) + ')');
+    field.style.clipPath = t >= 1 ? 'none' : 'url(#gpClip)';
+    gp.style.setProperty('--gp-cap', String(1 - smooth(0.01, 0.16, p)));
+    gp.style.setProperty('--gp-reveal', String(isStatic ? 1 : smooth(0.78, 0.9, p)));
+    gp.style.setProperty('--gp-fs', String(1 + 0.16 * smooth(0, 0.82, p)));
+    gp.style.setProperty('--gp-cap-hit', p < 0.08 ? 'auto' : 'none');
+    gp.dataset.gpEntered = String(p >= 0.9);
+  }
+  function frame() { raf = 0; if (dirty) { dirty = false; layout(); } if (ready) paint(position()); }
+  function schedule() { if (!raf && active) raf = requestAnimationFrame(frame); }
+  function relayout() { dirty = true; schedule(); }
+  function remeasure() { ready = false; relayout(); }   // a fonte chegou: a tinta muda de lugar
+
+  frame();
+  window.addEventListener('scroll', schedule, { passive: true });
+  window.addEventListener('resize', relayout);
+  if (window.visualViewport) window.visualViewport.addEventListener('resize', relayout);
+  if ('ResizeObserver' in window) new ResizeObserver(relayout).observe(gp);
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(remeasure);
+  if (motion.addEventListener) motion.addEventListener('change', relayout);
+  if ('IntersectionObserver' in window) {
+    new IntersectionObserver(function (es) {
+      active = es[0].isIntersecting;
+      if (active) relayout(); else if (raf) { cancelAnimationFrame(raf); raf = 0; }
+    }, { rootMargin: '100% 0px' }).observe(gp);
+  }
+})();

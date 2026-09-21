@@ -3028,3 +3028,59 @@ body { overflow-x: clip; }
   .hub-flow path { animation: none; stroke-dashoffset: 0; }
   .hub-core::after { animation: none; }
 }
+
+/* ==================== Sobre: Glyph Portal ====================
+   Porte em vanilla do Glyph Portal (Christian Katzmann, MIT). O papel e o navy
+   da pagina; o campo e verde da paleta; a palavra e um clipPath SVG em
+   userSpaceOnUse sobre o campo. O JS mede a tinta (maior quadrado opaco de
+   cada letra, num canvas) e, com o scroll, escala o clip ate o campo encher
+   a tela; o conteudo entra por --gp-reveal. Tudo o que muda por quadro e
+   transform/opacity. */
+.gp { position: relative; isolation: isolate; background: var(--brand-navy); --gp-len: 2.4; }
+.gp-vh { position: absolute; left: 0; top: 0; width: 0; height: 100vh; height: 100svh; pointer-events: none; visibility: hidden; }
+.gp-pin { position: relative; height: var(--gp-h, 100svh); overflow: clip; isolation: isolate; }
+.gp[data-gp-motion="on"] .gp-pin { position: sticky; top: 0; }
+.gp-field {
+  position: absolute; inset: 0; opacity: 0; pointer-events: none;
+  background:
+    radial-gradient(circle at 28% 18%, rgba(95,200,155,.55), transparent 42%),
+    radial-gradient(circle at 76% 72%, rgba(63,165,124,.45), transparent 46%),
+    linear-gradient(135deg, #0f3d2e 0%, #1c5a45 52%, #0b2b21 100%);
+  transform: scale(var(--gp-fs, 1)); transform-origin: 50% 46%;
+}
+.gp[data-gp-ready] .gp-field { opacity: 1; clip-path: url(#gpClip); }
+.gp-art { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; }
+.gp-glyph { font-family: var(--font-body); font-weight: 700; font-size: 100px; letter-spacing: 0; font-kerning: none; font-variant-ligatures: none; }
+.gp-fallback {
+  position: absolute; inset: 0; display: grid; place-items: center;
+  font: 700 min(21vw, 38vh) / 1 var(--font-body); letter-spacing: 0; color: #1c5a45;
+}
+.gp[data-gp-ready] .gp-fallback { visibility: hidden; }
+.gp-caption {
+  position: absolute; left: 0; right: 0; top: calc(var(--gp-word-bottom, 60%) + 44px);
+  display: flex; justify-content: center; align-items: center; gap: var(--sp-20);
+  font-size: var(--fs-14); color: var(--text-muted);
+  opacity: var(--gp-cap, 1); pointer-events: var(--gp-cap-hit, auto);
+}
+.gp-enter {
+  display: inline-flex; align-items: center; gap: var(--sp-8); min-height: 44px; padding: 0 var(--sp-20);
+  border: 1px solid var(--border-strong); border-radius: var(--r-pill); color: var(--text-primary); text-decoration: none;
+}
+.gp-enter:hover { border-color: var(--brand-green); }
+.gp-content { position: relative; min-height: var(--gp-h, 100svh); display: grid; align-content: center; }
+.gp[data-gp-motion="on"] .gp-content { margin-top: calc((var(--gp-len) - 1) * var(--gp-h)); opacity: var(--gp-reveal, 0); pointer-events: none; }
+.gp[data-gp-motion="on"][data-gp-entered="true"] .gp-content { pointer-events: auto; }
+.gp[data-gp-motion="on"] .gp-content:focus-within { opacity: 1; pointer-events: auto; }
+.gp[data-gp-motion="off"] .gp-hint { display: none; }
+/* o campo dissolve em navy no fim da secao: os capitulos seguem no papel */
+.gp::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 180px; pointer-events: none; background: linear-gradient(180deg, transparent, var(--brand-navy)); }
+/* a abertura sobre o campo verde: o verde de destaque vira creme, os rotulos clareiam */
+.gp .ab-mast { padding-top: var(--sp-32); }
+.gp .ab-mast-title em { color: var(--brand-cream); }
+.gp .ab-mast-eyebrow, .gp .ab-mast-facts dt { color: rgba(244,242,236,.72); }
+.gp .ab-mast-lead, .gp .ab-mast-facts dd { color: #e6ede9; }
+@media (prefers-reduced-motion: reduce) {
+  .gp .gp-pin { position: relative !important; }
+  .gp .gp-content { margin-top: 0 !important; opacity: 1 !important; pointer-events: auto !important; min-height: 0; }
+  .gp .gp-caption { opacity: 1 !important; }
+}

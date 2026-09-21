@@ -28,7 +28,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Spectral:wght@400;500;600;700&family=Hanken+Grotesk:wght@400;500;600;700&display=swap">
 <link rel="icon" type="image/svg+xml" href="/assets/img/logo.svg">
-<link rel="stylesheet" href="/assets/css/styles.css?v=202609202213">
+<link rel="stylesheet" href="/assets/css/styles.css?v=202609202214">
 <noscript><style>.reveal,.reveal-stagger [class*="-card"],.blog-highlight.reveal .blog-feature-image,.blog-highlight.reveal .blog-feature-content{opacity:1!important;transform:none!important;filter:none!important}</style></noscript>
 <script type="application/ld+json">
 {"@context":"https://schema.org","@type":"AboutPage","url":"https://axisfitomed.com.br/sobre","name":"Sobre a Axis FitoMed","inLanguage":"pt-BR","isPartOf":{"@type":"WebSite","url":"https://axisfitomed.com.br/"},"mainEntity":{"@type":"MedicalClinic","name":"Axis FitoMed","@id":"https://axisfitomed.com.br/#clinica"},"publisher":{"@type":"MedicalClinic","name":"Axis FitoMed","@id":"https://axisfitomed.com.br/#clinica"}}
@@ -66,7 +66,26 @@
 <main id="conteudo">
 
 <!-- Masthead / capa da monografia -->
-<section class="ab-mast reveal">
+<!-- Glyph Portal (porte em vanilla, ver main.js): a palavra AXIS e uma janela
+     para um campo verde; ao rolar, a camera entra pela letra de maior miolo
+     ate o campo tomar a tela, e so entao a abertura da pagina aparece sobre
+     ele. Sem JS ou sob prefers-reduced-motion: palavra estatica e conteudo
+     visivel, sem pino. -->
+<section class="gp" aria-label="Axis">
+  <div class="gp-vh" aria-hidden="true"></div>
+  <div class="gp-pin">
+    <div class="gp-field" aria-hidden="true"></div>
+    <svg class="gp-art" aria-hidden="true" focusable="false">
+      <defs><clipPath id="gpClip" clipPathUnits="userSpaceOnUse"><text class="gp-glyph" x="0" y="0">AXIS</text></clipPath></defs>
+    </svg>
+    <span class="gp-fallback" aria-hidden="true">AXIS</span>
+    <div class="gp-caption">
+      <span class="gp-hint" aria-hidden="true">Role para entrar</span>
+      <a class="gp-enter" href="#gp-content">Entrar<span aria-hidden="true"> ↘</span></a>
+    </div>
+  </div>
+  <div class="gp-content" id="gp-content" tabindex="-1">
+    <div class="ab-mast reveal">
   <div class="ab-wrap">
     <p class="ab-mast-eyebrow">Sobre a Axis · Medicina endocanabinoide</p>
     <h1 class="ab-mast-title">Contra o achismo,<br>apresentamos <em>métodos</em>.</h1>
@@ -77,6 +96,8 @@
         <div><dt>Base</dt><dd>Curitiba · Paraná</dd></div>
         <div><dt>Conformidade</dt><dd>Anvisa · RDC 327/2019 e 660/2022</dd></div>
       </dl>
+    </div>
+  </div>
     </div>
   </div>
 </section>
@@ -253,7 +274,7 @@
   </div>
 </footer>
 
-<script src="/assets/js/main.js?v=202609202213"></script>
+<script src="/assets/js/main.js?v=202609202214"></script>
 <script defer src="/_vercel/insights/script.js"></script>
 </body>
 </html>
