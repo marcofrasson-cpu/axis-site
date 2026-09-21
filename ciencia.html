@@ -28,7 +28,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Spectral:wght@400;500;600;700&family=Hanken+Grotesk:wght@400;500;600;700&display=swap">
 <link rel="icon" type="image/svg+xml" href="/assets/img/logo.svg">
-<link rel="stylesheet" href="/assets/css/styles.css?v=202609202230">
+<link rel="stylesheet" href="/assets/css/styles.css?v=202609210826">
 <noscript><style>.reveal,.reveal-stagger [class*="-card"],.blog-highlight.reveal .blog-feature-image,.blog-highlight.reveal .blog-feature-content{opacity:1!important;transform:none!important;filter:none!important}.ecs-scene{opacity:1!important}</style></noscript>
 <script type="application/ld+json">
 {"@context":"https://schema.org","@type":"MedicalWebPage","url":"https://axisfitomed.com.br/ciencia","name":"O que a ciência diz sobre cannabis medicinal","description":"Seleção comentada de estudos clínicos e revisões sobre cannabis medicinal, organizada por área e por tipo de evidência.","inLanguage":"pt-BR","isPartOf":{"@type":"WebSite","url":"https://axisfitomed.com.br/"},"about":{"@type":"MedicalTherapy","name":"Cannabis medicinal"},"publisher":{"@type":"MedicalClinic","name":"Axis FitoMed","@id":"https://axisfitomed.com.br/#clinica"},"audience":{"@type":"MedicalAudience","audienceType":"Pacientes, familiares e profissionais de saúde"}}
@@ -172,6 +172,23 @@
       </article>
     </div>
     </div>
+  </div>
+</section>
+
+<!-- Bundle de artigos (stack-spread, porte em vanilla — ver main.js): as doze
+     referencias empilhadas em leque; ao rolar, espalham pela tela em volta do
+     texto e assentam (no toque, em grade). O JS monta os cartoes a partir da
+     lista abaixo — nada duplicado no HTML; a lista com filtros continua sendo
+     a versao acessivel. -->
+<section class="ps" aria-labelledby="ps-title">
+  <div class="ps-stage">
+    <div class="ps-copy">
+      <div class="kicker"><span class="kicker__rule"></span><span class="kicker__label">Biblioteca</span></div>
+      <h2 id="ps-title">Doze referências, <span class="hl">sem atalhos</span>.</h2>
+      <p>Revisões sistemáticas, meta-análises e ensaios clínicos que sustentam — e limitam — o que fazemos. Abaixo, com filtros por área e tipo.</p>
+    </div>
+    <div class="ps-cards" aria-hidden="true"></div>
+    <div class="ps-hint" aria-hidden="true"><span>Role</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></div>
   </div>
 </section>
 
@@ -405,7 +422,7 @@
   </div>
 </footer>
 
-<script src="/assets/js/main.js?v=202609202230"></script>
+<script src="/assets/js/main.js?v=202609210826"></script>
 <script defer src="/_vercel/insights/script.js"></script>
 </body>
 </html>

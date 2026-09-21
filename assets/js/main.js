@@ -1060,3 +1060,99 @@
     }, { rootMargin: '100% 0px' }).observe(gp);
   }
 })();
+
+// ========== Bundle de artigos (/ciencia, stack-spread em vanilla) ==========
+// Porte do stack-spread (Hyperiux Vault). Os cartoes nascem da lista
+// .paper-card (tipo, area, titulo, autores) e vivem em vw/vh no palco
+// pegajoso. Progresso do scroll: segura ate 12%, espalha ate 90%, assenta.
+// Cada cartao vai de um leque (offset + angulo) ao seu lugar: no desktop, doze
+// celulas em volta do texto; no toque (pointer: coarse), uma grade 3x4 sob o
+// texto. Depois de espalhado, o ponteiro empurra os cartoes de leve
+// (paralaxe por profundidade, com mola simples). Clique leva ao paper na
+// lista. Sob prefers-reduced-motion: tudo no lugar final, sem pino.
+(function () {
+  var ps = document.querySelector('.ps');
+  if (!ps) return;
+  var stage = ps.querySelector('.ps-stage'), host = ps.querySelector('.ps-cards');
+  var papers = [].slice.call(document.querySelectorAll('.paper-card'));
+  if (!host || !papers.length) return;
+  var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var coarse = window.matchMedia('(pointer: coarse)');
+  var START = 0.12, END = 0.9, PX = 2.6, PY = 2.2, STACK_SCALE = 0.82;
+
+  // Lugares no desktop: grade 5x3 (x em vw, y em vh) sem as tres celulas do meio.
+  var DESK = [], xs = [-38, -19, 0, 19, 38], ys = [-26, 0, 34];   // linha de cima livre do header
+  ys.forEach(function (y) { xs.forEach(function (x) { if (!(y === 0 && Math.abs(x) < 30)) DESK.push({ x: x, y: y }); }); });
+  // No toque: 3 colunas x 4 linhas, abaixo do texto.
+  var SMALL = [];
+  for (var r = 0; r < 4; r++) [-32, 0, 32].forEach(function (x) { SMALL.push({ x: x, y: -2 + r * 14.5 }); });
+
+  var cards = papers.map(function (paper, i) {
+    var el = document.createElement('div'); el.className = 'ps-card';
+    var type = paper.querySelector('.paper-type'), area = paper.querySelector('.paper-area'), h3 = paper.querySelector('h3'), by = paper.querySelector('.paper-authors');
+    el.innerHTML = '<div class="ps-meta">' + (type ? '<span class="ps-type">' + type.textContent + '</span>' : '') + (area ? '<span>' + area.textContent + '</span>' : '') + '</div>'
+      + '<h3>' + (h3 ? h3.textContent : '') + '</h3>' + (by ? '<p class="ps-by">' + by.textContent + '</p>' : '');
+    el.style.zIndex = String(i + 2);
+    el.addEventListener('click', function () { paper.scrollIntoView({ behavior: 'smooth', block: 'center' }); });
+    host.appendChild(el);
+    // leque: offsets e angulos espalhados de forma determinista
+    var col = i % 4, row = Math.floor(i / 4);
+    return {
+      el: el,
+      stack: { x: -15 + col * 9 + (i % 3) * 2, y: -10 + row * 8 + (i % 2) * 2, r: -18 + ((i * 7) % 36) },
+      restR: (i % 2 ? 1 : -1) * (1.5 + (i % 3)),
+      depth: papers.length <= 1 ? 1 : 0.55 + (i / (papers.length - 1)) * 0.75
+    };
+  });
+
+  var small = false, p = 0, spread = false;
+  var ptr = { x: 0, y: 0, cx: 0, cy: 0 }, raf = 0, inView = false;
+  function readSmall() { small = coarse.matches; ps.dataset.psSmall = String(small); }
+  function progress() {
+    var r = ps.getBoundingClientRect(), travel = r.height - window.innerHeight;
+    var raw = travel > 0 ? Math.min(1, Math.max(0, -r.top / travel)) : 1;
+    return { raw: raw, p: Math.min(1, Math.max(0, (raw - START) / (END - START))) };
+  }
+  function paint() {
+    var pr = reduced ? { raw: 1, p: 1 } : progress();
+    p = pr.p;
+    var wasSpread = spread; spread = p > 0.985;
+    if (spread !== wasSpread) ps.dataset.psSpread = String(spread);
+    if (!spread) { ptr.x = ptr.y = 0; }
+    ptr.cx += (ptr.x - ptr.cx) * 0.08; ptr.cy += (ptr.y - ptr.cy) * 0.08;
+    var drift = (!small && !reduced) ? 1 : 0;
+    cards.forEach(function (c, i) {
+      var end = small ? SMALL[i % SMALL.length] : DESK[i % DESK.length];
+      var tx = c.stack.x + (end.x - c.stack.x) * p, ty = c.stack.y + (end.y - c.stack.y) * p;
+      var dx = tx - ptr.cx * PX * c.depth * p * drift, dy = ty - ptr.cy * PY * c.depth * p * drift;
+      var rot = reduced ? 0 : c.stack.r + (((small ? 0 : c.restR)) - c.stack.r) * p;
+      var sc = STACK_SCALE + (1 - STACK_SCALE) * p;
+      c.el.style.transform = 'translate(calc(-50% + ' + dx.toFixed(3) + 'vw), calc(-50% + ' + dy.toFixed(3) + 'vh)) rotate(' + rot.toFixed(2) + 'deg) scale(' + sc.toFixed(4) + ')';
+    });
+    var fade = Math.min(1, Math.max(0, (p - 0.3) / 0.35)), grow = Math.min(1, Math.max(0, (p - 0.3) / 0.6));
+    ps.style.setProperty('--ps-copy', fade.toFixed(3));
+    ps.style.setProperty('--ps-copy-s', reduced ? '1' : (0.85 + 0.15 * grow).toFixed(4));
+    ps.style.setProperty('--ps-hint', (1 - Math.min(1, pr.raw / START)).toFixed(3));
+  }
+  function loop() {
+    raf = 0; paint();
+    // a mola do ponteiro continua ate assentar; o scroll agenda o resto
+    if (inView && (Math.abs(ptr.x - ptr.cx) > 0.002 || Math.abs(ptr.y - ptr.cy) > 0.002)) raf = requestAnimationFrame(loop);
+  }
+  function schedule() { if (!raf) raf = requestAnimationFrame(loop); }
+
+  readSmall(); paint();
+  if (coarse.addEventListener) coarse.addEventListener('change', function () { readSmall(); schedule(); });
+  window.addEventListener('scroll', schedule, { passive: true });
+  window.addEventListener('resize', schedule);
+  if (!reduced) {
+    window.addEventListener('pointermove', function (e) {
+      if (!spread || small || !inView) return;
+      ptr.x = (e.clientX / window.innerWidth) * 2 - 1; ptr.y = (e.clientY / window.innerHeight) * 2 - 1; schedule();
+    }, { passive: true });
+    document.addEventListener('pointerleave', function () { ptr.x = ptr.y = 0; schedule(); });
+  }
+  if ('IntersectionObserver' in window) {
+    new IntersectionObserver(function (es) { inView = es[0].isIntersecting; if (inView) schedule(); }, { rootMargin: '20% 0px' }).observe(ps);
+  } else inView = true;
+})();

@@ -3091,3 +3091,62 @@ body { overflow-x: clip; }
   .gp .gp-content { margin-top: 0 !important; opacity: 1 !important; pointer-events: auto !important; min-height: 0; }
   .gp .gp-caption { opacity: 1 !important; }
 }
+
+/* ==================== Ciência: bundle de artigos (stack-spread) ====================
+   Porte em vanilla do stack-spread (Hyperiux Vault). Secao alta com palco
+   pegajoso de uma tela; os cartoes vivem em vw/vh, centrados no meio do palco
+   (translate -50%), e o JS escreve translate/rotate/scale por quadro conforme o
+   progresso do scroll. So transform e opacity mudam. */
+.ps { position: relative; height: 320vh; background: var(--ground-deep); }
+.ps-stage { position: sticky; top: 0; height: 100vh; height: 100svh; overflow: hidden; }
+.ps-copy {
+  position: absolute; inset: 0; z-index: 5; display: flex; flex-direction: column; align-items: center; justify-content: center;
+  text-align: center; padding: 0 var(--sp-20); pointer-events: none;
+  opacity: var(--ps-copy, 0); transform: scale(var(--ps-copy-s, .85));
+}
+.ps-copy .kicker { margin-bottom: var(--sp-20); }
+.ps-copy h2 { font-size: clamp(30px, 4vw, 52px); line-height: 1.08; letter-spacing: -.025em; max-width: 16ch; text-wrap: balance; }
+.ps-copy p { margin-top: var(--gap-title-lead); font-size: var(--fs-lead); line-height: 1.6; color: var(--text-muted); max-width: 44ch; }
+.ps-cards { position: absolute; inset: 0; z-index: 10; }
+.ps-card {
+  position: absolute; left: 50%; top: 50%; width: 16vw; height: 21vh; will-change: transform;
+  display: flex; flex-direction: column; gap: var(--sp-8); padding: var(--sp-12);
+  background: var(--bg-card); border: 1px solid var(--border-strong); border-radius: var(--r-surface);
+  box-shadow: 0 12px 30px rgba(0,0,0,.35); overflow: hidden; cursor: pointer; pointer-events: none;
+}
+.ps[data-ps-spread="true"] .ps-card { pointer-events: auto; }
+.ps-card:hover { border-color: rgba(95,200,155,.45); }
+.ps-meta { display: flex; gap: var(--sp-4); flex-wrap: wrap; }
+.ps-meta span {
+  font-size: 10px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; line-height: 1.2;
+  padding: 3px 7px; border-radius: var(--r-pill); border: 1px solid var(--border-hairline); color: var(--text-muted);
+}
+.ps-meta .ps-type { color: var(--brand-green); border-color: rgba(95,200,155,.35); }
+.ps-card h3 {
+  font-size: clamp(11px, .85vw, 13px); font-weight: 600; line-height: 1.3; letter-spacing: -.005em; color: var(--text-primary);
+  display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden;
+}
+.ps-card .ps-by { margin-top: auto; font-size: 10px; line-height: 1.3; color: var(--text-subtle); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.ps-hint {
+  position: absolute; left: 0; right: 0; bottom: 3vh; z-index: 20; display: flex; flex-direction: column; align-items: center; gap: 4px;
+  font-size: var(--fs-12); font-weight: 600; letter-spacing: .2em; text-transform: uppercase; color: var(--text-muted);
+  opacity: var(--ps-hint, 1); pointer-events: none;
+}
+.ps-hint svg { width: 16px; height: 16px; animation: psBounce 1.2s ease-in-out infinite; }
+@keyframes psBounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(5px); } }
+/* toque: cartoes fixos em grade (o JS decide por pointer: coarse), texto no topo */
+.ps[data-ps-small="true"] { height: 260vh; }
+.ps[data-ps-small="true"] .ps-card { width: 28vw; height: 12vh; padding: var(--sp-8); gap: var(--sp-4); }
+.ps[data-ps-small="true"] .ps-card h3 { font-size: 10px; -webkit-line-clamp: 3; }
+.ps[data-ps-small="true"] .ps-meta span { font-size: 8px; padding: 2px 5px; }
+.ps[data-ps-small="true"] .ps-card .ps-by { display: none; }
+.ps[data-ps-small="true"] .ps-copy { justify-content: flex-start; padding-top: calc(var(--header-box) + 4vh); }
+.ps[data-ps-small="true"] .ps-copy h2 { font-size: clamp(26px, 7vw, 34px); }
+.ps[data-ps-small="true"] .ps-copy p { font-size: var(--fs-14); max-width: 34ch; }
+@media (prefers-reduced-motion: reduce) {
+  .ps, .ps[data-ps-small="true"] { height: auto; }
+  .ps-stage { position: relative; }
+  .ps-copy { opacity: 1; transform: none; }
+  .ps-hint { display: none; }
+  .ps-card { pointer-events: auto; }
+}
