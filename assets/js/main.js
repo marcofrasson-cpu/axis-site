@@ -1156,3 +1156,20 @@
     new IntersectionObserver(function (es) { inView = es[0].isIntersecting; if (inView) schedule(); }, { rootMargin: '20% 0px' }).observe(ps);
   } else inView = true;
 })();
+
+// ========== Filtro de vidro liquido (botoes) ==========
+// O backdrop-filter dos .btn aponta para #axis-glass: turbulencia fractal,
+// desfocada, desloca o que esta atras do botao (refracao) e desfoca de novo.
+// Injetado uma vez no body — um filtro serve a todos os botoes da pagina.
+(function () {
+  if (document.getElementById('axis-glass')) return;
+  var svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+  svg.setAttribute('aria-hidden', 'true'); svg.setAttribute('focusable', 'false');
+  svg.style.cssText = 'position:absolute;width:0;height:0;overflow:hidden;pointer-events:none';
+  svg.innerHTML = '<filter id="axis-glass" x="0%" y="0%" width="100%" height="100%" color-interpolation-filters="sRGB">'
+    + '<feTurbulence type="fractalNoise" baseFrequency="0.05 0.05" numOctaves="1" seed="1" result="t"/>'
+    + '<feGaussianBlur in="t" stdDeviation="2" result="b"/>'
+    + '<feDisplacementMap in="SourceGraphic" in2="b" scale="70" xChannelSelector="R" yChannelSelector="B" result="d"/>'
+    + '<feGaussianBlur in="d" stdDeviation="4"/></filter>';
+  document.body.appendChild(svg);
+})();

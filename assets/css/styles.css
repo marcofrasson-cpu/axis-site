@@ -2940,20 +2940,8 @@ body { overflow-x: clip; }
   .fin-body { font-size: var(--fs-16); margin-bottom: var(--sp-32); }
   .fin-ctas { flex-direction: column; align-items: center; }
 }
-/* CTA do fecho: pill de vidro (Apple) — translucida, fio claro na borda de
-   cima, o campo verde desfocado atras. O verde chapado virava um bloco. */
-.fin-ctas .btn-primary {
-  padding: var(--sp-12) var(--sp-32); border-radius: var(--r-pill); font-size: var(--fs-16); font-weight: 500; color: #fff;
-  background: rgba(95,200,155,.16); border: 1px solid rgba(255,255,255,.22); text-shadow: none;
-  box-shadow: inset 0 1px 0 rgba(255,255,255,.30), inset 0 -1px 0 rgba(0,0,0,.16), 0 10px 30px rgba(0,0,0,.28);
-  -webkit-backdrop-filter: blur(18px) saturate(160%); backdrop-filter: blur(18px) saturate(160%);
-  transition: background 160ms ease, border-color 160ms ease, transform 160ms var(--ease-settle), box-shadow 160ms ease;
-}
-.fin-ctas .btn-primary:hover {
-  background: rgba(95,200,155,.28); border-color: rgba(255,255,255,.36); transform: translateY(-1px);
-  box-shadow: inset 0 1px 0 rgba(255,255,255,.34), inset 0 -1px 0 rgba(0,0,0,.16), 0 14px 34px rgba(0,0,0,.32);
-}
-.fin-ctas .btn-primary:active { transform: translateY(0); }
+/* CTA do fecho: maior que o padrao; o vidro vem do sistema de botoes */
+.fin-ctas .btn-primary { padding: var(--sp-12) var(--sp-32); font-size: var(--fs-16); }
 
 /* ==================== Titulos: revelacao por palavra ====================
    Porte em vanilla do reveal-text (21st.dev): cada palavra de h1/h2 entra com
@@ -3150,3 +3138,42 @@ body { overflow-x: clip; }
   .ps-hint { display: none; }
   .ps-card { pointer-events: auto; }
 }
+
+/* ==================== Botões: vidro líquido ====================
+   Porte do liquid-glass-button (21st.dev). Fundo transparente, aro de vidro
+   feito de sombras internas (::after), e uma camada atras (::before) com
+   backdrop-filter num filtro SVG — turbulencia + deslocamento + desfoque —
+   que refrata o que passa por baixo (o filtro vive em main.js, injetado no
+   body). O filtro SVG so vale no Chrome/Edge; Safari e Firefox ficam com aro
+   e tint, sem refracao. O primario mantem o verde como tint: a cor age. */
+.btn {
+  position: relative; isolation: isolate;
+  background: transparent; border-color: transparent; color: var(--text-primary);
+  transition: transform 300ms var(--ease-settle), color 160ms ease;
+}
+.btn::before {
+  content: ""; position: absolute; inset: 0; z-index: -1; border-radius: inherit; overflow: hidden;
+  -webkit-backdrop-filter: url(#axis-glass); backdrop-filter: url(#axis-glass);
+}
+.btn::after {
+  content: ""; position: absolute; inset: 0; border-radius: inherit; pointer-events: none;
+  box-shadow:
+    0 0 8px rgba(0,0,0,.03), 0 2px 6px rgba(0,0,0,.08),
+    inset 3px 3px .5px -3.5px rgba(255,255,255,.09), inset -3px -3px .5px -3.5px rgba(255,255,255,.85),
+    inset 1px 1px 1px -.5px rgba(255,255,255,.6), inset -1px -1px 1px -.5px rgba(255,255,255,.6),
+    inset 0 0 6px 6px rgba(255,255,255,.12), inset 0 0 2px 2px rgba(255,255,255,.06),
+    0 0 12px rgba(0,0,0,.15);
+}
+.btn:hover { transform: scale(1.05); }
+.btn:active { transform: scale(.99); }
+.btn-primary, .btn-primary:hover { background: transparent; border-color: transparent; color: #fff; }
+.btn-primary::before { background: rgba(95,200,155,.18); }
+.btn-primary::after { box-shadow:
+    0 0 8px rgba(0,0,0,.03), 0 2px 6px rgba(0,0,0,.08),
+    inset 3px 3px .5px -3.5px rgba(255,255,255,.09), inset -3px -3px .5px -3.5px rgba(255,255,255,.85),
+    inset 1px 1px 1px -.5px rgba(255,255,255,.6), inset -1px -1px 1px -.5px rgba(255,255,255,.6),
+    inset 0 0 6px 6px rgba(95,200,155,.14), inset 0 0 2px 2px rgba(255,255,255,.06),
+    0 0 14px rgba(95,200,155,.18); }
+.btn-ghost, .btn-ghost:hover { background: transparent; border-color: transparent; }
+.btn-ghost::before { background: rgba(255,255,255,.04); }
+@media (prefers-reduced-motion: reduce) { .btn, .btn:hover, .btn:active { transform: none; } }
