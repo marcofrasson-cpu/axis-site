@@ -3262,14 +3262,22 @@ body { overflow-x: clip; }
 .bm-marker--l { flex-direction: row-reverse; transform: translate(calc(-100% + var(--sp-8) + 6px), -50%); }
 .bm-marker--head { width: auto; height: 44px; }
 .bm-marker-dot {
-  width: 12px; height: 12px; border-radius: var(--r-circle); clip-path: none;
-  background: rgba(95,200,155,.55); box-shadow: 0 0 0 1.5px rgba(95,200,155,.5), 0 0 0 5px rgba(8,17,28,.55);
+  width: 10px; height: 10px; border-radius: var(--r-circle); clip-path: none;
+  background: rgba(95,200,155,.7); box-shadow: 0 0 0 1px rgba(95,200,155,.35);
 }
-.bm-marker-label { font-size: var(--fs-12); font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--text-muted); text-shadow: 0 1px 2px rgba(8,17,28,.9); transition: color 200ms ease; }
-.bm-marker:hover .bm-marker-label, .bm-marker.is-on .bm-marker-label { color: var(--text-primary); }
-.bm-marker.is-on .bm-marker-dot { background: var(--brand-green); box-shadow: 0 0 0 2px #fff, 0 0 0 6px rgba(8,17,28,.6); transform: scale(1.15); }
+.bm-marker-label { font-size: 13px; font-weight: 500; letter-spacing: 0; text-transform: none; color: var(--text-muted); text-shadow: 0 1px 2px rgba(8,17,28,.8); transition: color 200ms ease; }
+.bm-marker:hover .bm-marker-label { color: var(--text-primary); }
+.bm-marker.is-on .bm-marker-label { color: var(--text-primary); font-weight: 600; }
+.bm-marker.is-on .bm-marker-dot { background: var(--brand-green); box-shadow: 0 0 0 3px rgba(95,200,155,.22); transform: none; }
+/* sem pulso no marcador ativo nem respiracao no nucleo: a selecao ja e clara */
+.bm-marker.is-on::after { display: none; }
+.bm-hub { animation: none; }
+/* cabecalho em duas colunas */
+.bm-head { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: var(--sp-20) var(--sp-56); align-items: end; }
+.bm-head-r { display: flex; flex-direction: column; gap: var(--sp-20); padding-bottom: 4px; }
+@media (max-width: 900px) { .bm-head { grid-template-columns: 1fr; } }
 /* lista de regioes */
-.bm-tabs { display: flex; flex-wrap: wrap; gap: var(--sp-8); margin-top: var(--sp-12); }
+.bm-tabs { display: flex; flex-wrap: wrap; gap: var(--sp-8); margin-top: 0; }
 .bm-tab {
   font: inherit; font-size: var(--fs-14); font-weight: 500; color: var(--text-muted); cursor: pointer;
   padding: 7px 14px; border: 1px solid var(--border-hairline); border-radius: var(--r-pill); background: transparent;
@@ -3308,8 +3316,8 @@ body { overflow-x: clip; }
 .bm-rev { font-size: var(--fs-12); color: var(--text-subtle); margin: 0 !important; }
 /* mapa mais perto do titulo; intro curta e sem serifa */
 .bodymap { padding: var(--sp-32) 0 var(--space-section); }   /* primeira secao da pagina: o header ja da ar em cima */
-.bodymap .section-intro { font-family: var(--font-body); font-size: var(--fs-16); line-height: 1.55; color: var(--text-muted); margin: var(--sp-12) 0 0; max-width: 56ch; }
-.bodymap .section-title { max-width: 22ch; }
+.bodymap .section-intro { font-family: var(--font-body); font-size: var(--fs-16); line-height: 1.55; color: var(--text-muted); margin: 0; max-width: 46ch; }
+.bodymap .section-title { max-width: 16ch; margin-bottom: 0; }
 .bm-stage { margin-top: var(--sp-20); }
 @media (max-width: 640px) { .bm-marker-label { display: none; } .bm-marker { padding: 0; transform: translate(-50%, -50%); } }
 @media (prefers-reduced-motion: reduce) { .bm-hub { animation: none; } }
