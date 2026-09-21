@@ -2593,45 +2593,76 @@ body { overflow-x: clip; }
 .sv-stats .stat-affix { color: var(--brand-green); }
 
 /* ==================== Contato — formulario (estilo Until) ==================== */
-.ct-wrap { max-width: 780px; margin: 0 auto; }
-.ct-head { text-align: center; margin-bottom: 36px; }
-.ct-head .ab-eyebrow { justify-content: center; }
-.ct-title { font-size: clamp(32px, 4vw, 52px); font-weight: 700; letter-spacing: -0.03em; margin: 16px 0 14px; line-height: 1.06; }
-.ct-intro { color: var(--lead-color); font-size: var(--fs-lead); max-width: 52ch; margin: 0 auto; }
-.ct-form { background: linear-gradient(160deg, #12233a, #0e1b2c); border: 1px solid var(--border-hairline); border-radius: var(--r-surface); padding: 40px; box-shadow: var(--shadow-lg); }
-.ct-row { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-bottom: 18px; }
-.ct-field { display: flex; flex-direction: column; gap: 8px; margin-bottom: 18px; }
-.ct-row .ct-field { margin-bottom: 0; }
-.ct-field label { font-size: var(--fs-14); color: var(--text-muted); font-weight: 500; }
+/* ==================== Contato — Mercury (porte em vanilla) ==================== */
+.mx { position: relative; overflow: hidden; isolation: isolate; min-height: calc(100svh - var(--header-box)); display: flex; align-items: center; background: var(--ground-deepest); }
+.mx-defs { position: absolute; width: 0; height: 0; overflow: hidden; }
+.mx-stage { position: absolute; inset: 0; z-index: 0; filter: url(#ctGoo); opacity: .38; pointer-events: none; }
+.mx-blob {
+  position: absolute; left: var(--x); top: var(--y); width: var(--s); height: var(--s); border-radius: var(--r-circle);
+  background: linear-gradient(135deg, #3fa57c, #123d2f); filter: blur(22px);
+  animation: mxFloat var(--t, 24s) infinite alternate ease-in-out; animation-delay: var(--d, 0s);
+  transition: margin 120ms ease-out;   /* suaviza a paralaxe do ponteiro (JS escreve margin) */
+}
+@keyframes mxFloat { 0% { transform: translate(0, 0) scale(1); } 33% { transform: translate(8vw, 14vh) scale(1.18); } 66% { transform: translate(-4vw, 8vh) scale(.84); } 100% { transform: translate(4vw, -8vh) scale(1.08); } }
+.ct-wrap { position: relative; z-index: 1; max-width: 560px; margin: 0 auto; width: 100%; }
+.ct-head { text-align: left; margin-bottom: var(--sp-56); }
+.ct-eyebrow { display: block; font-size: var(--fs-12); font-weight: 600; letter-spacing: .3em; text-transform: uppercase; color: var(--text-subtle); margin-bottom: var(--sp-12); }
+.ct-title { font-size: clamp(44px, 6vw, 72px); font-weight: 700; letter-spacing: -.035em; line-height: .95; margin: 0 0 var(--sp-20); }
+.ct-intro { color: var(--lead-color); font-size: var(--fs-16); max-width: 40ch; margin: 0; }
+/* formulario: sem caixa; cada campo e um bloco que desliza 10px no foco */
+.ct-form { background: none; border: 0; border-radius: 0; padding: 0; box-shadow: none; }
+.ct-row { display: grid; grid-template-columns: 1fr 1fr; gap: var(--sp-32); margin-bottom: 0; }
+.ct-field { position: relative; display: flex; flex-direction: column; gap: 0; margin-bottom: var(--sp-32); transition: transform 400ms cubic-bezier(.2, 1, .3, 1); }
+.ct-row .ct-field { margin-bottom: var(--sp-32); }
+.ct-field:focus-within { transform: translateX(10px); }
+.ct-field label { font-size: var(--fs-12); font-weight: 600; letter-spacing: .12em; text-transform: uppercase; color: var(--text-subtle); margin-bottom: var(--sp-8); }
 .ct-field input, .ct-field select, .ct-field textarea {
-  font: inherit; font-size: var(--fs-16); color: var(--text-primary); background: rgba(255, 255, 255, 0.03);
-  border: 1px solid var(--border-hairline); border-radius: var(--r-nested); padding: 12px 14px; width: 100%;
-  transition: border-color 150ms ease, background 150ms ease;
+  font: inherit; font-size: 18px; color: var(--text-primary); background: transparent;
+  border: 0; border-bottom: 1px solid var(--border-strong); border-radius: 0; padding: var(--sp-12) 0; width: 100%;
+  transition: border-color 400ms ease;
 }
-.ct-field input:focus, .ct-field select:focus, .ct-field textarea:focus {
-  outline: none; border-color: var(--brand-green); background: rgba(95, 200, 155, 0.05);
-}
-.ct-field textarea { resize: vertical; min-height: 112px; }
+.ct-field input:focus, .ct-field select:focus, .ct-field textarea:focus { outline: none; border-color: transparent; background: transparent; }
+.ct-glow { position: absolute; left: 0; bottom: 0; height: 2px; width: 0; background: var(--brand-green); transition: width 600ms cubic-bezier(.2, 1, .3, 1); }
+.ct-field:focus-within .ct-glow { width: 100%; }
+.ct-field textarea { resize: vertical; min-height: 80px; }
 .ct-field select {
-  appearance: none; -webkit-appearance: none;
+  appearance: none; -webkit-appearance: none; cursor: pointer;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8' fill='none' stroke='%2394a3b8' stroke-width='1.6'%3E%3Cpath d='M1 1.5L6 6.5L11 1.5'/%3E%3C/svg%3E");
-  background-repeat: no-repeat; background-position: right 14px center; padding-right: 36px;
+  background-repeat: no-repeat; background-position: right 4px center; padding-right: 28px;
 }
-.ct-aviso {
-  margin: 14px 0 0; font-family: var(--font-body); font-size: var(--fs-14);
-  line-height: 1.6; color: var(--brand-green);
-}
-.ct-privacy-note { font-size: var(--fs-12); line-height: 1.5; color: var(--text-subtle); background: rgba(95, 200, 155, 0.05); border-left: 2px solid var(--brand-green); border-radius: var(--r-nested); padding: 12px 14px; margin: 6px 0 4px; }
-.ct-consent { display: flex; gap: 10px; align-items: flex-start; font-size: var(--fs-14); color: var(--text-muted); margin: 8px 0 22px; line-height: 1.5; cursor: pointer; }
+.ct-field select option { background: var(--ground-raised); color: var(--text-primary); }
+.ct-aviso { margin: var(--sp-12) 0 0; font-family: var(--font-body); font-size: var(--fs-14); line-height: 1.6; color: var(--brand-green); }
+.ct-privacy-note { font-size: var(--fs-12); line-height: 1.5; color: var(--text-subtle); background: none; border: 0; border-left: 2px solid var(--brand-green); border-radius: 0; padding: 4px 0 4px var(--sp-12); margin: 0 0 var(--sp-20); }
+.ct-consent { display: flex; gap: var(--sp-12); align-items: flex-start; font-size: var(--fs-14); color: var(--text-muted); margin: 0 0 var(--sp-32); line-height: 1.5; cursor: pointer; }
 .ct-consent input { margin-top: 3px; accent-color: var(--brand-green); flex-shrink: 0; width: 16px; height: 16px; }
-.ct-submit { width: 100%; }
-.ct-note { font-size: var(--fs-12); color: var(--text-subtle); text-align: center; margin-top: 12px; }
-.ct-channels { display: flex; justify-content: center; gap: 24px; flex-wrap: wrap; margin-top: 28px; font-size: var(--fs-14); color: var(--text-muted); }
-.ct-channels a { color: var(--brand-green); }
+/* botao: solido, a gota verde atras, os dois no mesmo filtro goo (se fundem no hover) */
+.ct-submit-wrap { position: relative; filter: url(#ctGoo); margin-top: var(--sp-12); }
+.ct-drop {
+  position: absolute; left: 50%; top: 50%; width: 100%; height: 100%; transform: translate(-50%, -50%);
+  background: var(--brand-green); border-radius: var(--r-pill); z-index: 1;
+  transition: transform 500ms cubic-bezier(.175, .885, .32, 1.275), filter 500ms ease;
+}
+.ct-submit-wrap:hover .ct-drop { transform: translate(-50%, -50%) scale(1.05, 1.22); filter: brightness(1.15); }
+.ct-submit {
+  position: relative; z-index: 2; width: 100%; padding: 18px 32px; border: 0; cursor: pointer; font: inherit;
+  background: var(--brand-green); color: var(--brand-navy); font-size: var(--fs-14); font-weight: 700; letter-spacing: .18em; text-transform: uppercase;
+  transition: letter-spacing 300ms ease;
+}
+.ct-submit:hover { letter-spacing: .3em; }
+.ct-submit:focus-visible { outline: 2px solid var(--text-primary); outline-offset: 3px; }
+.ct-note { font-size: var(--fs-12); color: var(--text-subtle); text-align: left; margin-top: var(--sp-12); }
+.ct-channels { display: flex; justify-content: space-between; gap: var(--sp-20); flex-wrap: wrap; margin-top: var(--sp-56); font-size: var(--fs-12); font-weight: 600; letter-spacing: .18em; text-transform: uppercase; color: var(--text-subtle); }
+.ct-channels a { color: var(--text-subtle); text-decoration: none; transition: color 300ms; }
+.ct-channels a:hover { color: var(--text-primary); }
 @media (max-width: 640px) {
   .ct-row { grid-template-columns: 1fr; gap: 0; }
-  .ct-row .ct-field { margin-bottom: 18px; }
-  .ct-form { padding: 26px; }
+  .ct-head { margin-bottom: var(--sp-32); }
+  .mx-stage { opacity: .4; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .mx-blob { animation: none; transition: none; }
+  .ct-field, .ct-glow, .ct-drop, .ct-submit { transition: none; }
+  .ct-field:focus-within { transform: none; }
 }
 
 /* ==================== Servicos — Percurso (.pc) ====================

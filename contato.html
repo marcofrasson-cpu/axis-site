@@ -28,7 +28,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Spectral:wght@400;500;600;700&family=Hanken+Grotesk:wght@400;500;600;700&display=swap">
 <link rel="icon" type="image/svg+xml" href="/assets/img/logo.svg">
-<link rel="stylesheet" href="/assets/css/styles.css?v=202609210926">
+<link rel="stylesheet" href="/assets/css/styles.css?v=202609210930">
 <noscript><style>.reveal,.reveal-stagger [class*="-card"],.blog-highlight.reveal .blog-feature-image,.blog-highlight.reveal .blog-feature-content{opacity:1!important;transform:none!important;filter:none!important}</style></noscript>
 <script type="application/ld+json">
 {"@context":"https://schema.org","@type":"ContactPage","url":"https://axisfitomed.com.br/contato","name":"Fale com a equipe — Axis FitoMed","inLanguage":"pt-BR","isPartOf":{"@type":"WebSite","url":"https://axisfitomed.com.br/"},"mainEntity":{"@type":"MedicalClinic","@id":"https://axisfitomed.com.br/#clinica","name":"Axis FitoMed","url":"https://axisfitomed.com.br/","email":"contato@axisfitomed.com.br","contactPoint":{"@type":"ContactPoint","contactType":"agendamento","email":"contato@axisfitomed.com.br","availableLanguage":"Portuguese","areaServed":"BR"},"openingHoursSpecification":{"@type":"OpeningHoursSpecification","dayOfWeek":["Monday","Tuesday","Wednesday","Thursday","Friday"],"opens":"08:00","closes":"18:00"}}}
@@ -65,45 +65,58 @@
 
 <main id="conteudo">
 
-<section class="section ct-section reveal">
+<!-- Contato (Mercury Login, porte em vanilla): palco com gotas verdes em filtro
+     "goo" (SVG), cabecalho a esquerda, campos so com sublinhado e barra que
+     acende no foco, botao solido com a gota atras. O envio (mailto) e o mesmo
+     de sempre — ids dos campos intactos. -->
+<section class="section ct-section mx reveal">
+  <svg class="mx-defs" aria-hidden="true" focusable="false"><defs><filter id="ctGoo"><feGaussianBlur in="SourceGraphic" stdDeviation="12" result="blur"/><feColorMatrix in="blur" mode="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 19 -9" result="goo"/><feComposite in="SourceGraphic" in2="goo" operator="atop"/></filter></defs></svg>
+  <div class="mx-stage" aria-hidden="true">
+    <span class="mx-blob" style="--s:260px;--x:12%;--y:18%;--d:-4s;--t:24s"></span>
+    <span class="mx-blob" style="--s:340px;--x:64%;--y:10%;--d:-11s;--t:29s"></span>
+    <span class="mx-blob" style="--s:220px;--x:78%;--y:58%;--d:-7s;--t:21s"></span>
+    <span class="mx-blob" style="--s:300px;--x:26%;--y:66%;--d:-16s;--t:27s"></span>
+    <span class="mx-blob" style="--s:180px;--x:48%;--y:40%;--d:-2s;--t:19s"></span>
+    <span class="mx-blob" style="--s:240px;--x:88%;--y:30%;--d:-13s;--t:31s"></span>
+  </div>
   <div class="container ct-wrap">
     <div class="ct-head">
-      <span class="ab-eyebrow">Contato</span>
-      <h1 class="ct-title">Fale com a equipe</h1>
-      <p class="ct-intro">Agende uma avaliação, tire dúvidas ou solicite mais informações. Respondemos em até um dia útil.</p>
+      <span class="ct-eyebrow">Contato · Curitiba · PR</span>
+      <h1 class="ct-title">Fale com<br>a equipe.</h1>
+      <p class="ct-intro">Agende uma avaliação, tire dúvidas ou peça mais informações. Respondemos em até um dia útil.</p>
     </div>
 
     <form class="ct-form" id="contatoForm" novalidate>
       <div class="ct-row">
-        <div class="ct-field"><label for="nome">Nome *</label><input type="text" id="nome" name="nome" required autocomplete="given-name"></div>
-        <div class="ct-field"><label for="sobrenome">Sobrenome *</label><input type="text" id="sobrenome" name="sobrenome" required autocomplete="family-name"></div>
+        <div class="ct-field"><label for="nome">Nome *</label><input type="text" id="nome" name="nome" required autocomplete="given-name"><span class="ct-glow"></span></div>
+        <div class="ct-field"><label for="sobrenome">Sobrenome *</label><input type="text" id="sobrenome" name="sobrenome" required autocomplete="family-name"><span class="ct-glow"></span></div>
       </div>
       <div class="ct-row">
-        <div class="ct-field"><label for="email">E-mail *</label><input type="email" id="email" name="email" required autocomplete="email"></div>
-        <div class="ct-field"><label for="telefone">WhatsApp / Telefone</label><input type="tel" id="telefone" name="telefone" autocomplete="tel"></div>
+        <div class="ct-field"><label for="email">E-mail *</label><input type="email" id="email" name="email" required autocomplete="email"><span class="ct-glow"></span></div>
+        <div class="ct-field"><label for="telefone">WhatsApp / Telefone</label><input type="tel" id="telefone" name="telefone" autocomplete="tel"><span class="ct-glow"></span></div>
       </div>
       <div class="ct-row">
-        <div class="ct-field"><label for="cidade">Cidade</label><input type="text" id="cidade" name="cidade" autocomplete="address-level2"></div>
+        <div class="ct-field"><label for="cidade">Cidade</label><input type="text" id="cidade" name="cidade" autocomplete="address-level2"><span class="ct-glow"></span></div>
         <div class="ct-field"><label for="assunto">Assunto</label>
           <select id="assunto" name="assunto">
             <option>Agendar avaliação</option>
             <option>Dúvida sobre tratamento</option>
             <option>Renovação de receita</option>
             <option>Outro</option>
-          </select>
+          </select><span class="ct-glow"></span>
         </div>
       </div>
-      <div class="ct-field"><label for="mensagem">Mensagem *</label><textarea id="mensagem" name="mensagem" rows="4" required></textarea></div>
+      <div class="ct-field"><label for="mensagem">Mensagem *</label><textarea id="mensagem" name="mensagem" rows="3" required></textarea><span class="ct-glow"></span></div>
       <p class="ct-privacy-note">Não envie exames, laudos ou informações clínicas sensíveis por este formulário. Quando necessário, nossa equipe solicitará esses dados por um canal seguro.</p>
-      <label class="ct-consent"><input type="checkbox" id="consent" required> Concordo em ser contatado pela Axis FitoMed sobre a minha solicitação e com o tratamento dos meus dados para esse fim, nos termos da <a href="/privacidade">Política de Privacidade</a>.</label>
-      <button type="submit" class="btn btn-primary ct-submit">Enviar</button>
+      <label class="ct-consent"><input type="checkbox" id="consent" required><span>Concordo em ser contatado pela Axis FitoMed sobre a minha solicitação e com o tratamento dos meus dados para esse fim, nos termos da <a href="/privacidade">Política de Privacidade</a>.</span></label>
+      <div class="ct-submit-wrap"><span class="ct-drop" aria-hidden="true"></span><button type="submit" class="ct-submit">Enviar mensagem</button></div>
       <p class="ct-aviso" id="contatoAviso" role="status" hidden></p>
       <p class="ct-note">O envio abre seu app de e-mail com a mensagem já preenchida.</p>
     </form>
 
     <div class="ct-channels">
       <a href="mailto:contato@axisfitomed.com.br">contato@axisfitomed.com.br</a>
-      <span>Seg–Sex, 8h–18h</span>
+      <span>Seg–Sex · 8h–18h</span>
     </div>
   </div>
 </section>
@@ -154,7 +167,7 @@
   </div>
 </footer>
 
-<script src="/assets/js/main.js?v=202609210926"></script>
+<script src="/assets/js/main.js?v=202609210930"></script>
 <script defer src="/_vercel/insights/script.js"></script>
 </body>
 </html>

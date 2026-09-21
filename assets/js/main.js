@@ -1198,3 +1198,19 @@
     new IntersectionObserver(function (es) { inView = es[0].isIntersecting; if (inView) schedule(); }, { rootMargin: '20% 0px' }).observe(ps);
   } else inView = true;
 })();
+
+// ========== Contato: paralaxe das gotas (Mercury) ==========
+// O ponteiro empurra cada gota por margin (nao por transform: o transform e da
+// animacao de flutuacao). So com ponteiro fino; sob reduced-motion nao roda.
+(function () {
+  var blobs = [].slice.call(document.querySelectorAll('.mx-blob'));
+  if (!blobs.length || window.matchMedia('(prefers-reduced-motion: reduce)').matches || !window.matchMedia('(hover: hover)').matches) return;
+  var raf = 0, px = 0, py = 0;
+  document.addEventListener('pointermove', function (e) {
+    px = e.clientX / window.innerWidth; py = e.clientY / window.innerHeight;
+    if (!raf) raf = requestAnimationFrame(function () {
+      raf = 0;
+      blobs.forEach(function (b, i) { var sp = (i + 1) * 16; b.style.marginLeft = (px * sp) + 'px'; b.style.marginTop = (py * sp) + 'px'; });
+    });
+  }, { passive: true });
+})();
