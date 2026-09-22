@@ -28,7 +28,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Spectral:wght@400;500;600;700&family=Hanken+Grotesk:wght@400;500;600;700&display=swap">
 <link rel="icon" type="image/svg+xml" href="/assets/img/logo.svg">
-<link rel="stylesheet" href="/assets/css/styles.css?v=202609221909">
+<link rel="stylesheet" href="/assets/css/styles.css?v=202609221915">
 <noscript><style>.reveal,.reveal-stagger [class*="-card"],.blog-highlight.reveal .blog-feature-image,.blog-highlight.reveal .blog-feature-content{opacity:1!important;transform:none!important;filter:none!important}</style></noscript>
 <script type="application/ld+json">
 {"@context":"https://schema.org","@type":"MedicalClinic","name":"Axis FitoMed","url":"https://axisfitomed.com.br/","address":{"@type":"PostalAddress","addressLocality":"Curitiba","addressRegion":"PR","addressCountry":"BR"},"employee":[{"@type":"Physician","name":"Dr. Marco Aurélio Frasson","medicalSpecialty":"Ortopedia e Traumatologia","identifier":"CRM-PR 47986 · RQE 37027"},{"@type":"Physician","name":"Dr. Gustavo Amaral","medicalSpecialty":"Ortopedia e Traumatologia","identifier":"CRM-PR 33952 · RQE 32175"},{"@type":"Physician","name":"Dr. Leandro Bortoluzzi Daniel","medicalSpecialty":"Cirurgia Geral","identifier":"CRM-PR 45192 · RQE 35978"}],"@id":"https://axisfitomed.com.br/#clinica","openingHoursSpecification":{"@type":"OpeningHoursSpecification","dayOfWeek":["Monday","Tuesday","Wednesday","Thursday","Friday"],"opens":"08:00","closes":"18:00"}}
@@ -65,10 +65,15 @@
 
 <main id="conteudo">
 
-<section class="page-hero">
+<!-- Sparkles (porte em vanilla, canvas 2D): particulas que cintilam atras do
+     titulo, mais densas sob ele, e um feixe fino sob o h1. Anima so com o hero
+     em tela; reduced-motion desenha um quadro. -->
+<section class="page-hero page-hero--sparks">
+  <canvas class="sp-field" aria-hidden="true"></canvas>
   <div class="container">
     <span class="page-eyebrow">Equipe</span>
     <h1>Médicos, antes de tudo.</h1>
+    <span class="sp-beam" aria-hidden="true"></span>
     <p>Formação em ortopedia, traumatologia e medicina endocanabinoide — e prática clínica consolidada. Quem conduz cada avaliação e acompanhamento na Axis.</p>
   </div>
 </section>
@@ -196,7 +201,7 @@
   </div>
 </footer>
 
-<script src="/assets/js/main.js?v=202609221909"></script>
+<script src="/assets/js/main.js?v=202609221915"></script>
 <script defer src="/_vercel/insights/script.js"></script>
 </body>
 </html>

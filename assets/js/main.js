@@ -1315,3 +1315,50 @@
   window.addEventListener('resize', schedule);
   paint();
 })();
+
+// ========== Sparkles (hero de /equipe, canvas 2D) ==========
+// Porte do SparklesCore (tsparticles) sem a biblioteca: pontos de 0.6–1.4px
+// com deriva lenta em direcao aleatoria e opacidade oscilando (cada um com
+// fase e velocidade proprias) — o cintilar. Densidade ~110 por 400x400,
+// mais concentrados sob o titulo (a mascara CSS faz o resto). Anima so com o
+// hero em tela; reduced-motion desenha um quadro e para.
+(function () {
+  var hero = document.querySelector('.page-hero--sparks'), canvas = hero && hero.querySelector('.sp-field');
+  if (!hero || !canvas || !canvas.getContext) return;
+  var ctx = canvas.getContext('2d'), reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var W = 0, H = 0, pts = [], running = false, raf = 0, last = 0;
+  function resize() {
+    var r = hero.getBoundingClientRect(), dpr = Math.min(window.devicePixelRatio || 1, 2);
+    W = Math.round(r.width); H = Math.round(r.height);
+    canvas.width = W * dpr; canvas.height = H * dpr; ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    var n = Math.round((W * H) / (400 * 400) * 110);
+    pts = [];
+    for (var i = 0; i < n; i++) {
+      var a = Math.random() * Math.PI * 2, sp = 0.1 + Math.random() * 0.9;
+      pts.push({ x: Math.random() * W, y: Math.random() * H, vx: Math.cos(a) * sp * 0.02, vy: Math.sin(a) * sp * 0.02,
+        r: 0.6 + Math.random() * 0.8, ph: Math.random() * Math.PI * 2, w: (0.6 + Math.random() * 0.9) * 0.9 });
+    }
+    if (reduced) draw(0, 0);
+  }
+  function draw(t, dt) {
+    ctx.clearRect(0, 0, W, H);
+    for (var i = 0; i < pts.length; i++) {
+      var p = pts[i];
+      if (dt) { p.x += p.vx * dt; p.y += p.vy * dt; if (p.x < -2) p.x = W + 2; if (p.x > W + 2) p.x = -2; if (p.y < -2) p.y = H + 2; if (p.y > H + 2) p.y = -2; }
+      var o = 0.1 + 0.9 * (0.5 + 0.5 * Math.sin(p.ph + t * 0.001 * p.w * 4));
+      ctx.globalAlpha = o; ctx.fillStyle = '#e6fff3';
+      ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2); ctx.fill();
+    }
+    ctx.globalAlpha = 1;
+  }
+  function loop(t) { if (!running) return; var dt = last ? Math.min(50, t - last) : 16; last = t; draw(t, dt); raf = requestAnimationFrame(loop); }
+  function start() { if (running || reduced) return; running = true; last = 0; raf = requestAnimationFrame(loop); }
+  function stop() { running = false; if (raf) cancelAnimationFrame(raf); raf = 0; }
+  resize();
+  if ('ResizeObserver' in window) new ResizeObserver(resize).observe(hero); else window.addEventListener('resize', resize);
+  if (!reduced) {
+    if ('IntersectionObserver' in window) new IntersectionObserver(function (es) { es.forEach(function (e) { if (e.isIntersecting) start(); else stop(); }); }, { threshold: 0.05 }).observe(hero);
+    else start();
+    document.addEventListener('visibilitychange', function () { if (document.visibilityState === 'visible') { if (!running) start(); } else stop(); });
+  }
+})();
