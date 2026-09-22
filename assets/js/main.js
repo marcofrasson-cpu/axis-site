@@ -1206,20 +1206,50 @@
   } else inView = true;
 })();
 
-// ========== Contato: paralaxe das gotas (Mercury) ==========
-// O ponteiro empurra cada gota por margin (nao por transform: o transform e da
-// animacao de flutuacao). So com ponteiro fino; sob reduced-motion nao roda.
+// ========== Contato: fumaca (Smokey, WebGL) ==========
+// Shader do componente: distorcao iterada em cosseno gera ondas que se
+// deformam; o ponteiro desloca a fase (ripple). Cor: verde profundo da
+// paleta. Meia resolucao; anima so com a secao em tela; sob reduced-motion
+// desenha um quadro e para.
 (function () {
-  var blobs = [].slice.call(document.querySelectorAll('.mx-blob'));
-  if (!blobs.length || window.matchMedia('(prefers-reduced-motion: reduce)').matches || !window.matchMedia('(hover: hover)').matches) return;
-  var raf = 0, px = 0, py = 0;
-  document.addEventListener('pointermove', function (e) {
-    px = e.clientX / window.innerWidth; py = e.clientY / window.innerHeight;
-    if (!raf) raf = requestAnimationFrame(function () {
-      raf = 0;
-      blobs.forEach(function (b, i) { var sp = (i + 1) * 16; b.style.marginLeft = (px * sp) + 'px'; b.style.marginTop = (py * sp) + 'px'; });
-    });
-  }, { passive: true });
+  var stage = document.querySelector('.sk'), canvas = stage && stage.querySelector('.sk-field');
+  if (!stage || !canvas) return;
+  var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var gl = canvas.getContext('webgl', { antialias: false, alpha: false, powerPreference: 'low-power' });
+  if (!gl) return;
+  var VERT = 'attribute vec2 a; void main(){ gl_Position = vec4(a, 0.0, 1.0); }';
+  var FRAG = [
+    'precision mediump float; uniform vec2 iResolution; uniform float iTime; uniform vec2 iMouse; uniform vec3 u_color;',
+    'void main(){',
+    '  vec2 c = (2.0 * gl_FragCoord.xy - iResolution.xy) / min(iResolution.x, iResolution.y);',
+    '  float t = iTime * 0.5; vec2 m = iMouse / iResolution; vec2 rc = 2.0 * m - 1.0; vec2 d = c;',
+    '  for (float i = 1.0; i < 8.0; i++) { d.x += 0.5 / i * cos(i * 2.0 * d.y + t + rc.x * 3.1415); d.y += 0.5 / i * cos(i * 2.0 * d.x + t + rc.y * 3.1415); }',
+    '  float wave = abs(sin(d.x + d.y + t)); float glow = smoothstep(0.9, 0.2, wave);',
+    '  gl_FragColor = vec4(u_color * glow, 1.0); }'
+  ].join('\n');
+  function sh(type, src) { var s = gl.createShader(type); gl.shaderSource(s, src); gl.compileShader(s); return gl.getShaderParameter(s, gl.COMPILE_STATUS) ? s : null; }
+  var vs = sh(gl.VERTEX_SHADER, VERT), fs = sh(gl.FRAGMENT_SHADER, FRAG); if (!vs || !fs) return;
+  var prog = gl.createProgram(); gl.attachShader(prog, vs); gl.attachShader(prog, fs); gl.linkProgram(prog); if (!gl.getProgramParameter(prog, gl.LINK_STATUS)) return;
+  gl.useProgram(prog);
+  var buf = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, buf); gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 1, -1, -1, 1, 1, 1]), gl.STATIC_DRAW);
+  var loc = gl.getAttribLocation(prog, 'a'); gl.enableVertexAttribArray(loc); gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
+  var U = { res: gl.getUniformLocation(prog, 'iResolution'), t: gl.getUniformLocation(prog, 'iTime'), m: gl.getUniformLocation(prog, 'iMouse'), c: gl.getUniformLocation(prog, 'u_color') };
+  gl.uniform3f(U.c, 0x1c / 255, 0x5a / 255, 0x45 / 255);   // verde profundo da paleta
+  var mx = 0.5, my = 0.5, tx = 0.5, ty = 0.5, hover = false, dpr = 0.5;
+  function resize() { var r = stage.getBoundingClientRect(); dpr = Math.min(window.devicePixelRatio || 1, 2) * 0.5; canvas.width = Math.max(1, Math.round(r.width * dpr)); canvas.height = Math.max(1, Math.round(r.height * dpr)); gl.viewport(0, 0, canvas.width, canvas.height); if (reduced) draw(0); }
+  function draw(t) { mx += (tx - mx) * 0.06; my += (ty - my) * 0.06; gl.uniform2f(U.res, canvas.width, canvas.height); gl.uniform1f(U.t, t * 0.001); gl.uniform2f(U.m, mx * canvas.width, my * canvas.height); gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4); }
+  var running = false, raf = 0;
+  function loop(t) { if (!running) return; draw(t); raf = requestAnimationFrame(loop); }
+  function start() { if (running || reduced) return; running = true; raf = requestAnimationFrame(loop); }
+  function stop() { running = false; if (raf) cancelAnimationFrame(raf); raf = 0; }
+  resize();
+  if ('ResizeObserver' in window) new ResizeObserver(resize).observe(stage); else window.addEventListener('resize', resize);
+  if (!reduced) {
+    stage.addEventListener('pointermove', function (e) { var r = stage.getBoundingClientRect(); tx = (e.clientX - r.left) / r.width; ty = 1 - (e.clientY - r.top) / r.height; }, { passive: true });
+    stage.addEventListener('pointerleave', function () { tx = 0.5; ty = 0.5; });
+    if ('IntersectionObserver' in window) new IntersectionObserver(function (es) { es.forEach(function (e) { if (e.isIntersecting) start(); else stop(); }); }, { threshold: 0.05 }).observe(stage); else start();
+    document.addEventListener('visibilitychange', function () { if (document.visibilityState === 'visible') { if (!running) start(); } else stop(); });
+  }
 })();
 
 // ========== Trilha do percurso (stepper) ==========
