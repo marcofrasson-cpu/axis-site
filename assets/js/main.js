@@ -1313,7 +1313,7 @@
   var sec = document.querySelector('[data-journey]');
   if (!sec) return;
   var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  if (reduced || window.innerWidth <= 700) { sec.setAttribute('data-jn-static', ''); if (reduced) return; }
+  if (reduced) { sec.setAttribute('data-jn-static', ''); return; }
   var track = sec.querySelector('[data-jn-track]'), line = sec.querySelector('[data-jn-line]');
   var items = [].slice.call(sec.querySelectorAll('[data-jn-item]')).map(function (el) {
     return { el: el, stem: el.querySelector('.jn-stem'), dot: el.querySelector('.jn-dot'), masks: [].slice.call(el.querySelectorAll('.jn-mask > *')) };
@@ -1340,11 +1340,23 @@
       it.masks.forEach(function (m, k) { var d = easeOut(clamp((q - 0.25 - k * 0.06) / 0.7)); m.style.transform = 'translateY(' + ((1 - d) * 110).toFixed(2) + '%)'; });
     });
   }
-  function loop() { if (!inView || isMobile()) { raf = 0; return; } paint(); raf = requestAnimationFrame(loop); }
+  // Celular: lista vertical; cada etapa recebe --q pelo scroll (chega a 1 quando
+  // o topo da etapa passa 70% da tela) — a haste se preenche, o ponto acende.
+  function paintMobile() {
+    var vh = window.innerHeight;
+    items.forEach(function (it) {
+      var r = it.el.getBoundingClientRect();
+      var q = clamp((vh * 0.7 - r.top) / Math.max(1, r.height * 0.9));
+      it.el.style.setProperty('--q', q.toFixed(3));
+      it.el.classList.toggle('is-on', q > 0.05);
+    });
+  }
+  function loop() { if (!inView) { raf = 0; return; } if (isMobile()) paintMobile(); else paint(); raf = requestAnimationFrame(loop); }
   function start() { if (!raf) raf = requestAnimationFrame(loop); }
   function mode() {
-    if (isMobile()) { sec.setAttribute('data-jn-static', ''); sec.removeAttribute('data-jn-ready'); }
-    else { sec.removeAttribute('data-jn-static'); sec.setAttribute('data-jn-ready', ''); start(); }
+    if (isMobile()) { sec.setAttribute('data-jn-static', ''); sec.removeAttribute('data-jn-ready'); items.forEach(function (it) { it.el.classList.add('jn-item--static'); }); }
+    else { sec.removeAttribute('data-jn-static'); sec.setAttribute('data-jn-ready', ''); items.forEach(function (it) { it.el.classList.remove('jn-item--static'); it.el.style.removeProperty('--q'); }); }
+    start();
   }
   if ('IntersectionObserver' in window) {
     new IntersectionObserver(function (es) { inView = es[0].isIntersecting; if (inView) start(); }, { rootMargin: '10% 0px' }).observe(sec);
