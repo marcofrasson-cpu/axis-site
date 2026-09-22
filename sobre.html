@@ -28,7 +28,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Spectral:wght@400;500;600;700&family=Hanken+Grotesk:wght@400;500;600;700&display=swap">
 <link rel="icon" type="image/svg+xml" href="/assets/img/logo.svg">
-<link rel="stylesheet" href="/assets/css/styles.css?v=202609221920">
+<link rel="stylesheet" href="/assets/css/styles.css?v=202609221928">
 <noscript><style>.reveal,.reveal-stagger [class*="-card"],.blog-highlight.reveal .blog-feature-image,.blog-highlight.reveal .blog-feature-content{opacity:1!important;transform:none!important;filter:none!important}</style></noscript>
 <script type="application/ld+json">
 {"@context":"https://schema.org","@type":"AboutPage","url":"https://axisfitomed.com.br/sobre","name":"Sobre a Axis FitoMed","inLanguage":"pt-BR","isPartOf":{"@type":"WebSite","url":"https://axisfitomed.com.br/"},"mainEntity":{"@type":"MedicalClinic","name":"Axis FitoMed","@id":"https://axisfitomed.com.br/#clinica"},"publisher":{"@type":"MedicalClinic","name":"Axis FitoMed","@id":"https://axisfitomed.com.br/#clinica"}}
@@ -270,11 +270,26 @@
       <span>© 2026 Axis FitoMed. Todos os direitos reservados.</span>
       <span>Conforme Anvisa · uso sob prescrição médica.</span>
     </div>
-    <div class="pf-wordmark" aria-hidden="true"><span>Axis FitoMed</span></div>
+    <div class="pf-hover" aria-hidden="true">
+      <svg class="pf-hover-svg" viewBox="0 0 300 60" xmlns="http://www.w3.org/2000/svg" data-hover-text>
+        <defs>
+          <linearGradient id="pfGrad" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="300" y2="0">
+            <stop offset="0" stop-color="#5fc89b"/><stop offset=".5" stop-color="#f4f2ec"/><stop offset="1" stop-color="#e8a13c"/>
+          </linearGradient>
+          <radialGradient id="pfReveal" gradientUnits="userSpaceOnUse" cx="150" cy="30" r="60">
+            <stop offset="0" stop-color="#fff"/><stop offset="1" stop-color="#000"/>
+          </radialGradient>
+          <mask id="pfMask"><rect x="0" y="0" width="300" height="60" fill="url(#pfReveal)"/></mask>
+        </defs>
+        <text class="pf-t pf-t--base" x="50%" y="50%" text-anchor="middle" dominant-baseline="middle">Axis FitoMed</text>
+        <text class="pf-t pf-t--draw" x="50%" y="50%" text-anchor="middle" dominant-baseline="middle">Axis FitoMed</text>
+        <text class="pf-t pf-t--grad" x="50%" y="50%" text-anchor="middle" dominant-baseline="middle" mask="url(#pfMask)">Axis FitoMed</text>
+      </svg>
+    </div>
   </div>
 </footer>
 
-<script src="/assets/js/main.js?v=202609221920"></script>
+<script src="/assets/js/main.js?v=202609221928"></script>
 <script defer src="/_vercel/insights/script.js"></script>
 </body>
 </html>

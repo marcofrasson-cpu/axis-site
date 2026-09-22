@@ -2507,7 +2507,9 @@ body { overflow-x: clip; }
 }
 
 /* ==================== Footer — wordmark gigante (estilo Popcorn) ==================== */
-.pf { position: relative; overflow: hidden; background: linear-gradient(to bottom, var(--brand-navy) 0, var(--ground-deepest) 180px); border-top: none; padding: var(--sp-56) 0 0; margin-top: 0; }
+.pf { position: relative; overflow: hidden; border-top: none; padding: var(--sp-56) 0 0; margin-top: 0;
+  /* gradiente radial do hover-footer, na paleta: navy no alto, verde muito diluido nas bordas de baixo */
+  background: radial-gradient(125% 125% at 50% 10%, var(--brand-navy) 45%, rgba(95,200,155,.10) 100%), var(--ground-deepest); }
 .pf-top { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--sp-56) var(--sp-32); align-items: start; }   /* era 1.6/1.35/1.15/1: a marca sobrava e as tres colunas se apertavam */
 /* 6 destinos em coluna unica deixavam o "Navegar" 150px mais alto que os
    vizinhos. Em 3+3 o rodape fecha parelho. */
@@ -3284,7 +3286,7 @@ body { overflow-x: clip; }
   .pf-bottom { margin-top: var(--sp-20); padding: var(--sp-12) 0; }
   /* 5.95 = largura de "Axis FitoMed" em em (Spectral 700, medida): a fonte
      vira o que cabe entre as margens de 20px */
-  .pf-wordmark { margin-top: var(--sp-20); font-size: min(12.4vw, calc((100vw - 40px) / 5.95)); }
+  
 }
 /* depois da regra de 2 colunas (1100px): a cascata decide, nao a especificidade */
 @media (max-width: 560px) { .team-grid { grid-template-columns: 1fr; } }
@@ -3404,3 +3406,41 @@ body { overflow-x: clip; }
   background: linear-gradient(90deg, transparent, #fff, transparent); opacity: .7;
 }
 @media (max-width: 600px) { .sp-beam { width: 82%; } }
+/* sparkles no cabecalho de /servicos: o canvas sangra 40px alem do cabecalho e
+   a mascara puxa para a esquerda, onde esta o titulo; o feixe alinha a esquerda */
+.bm-head--sparks { position: relative; }
+.bm-head--sparks > .bm-head-l, .bm-head--sparks > .bm-head-r { position: relative; z-index: 1; }
+.bm-head--sparks .sp-field { top: -48px; left: -40px; width: calc(100% + 80px); height: calc(100% + 80px);   /* canvas absoluto com width:auto cai no intrinseco 300x150 */
+  -webkit-mask-image: radial-gradient(60% 100% at 25% 50%, #000 25%, transparent 100%);
+  mask-image: radial-gradient(60% 100% at 25% 50%, #000 25%, transparent 100%); }
+.sp-beam--left { margin-left: 0; margin-right: auto; width: min(420px, 90%); margin-top: var(--sp-20); margin-bottom: 0; }
+
+/* Aberturas com fundo vivo (fumaca do contato, sparkles da equipe) colorem ate
+   o topo: sobem por baixo do header sticky/transparente e devolvem o
+   header-box em padding. O mobile tem main > section:first-child { padding-top:
+   18px } — o seletor abaixo ganha e devolve o header-box tambem la. */
+.sk, .page-hero--sparks { margin-top: calc(-1 * var(--header-box)); }
+.sk { padding-top: calc(var(--header-box) + var(--sp-32)); min-height: 100svh; }
+.page-hero--sparks { padding-top: calc(var(--header-box) + var(--space-hero-top)); }
+@media (max-width: 768px) {
+  main > .sk:first-child, .sk { padding-top: calc(var(--header-box) + var(--sp-20)); }
+  main > .page-hero--sparks:first-child, .page-hero--sparks { padding-top: calc(var(--header-box) + 16px); }
+}
+
+/* ==================== Rodape: wordmark com hover (TextHoverEffect em vanilla) ====================
+   Tres camadas do mesmo texto: contorno neutro (aparece no hover), traco verde
+   que se desenha quando o rodape entra em tela (stroke-dashoffset), e um
+   gradiente da paleta revelado so em volta do cursor (mascara radial que o JS
+   move). Sem ponteiro fino, fica o traco verde desenhado. */
+.pf-hover { position: relative; z-index: 1; width: 100%; margin-top: var(--sp-32); margin-bottom: -2%; }
+.pf-hover-svg { display: block; width: 100%; height: auto; user-select: none; cursor: default; overflow: visible; }
+.pf-t { font-family: var(--font-display); font-weight: 700; font-size: 44px; letter-spacing: -.02em; fill: transparent; stroke-width: .35; paint-order: stroke; }
+.pf-t--base { stroke: rgba(241,245,249,.35); opacity: 0; transition: opacity 300ms ease; }
+.pf-hover-svg.is-hover .pf-t--base { opacity: .7; }
+.pf-t--draw { stroke: rgba(95,200,155,.45); stroke-dasharray: 1000; stroke-dashoffset: 1000; }
+.pf-hover-svg.is-in .pf-t--draw { animation: pfDraw 4s ease-in-out forwards; }
+@keyframes pfDraw { to { stroke-dashoffset: 0; } }
+.pf-t--grad { stroke: url(#pfGrad); stroke-width: .5; opacity: 0; transition: opacity 200ms ease; }
+.pf-hover-svg.is-hover .pf-t--grad { opacity: 1; }
+@media (max-width: 860px) { .pf-hover { margin-top: var(--sp-12); } .pf-t { font-size: 46px; } }
+@media (prefers-reduced-motion: reduce) { .pf-hover-svg.is-in .pf-t--draw { animation: none; stroke-dashoffset: 0; } }

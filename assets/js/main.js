@@ -1346,19 +1346,19 @@
   paint();
 })();
 
-// ========== Sparkles (hero de /equipe, canvas 2D) ==========
+// ========== Sparkles ([data-sparks]: hero de /equipe, cabecalho de /servicos — canvas 2D) ==========
 // Porte do SparklesCore (tsparticles) sem a biblioteca: pontos de 0.6–1.4px
 // com deriva lenta em direcao aleatoria e opacidade oscilando (cada um com
 // fase e velocidade proprias) — o cintilar. Densidade ~110 por 400x400,
 // mais concentrados sob o titulo (a mascara CSS faz o resto). Anima so com o
 // hero em tela; reduced-motion desenha um quadro e para.
-(function () {
-  var hero = document.querySelector('.page-hero--sparks'), canvas = hero && hero.querySelector('.sp-field');
-  if (!hero || !canvas || !canvas.getContext) return;
+[].slice.call(document.querySelectorAll('[data-sparks]')).forEach(function (hero) {
+  var canvas = hero.querySelector('.sp-field');
+  if (!canvas || !canvas.getContext) return;
   var ctx = canvas.getContext('2d'), reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   var W = 0, H = 0, pts = [], running = false, raf = 0, last = 0;
   function resize() {
-    var r = hero.getBoundingClientRect(), dpr = Math.min(window.devicePixelRatio || 1, 2);
+    var r = canvas.getBoundingClientRect(), dpr = Math.min(window.devicePixelRatio || 1, 2);
     W = Math.round(r.width); H = Math.round(r.height);
     canvas.width = W * dpr; canvas.height = H * dpr; ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     var n = Math.round((W * H) / (400 * 400) * 110);
@@ -1391,4 +1391,23 @@
     else start();
     document.addEventListener('visibilitychange', function () { if (document.visibilityState === 'visible') { if (!running) start(); } else stop(); });
   }
+});
+
+// ========== Rodape: wordmark com hover (TextHoverEffect em vanilla) ==========
+// O traco verde se desenha quando o rodape entra em tela (classe is-in). Com o
+// ponteiro sobre o SVG, a mascara radial (cx/cy em unidades do viewBox) segue
+// o cursor com suavizacao e o gradiente aparece so ali (is-hover).
+(function () {
+  var svg = document.querySelector('[data-hover-text]');
+  if (!svg) return;
+  var reveal = svg.querySelector('#pfReveal');
+  if ('IntersectionObserver' in window) {
+    new IntersectionObserver(function (es, io) { es.forEach(function (e) { if (e.isIntersecting) { svg.classList.add('is-in'); io.disconnect(); } }); }, { threshold: 0.2 }).observe(svg);
+  } else svg.classList.add('is-in');
+  if (!window.matchMedia('(hover: hover)').matches || !reveal) return;
+  var tx = 150, ty = 30, cx = 150, cy = 30, raf = 0;
+  function tick() { raf = 0; cx += (tx - cx) * 0.18; cy += (ty - cy) * 0.18; reveal.setAttribute('cx', cx.toFixed(1)); reveal.setAttribute('cy', cy.toFixed(1)); if (Math.abs(tx - cx) > 0.2 || Math.abs(ty - cy) > 0.2) raf = requestAnimationFrame(tick); }
+  svg.addEventListener('pointermove', function (e) { var r = svg.getBoundingClientRect(); tx = (e.clientX - r.left) / r.width * 300; ty = (e.clientY - r.top) / r.height * 60; if (!raf) raf = requestAnimationFrame(tick); }, { passive: true });
+  svg.addEventListener('pointerenter', function () { svg.classList.add('is-hover'); });
+  svg.addEventListener('pointerleave', function () { svg.classList.remove('is-hover'); });
 })();
