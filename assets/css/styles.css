@@ -3331,3 +3331,66 @@ body { overflow-x: clip; }
   mask-image: radial-gradient(70% 70% at 50% 50%, #000 10%, transparent 100%);
 }
 @media (prefers-reduced-motion: reduce) { .df-bg { opacity: 1; transform: none; transition: none; } }
+
+/* ==================== Como funciona: trilha horizontal pinada (.jn) ====================
+   Porte em vanilla do timeline (Hyperiux Vault). Geometria em vw para a trilha
+   escalar com a tela; o progresso do scroll (0..1 ao longo dos 200vw da secao)
+   vira: translateX da trilha, largura da linha, e por etapa a haste (scaleY),
+   o ponto (scale) e o texto (translateY sob mascara). */
+.jn { position: relative; height: 200vw; background: var(--brand-navy); }
+.jn-pin { position: sticky; top: 0; height: 100vh; height: 100svh; overflow: hidden; display: flex; align-items: center; }
+.jn-track {
+  display: flex; align-items: center; gap: 5vw; padding: 0 5vw; height: 32vw; width: max-content;
+  will-change: transform;
+}
+.jn-photo { flex: none; width: 30vw; height: 100%; border-radius: var(--r-surface); overflow: hidden; }
+.jn-photo img { width: 100%; height: 100%; object-fit: cover; object-position: 60% 40%; display: block; filter: saturate(.9); }
+/* corpo: 5 etapas com 33vw de passo; as de cima nascem em 22vw, as de baixo deslocadas 16.5vw */
+.jn-body { position: relative; height: 100%; width: calc(22vw + 5 * 33vw); }
+.jn-head { position: absolute; left: 0; top: 0; width: 20vw; }
+.jn-head h2 { font-size: clamp(24px, 2.4vw, 36px); line-height: 1.1; margin-top: var(--sp-12); }
+.jn-period { position: absolute; left: 0; bottom: 0; margin: 0; font-size: var(--fs-14); color: var(--text-subtle); font-variant-numeric: tabular-nums; }
+.jn-line { position: absolute; left: 0; right: 0; top: 50%; height: 1px; background: var(--border-hairline); }
+.jn-line-fill { position: absolute; left: 0; top: 0; height: 100%; width: 100%; background: var(--brand-green); transform: scaleX(0); transform-origin: left center; }
+.jn-line::before, .jn-line::after { content: ""; position: absolute; top: 50%; width: 8px; height: 8px; border-radius: var(--r-circle); background: var(--brand-green); transform: translate(-50%, -50%); }
+.jn-line::before { left: 0; } .jn-line::after { left: 100%; }
+.jn-item { position: absolute; width: 27vw; height: 50%; padding-left: 2.2vw; }
+.jn-item--top { bottom: 50%; left: calc(22vw + var(--i) * 16.5vw); }
+.jn-item--bottom { top: 50%; left: calc(22vw + var(--i) * 16.5vw); }
+.jn-stem { position: absolute; left: 0; width: 1px; height: 90%; background: var(--brand-green); transform: scaleY(0); }
+.jn-item--top .jn-stem { bottom: 0; transform-origin: bottom; }
+.jn-item--bottom .jn-stem { top: 0; transform-origin: top; }
+.jn-dot { position: absolute; left: 0; width: 12px; height: 12px; border-radius: var(--r-circle); background: var(--brand-green); transform: translateX(-50%) scale(0); box-shadow: 0 0 0 4px rgba(95,200,155,.16); }
+.jn-item--top .jn-dot { top: 10%; transform: translate(-50%, -50%) scale(0); }
+.jn-item--bottom .jn-dot { bottom: 10%; transform: translate(-50%, 50%) scale(0); }
+.jn-text { position: absolute; left: 2.2vw; right: 0; display: flex; flex-direction: column; gap: var(--sp-8); }
+.jn-item--top .jn-text { top: 10%; transform: translateY(-50%); }
+.jn-item--bottom .jn-text { bottom: 10%; transform: translateY(50%); }
+.jn-mask { overflow: hidden; }
+.jn-mask > * { transform: translateY(110%); }
+.jn-item h3 { font-size: clamp(20px, 1.9vw, 28px); font-weight: 600; letter-spacing: -.01em; line-height: 1.1; color: var(--text-primary); display: flex; align-items: baseline; gap: var(--sp-12); }
+.jn-n { font-size: var(--fs-12); font-weight: 600; letter-spacing: .1em; color: var(--brand-green); font-variant-numeric: tabular-nums; }
+.jn-item p { font-size: var(--fs-16); line-height: 1.5; color: var(--text-muted); margin: 0; max-width: 34ch; }
+@media (max-width: 600px) {
+  .jn { height: 400vh; }
+  .jn-track { height: 64vh; gap: 6vw; padding: 0 6vw; }
+  .jn-photo { width: 78vw; height: 52vw; align-self: center; }
+  /* cabecalho ocupa 58vw; as etapas comecam depois dele, a 44vw de passo */
+  .jn-body { width: calc(66vw + 5 * 44vw + 10vw); }
+  .jn-head { width: 58vw; } .jn-head h2 { font-size: 22px; }
+  .jn-period { font-size: var(--fs-12); }
+  .jn-item { width: 64vw; padding-left: 5vw; }
+  .jn-item--top, .jn-item--bottom { left: calc(66vw + var(--i) * 44vw); }
+  .jn-text { left: 5vw; }
+  .jn-item--top .jn-text { top: 14%; } .jn-item--bottom .jn-text { bottom: 14%; }
+  .jn-item--top .jn-dot { top: 14%; } .jn-item--bottom .jn-dot { bottom: 14%; }
+  .jn-stem { height: 86%; }
+  .jn-item h3 { font-size: 20px; } .jn-item p { font-size: var(--fs-14); }
+}
+/* sem JS / reduced-motion: nada pina; a trilha rola na horizontal, tudo visivel */
+.jn:not([data-jn-ready]), .jn[data-jn-static] { height: auto; }
+.jn:not([data-jn-ready]) .jn-pin, .jn[data-jn-static] .jn-pin { position: static; height: auto; overflow-x: auto; padding: var(--space-section) 0; }
+.jn:not([data-jn-ready]) .jn-line-fill, .jn[data-jn-static] .jn-line-fill { transform: none; }
+.jn:not([data-jn-ready]) .jn-stem, .jn[data-jn-static] .jn-stem { transform: none; }
+.jn:not([data-jn-ready]) .jn-dot, .jn[data-jn-static] .jn-dot { transform: translate(-50%, -50%) scale(1); }
+.jn:not([data-jn-ready]) .jn-mask > *, .jn[data-jn-static] .jn-mask > * { transform: none; }

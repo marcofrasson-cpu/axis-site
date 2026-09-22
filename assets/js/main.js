@@ -825,7 +825,7 @@
 (function () {
   if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
   var heads = [].slice.call(document.querySelectorAll('h1, h2')).filter(function (h) {
-    return !h.classList.contains('stats-kicker') && !h.closest('.lg-doc');
+    return !h.classList.contains('stats-kicker') && !h.closest('.lg-doc') && !h.closest('.jn');   // .jn: a trilha ja anima o proprio titulo
   });
   if (!heads.length) return;
   function wrap(node, st) {
@@ -1263,6 +1263,51 @@
       var center = r.top + r.height / 2;
       var p = (vh / 2 - center) / (vh / 2 + r.height / 2);   // -1..1
       it.layers.forEach(function (l) { l.el.style.transform = 'translate3d(0,' + (p * l.f * r.height).toFixed(1) + 'px,0)'; });
+    });
+  }
+  function schedule() { if (!raf) raf = requestAnimationFrame(paint); }
+  window.addEventListener('scroll', schedule, { passive: true });
+  window.addEventListener('resize', schedule);
+  paint();
+})();
+
+// ========== Como funciona: trilha horizontal pinada (timeline em vanilla) ==========
+// Progresso p = quanto da secao (menos uma tela) ja rolou, 0..1. A trilha
+// desliza ate a ultima etapa encostar na direita; a linha se desenha de 5% a
+// 90%; cada etapa tem uma janela [a,b] de p: nos primeiros 40% a haste sobe e
+// o ponto acende, depois titulo e texto sobem sob a mascara (ease-out).
+(function () {
+  var sec = document.querySelector('[data-journey]');
+  if (!sec) return;
+  var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (reduced) { sec.setAttribute('data-jn-static', ''); return; }
+  var track = sec.querySelector('[data-jn-track]'), line = sec.querySelector('[data-jn-line]');
+  var items = [].slice.call(sec.querySelectorAll('[data-jn-item]')).map(function (el) {
+    return { el: el, stem: el.querySelector('.jn-stem'), dot: el.querySelector('.jn-dot'), masks: [].slice.call(el.querySelectorAll('.jn-mask > *')) };
+  });
+  var WIN_D = [[6, 26], [16, 36], [26, 46], [35, 55], [45, 65]], WIN_M = [[22, 32], [30, 40], [38, 48], [46, 56], [54, 64]];
+  sec.setAttribute('data-jn-ready', '');
+  var raf = 0;
+  function clamp(n) { return Math.min(1, Math.max(0, n)); }
+  function easeOut(t) { return 1 - Math.pow(1 - t, 2); }
+  function paint() {
+    raf = 0;
+    var r = sec.getBoundingClientRect(), vh = window.innerHeight, vw = window.innerWidth;
+    if (r.bottom < 0 || r.top > vh) return;
+    var p = clamp(-r.top / (r.height - vh));
+    var mobile = vw < 600, slideEnd = mobile ? 0.82 : 0.92;
+    var maxX = Math.max(0, track.scrollWidth - vw);
+    track.style.transform = 'translate3d(' + (-maxX * clamp(p / slideEnd)).toFixed(1) + 'px,0,0)';
+    line.style.transform = 'scaleX(' + clamp((p - 0.05) / 0.85).toFixed(4) + ')';
+    var WIN = mobile ? WIN_M : WIN_D;
+    items.forEach(function (it, i) {
+      var w = WIN[i] || WIN[WIN.length - 1];
+      var q = clamp((p * 100 - w[0]) / (w[1] - w[0]));
+      var a = clamp(q / 0.4), b = easeOut(clamp((q - 0.25) / 0.75));
+      it.stem.style.transform = 'scaleY(' + a.toFixed(4) + ')';
+      var up = it.el.classList.contains('jn-item--top');
+      it.dot.style.transform = 'translate(-50%,' + (up ? '-50%' : '50%') + ') scale(' + a.toFixed(4) + ')';
+      it.masks.forEach(function (m, k) { var d = easeOut(clamp((q - 0.25 - k * 0.06) / 0.7)); m.style.transform = 'translateY(' + ((1 - d) * 110).toFixed(2) + '%)'; });
     });
   }
   function schedule() { if (!raf) raf = requestAnimationFrame(paint); }

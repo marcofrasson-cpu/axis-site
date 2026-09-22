@@ -28,7 +28,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Spectral:wght@400;500;600;700&family=Hanken+Grotesk:wght@400;500;600;700&display=swap">
 <link rel="icon" type="image/svg+xml" href="/assets/img/logo.svg">
-<link rel="stylesheet" href="/assets/css/styles.css?v=202609211425">
+<link rel="stylesheet" href="/assets/css/styles.css?v=202609221909">
 <noscript><style>.reveal,.reveal-stagger [class*="-card"],.blog-highlight.reveal .blog-feature-image,.blog-highlight.reveal .blog-feature-content{opacity:1!important;transform:none!important;filter:none!important}</style></noscript>
 <script type="application/ld+json">
 {"@context":"https://schema.org","@type":"MedicalClinic","name":"Axis FitoMed","url":"https://axisfitomed.com.br/","description":"Associação médica de cannabis medicinal com rigor científico, em Curitiba, Paraná.","email":"contato@axisfitomed.com.br","medicalSpecialty":"Cannabis medicinal e medicina endocanabinoide","areaServed":{"@type":"City","name":"Curitiba"},"address":{"@type":"PostalAddress","addressLocality":"Curitiba","addressRegion":"PR","addressCountry":"BR"},"logo":"https://axisfitomed.com.br/assets/img/logo.svg","@id":"https://axisfitomed.com.br/#clinica","openingHoursSpecification":{"@type":"OpeningHoursSpecification","dayOfWeek":["Monday","Tuesday","Wednesday","Thursday","Friday"],"opens":"08:00","closes":"18:00"}}
@@ -319,44 +319,64 @@
 </section>
 
 <!-- Como funciona -->
-<section id="como-funciona" class="section reveal reveal-stagger">
-  <div class="container">
-    <div class="section-heading">
-      <div class="kicker"><span class="kicker__rule"></span><span class="kicker__label">Como funciona</span></div>
-      <h2>Um caminho claro do primeiro contato ao acompanhamento</h2>
-    </div>
-    <div class="grid-3 steps-timeline">
-      <div class="card card-step">
-        <div class="step-icon" aria-hidden="true">
-          <svg viewBox="0 0 48 48" fill="none" stroke="#5fc89b" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M8 12h32M8 24h24M8 36h16"/>
-            <circle cx="40" cy="34" r="6"/>
-            <path d="M44 38l4 4"/>
-          </svg>
-        </div>
-        <h3>Avaliação</h3>
-        <p>Consulta detalhada com histórico clínico, exame físico e revisão de exames anteriores quando houver.</p>
+<!-- Como funciona (timeline/Hyperiux, porte em vanilla, sem GSAP): a secao pina
+     por 200vw de rolagem; a trilha desliza na horizontal, a linha se desenha e
+     cada etapa levanta a haste, acende o ponto e revela o texto quando chega
+     ao centro. Tudo por transform/opacity a partir do progresso do scroll
+     (main.js). Sem JS ou sob reduced-motion: trilha rolavel na horizontal,
+     tudo visivel, sem pino. -->
+<section id="como-funciona" class="jn" aria-labelledby="jn-title" data-journey>
+  <div class="jn-pin">
+    <div class="jn-track" data-jn-track>
+      <div class="jn-photo">
+        <picture>
+          <source type="image/avif" srcset="/assets/img/percurso-clinico-v2-1600.avif">
+          <source type="image/webp" srcset="/assets/img/percurso-clinico-v2-1600.webp">
+          <img src="/assets/img/percurso-clinico-v2.jpg" alt="" loading="lazy" decoding="async" width="2400" height="1116" draggable="false">
+        </picture>
       </div>
-      <div class="card card-step">
-        <div class="step-icon" aria-hidden="true">
-          <svg viewBox="0 0 48 48" fill="none" stroke="#5fc89b" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-            <rect x="10" y="6" width="28" height="36" rx="2"/>
-            <path d="M16 16h16M16 22h16M16 28h10"/>
-            <path d="M28 36l3 3 6-6" stroke-width="2"/>
-          </svg>
+      <div class="jn-body">
+        <div class="jn-head">
+          <div class="kicker"><span class="kicker__rule"></span><span class="kicker__label">Como funciona</span></div>
+          <h2 id="jn-title">Um caminho claro do primeiro contato ao acompanhamento</h2>
         </div>
-        <h3>Prescrição</h3>
-        <p>Indicação do produto adequado (CBD, THC ou combinação) na dose correta para o seu caso, com orientações claras.</p>
-      </div>
-      <div class="card card-step">
-        <div class="step-icon" aria-hidden="true">
-          <svg viewBox="0 0 48 48" fill="none" stroke="#5fc89b" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M6 36L18 24l8 8 16-16"/>
-            <path d="M30 16h12v12"/>
-          </svg>
-        </div>
-        <h3>Acompanhamento</h3>
-        <p>Reavaliações periódicas, ajustes de dose e suporte ao longo de todo o tratamento.</p>
+        <p class="jn-period">5 etapas · sob prescrição médica</p>
+        <div class="jn-line" aria-hidden="true"><span class="jn-line-fill" data-jn-line></span></div>
+        <article class="jn-item jn-item--top" data-jn-item style="--i:0">
+          <span class="jn-stem" aria-hidden="true"></span><span class="jn-dot" aria-hidden="true"></span>
+          <div class="jn-text">
+            <div class="jn-mask"><h3><span class="jn-n">01</span>Contato</h3></div>
+            <div class="jn-mask"><p>Você escreve ou liga. A equipe responde em até um dia útil e orienta o próximo passo.</p></div>
+          </div>
+        </article>
+        <article class="jn-item jn-item--bottom" data-jn-item style="--i:1">
+          <span class="jn-stem" aria-hidden="true"></span><span class="jn-dot" aria-hidden="true"></span>
+          <div class="jn-text">
+            <div class="jn-mask"><h3><span class="jn-n">02</span>Avaliação</h3></div>
+            <div class="jn-mask"><p>Consulta detalhada com histórico clínico, exame físico e revisão de exames anteriores quando houver.</p></div>
+          </div>
+        </article>
+        <article class="jn-item jn-item--top" data-jn-item style="--i:2">
+          <span class="jn-stem" aria-hidden="true"></span><span class="jn-dot" aria-hidden="true"></span>
+          <div class="jn-text">
+            <div class="jn-mask"><h3><span class="jn-n">03</span>Prescrição</h3></div>
+            <div class="jn-mask"><p>Indicação do produto adequado — CBD, THC ou combinação — na dose correta para o seu caso, com orientações claras.</p></div>
+          </div>
+        </article>
+        <article class="jn-item jn-item--bottom" data-jn-item style="--i:3">
+          <span class="jn-stem" aria-hidden="true"></span><span class="jn-dot" aria-hidden="true"></span>
+          <div class="jn-text">
+            <div class="jn-mask"><h3><span class="jn-n">04</span>Produto com CoA</h3></div>
+            <div class="jn-mask"><p>Só produtos com Certificado de Análise: potência conferida, perfil de terpenos e rastreio de contaminantes.</p></div>
+          </div>
+        </article>
+        <article class="jn-item jn-item--top" data-jn-item style="--i:4">
+          <span class="jn-stem" aria-hidden="true"></span><span class="jn-dot" aria-hidden="true"></span>
+          <div class="jn-text">
+            <div class="jn-mask"><h3><span class="jn-n">05</span>Acompanhamento</h3></div>
+            <div class="jn-mask"><p>Reavaliações periódicas, ajustes de dose e suporte ao longo de todo o tratamento.</p></div>
+          </div>
+        </article>
       </div>
     </div>
   </div>
@@ -620,7 +640,7 @@
   </div>
 </footer>
 
-<script src="/assets/js/main.js?v=202609211425"></script>
+<script src="/assets/js/main.js?v=202609221909"></script>
 <script defer src="/_vercel/insights/script.js"></script>
 </body>
 </html>
