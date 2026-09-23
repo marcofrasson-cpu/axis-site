@@ -1466,77 +1466,215 @@
   window.addEventListener('resize', measure);
 })();
 
-// ========== Mesh gradient das faixas claras (.band-lift) ==========
-// O valor chapado (#15273a) lia como cinza morto numa area de largura inteira.
-// Por baixo de cada faixa vai um campo de quatro massas de cor que derivam
-// devagar — o mesmo principio do campo do /contato, mas em canvas 2D e num
-// buffer minusculo: um mesh gradient e so baixa frequencia, entao ~200px de
-// largura sobem para 1440 sem perder nada, e a interpolacao do browser mata o
-// banding que um gradiente escuro teria em 8 bits.
-// Custo: quatro gradientes radiais por quadro num canvas de ~200x300, a 15fps,
-// so com a faixa em tela. Sem WebGL — varias faixas por pagina nao esbarram no
-// limite de contextos.
+// ========== Mesh drift das faixas claras (.band-lift) ==========
+// Porte em vanilla do ShaderBackground "Mesh drift" (21st.dev Shader Builder).
+// O componente original e React + WebGL; aqui fica um IIFE e o mesmo shader,
+// inteiro — e a parte que nao se reescreve. Trocado: a paleta (uniform, nos
+// tokens do site), o cursor (desligado: eram pointermove global e um
+// getBoundingClientRect por evento de scroll, com captura — bate em layout a
+// cada quadro de rolagem) e o blur de 5 taps (desligado: a meia resolucao ja
+// suaviza, e cada tap e uma avaliacao inteira do campo).
+// Cada .band-lift ganha o seu. Sem WebGL, fica o --ground-lift chapado do CSS.
 (function () {
   var bands = [].slice.call(document.querySelectorAll('.band-lift'));
   if (!bands.length) return;
   var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  // Massas: duas de valor (a luz e a sombra do navy) e duas de cor (o verde da
-  // marca e o oleo), estas em alfa baixo. A faixa continua lendo como uma
-  // superficie so — o campo da vida, nao desenha.
-  var MASSES = [
-    { color: '29,53,80',  a: 0.58, r: 0.62, sx: 0.30, sy: 0.24, fx: 0.061, fy: 0.043, px: 0.0, py: 1.1, cx: 0.32, cy: 0.34 },
-    { color: '10,26,42',  a: 0.92, r: 0.66, sx: 0.28, sy: 0.26, fx: 0.047, fy: 0.055, px: 2.3, py: 0.4, cx: 0.74, cy: 0.66 },
-    { color: '31,84,70',  a: 0.34, r: 0.50, sx: 0.26, sy: 0.22, fx: 0.037, fy: 0.029, px: 4.1, py: 2.7, cx: 0.60, cy: 0.24 },
-    { color: '104,70,33', a: 0.17, r: 0.44, sx: 0.24, sy: 0.20, fx: 0.026, fy: 0.034, px: 5.6, py: 3.9, cx: 0.26, cy: 0.78 }
+  var VERT = 'attribute vec2 a_position; void main(){ gl_Position = vec4(a_position, 0.0, 1.0); }';
+
+  var FRAG = [
+    '#ifdef GL_FRAGMENT_PRECISION_HIGH',
+    'precision highp float;',
+    '#else',
+    'precision mediump float;',
+    '#endif',
+    'uniform vec3 u_colors[8];',
+    'uniform vec4 u_scene;',      // resolution.xy, time, contagem de cores
+    'uniform vec4 u_shape;',      // scale, intensity, -, warp
+    'uniform vec4 u_surface;',    // detail, contrast, brightness, saturation
+    'uniform vec4 u_finish;',     // -, vignette, -, grain
+    'uniform vec4 u_transform;',  // seed, rotation, drift, -
+    'uniform vec4 u_space;',      // offset.xy
+    '#define u_resolution u_scene.xy',
+    '#define u_time u_scene.z',
+    '#define u_colorCount u_scene.w',
+    '#define u_scale u_shape.x',
+    '#define u_intensity u_shape.y',
+    '#define u_warp u_shape.w',
+    '#define u_detail u_surface.x',
+    '#define u_contrast u_surface.y',
+    '#define u_brightness u_surface.z',
+    '#define u_saturation u_surface.w',
+    '#define u_vignette u_finish.y',
+    '#define u_grain u_finish.w',
+    '#ifdef GL_FRAGMENT_PRECISION_HIGH',
+    '#define u_seed u_transform.x',
+    '#else',
+    // mantem a entrada do hash dentro do +-2^14 garantido do mediump
+    '#define u_seed mod(u_transform.x, 31.0)',
+    '#endif',
+    '#define u_rotate u_transform.y',
+    '#define u_drift u_transform.z',
+    '#define u_offset u_space.xy',
+    'float hash21(vec2 p) {',
+    '#ifndef GL_FRAGMENT_PRECISION_HIGH',
+    '  p = mod(p, 31.0);',
+    '#endif',
+    '  p = fract(p * vec2(234.34, 435.345));',
+    '  p += dot(p, p + 34.23);',
+    '  return fract(p.x * p.y);',
+    '}',
+    // Hash de Dave Hoskins para o grao: o hash de multiplicacao acima serve
+    // para o ruido de valor, mas em coordenada inteira mostra uma malha
+    // alinhada aos eixos — le como rede sobre area chapada.
+    'float grainHash(vec2 p) {',
+    '  vec3 p3 = fract(vec3(p.xyx) * 0.1031);',
+    '  p3 += dot(p3, p3.yzx + 33.33);',
+    '  return fract((p3.x + p3.y) * p3.z);',
+    '}',
+    'float noise(vec2 p) {',
+    '  vec2 i = floor(p); vec2 f = fract(p);',
+    '  vec2 u = f * f * (3.0 - 2.0 * f);',
+    '  return mix(mix(hash21(i), hash21(i + vec2(1.0, 0.0)), u.x),',
+    '             mix(hash21(i + vec2(0.0, 1.0)), hash21(i + vec2(1.0, 1.0)), u.x), u.y);',
+    '}',
+    'float fbm(vec2 p) {',
+    '  float v = 0.0; float a = 0.5;',
+    '  for (int i = 0; i < 5; i++) { v += a * noise(p); p = p * 2.03 + vec2(17.0, 9.2); a *= 0.5; }',
+    '  return v;',
+    '}',
+    // O campo: uma massa gaussiana por cor, cada uma derivando no seu proprio
+    // periodo. E o mesh gradient.
+    'vec3 shade(vec2 p, float t) {',
+    '  vec3 acc = u_colors[0] * 0.15; float total = 0.15;',
+    '  for (int i = 0; i < 8; i++) {',
+    '    if (float(i) >= u_colorCount) break;',
+    '    float fi = float(i);',
+    '    vec2 c = vec2(sin(t * (0.21 + fi * 0.071) + fi * 2.4 + u_seed),',
+    '                  cos(t * (0.17 + fi * 0.093) + fi * 1.7)) * (0.45 + u_intensity * 0.35);',
+    '    float w = exp(-dot(p - c, p - c) * 6.0);',
+    '    acc += u_colors[i] * w; total += w;',
+    '  }',
+    '  return acc / total;',
+    '}',
+    'void main() {',
+    '  vec2 screenUv = gl_FragCoord.xy / u_resolution.xy;',
+    // max, nao min (era min no preset): com min, uma faixa larga e baixa mapeia
+    // p.x ate +-3 e cai inteira fora das massas — sobrava a cor base chapada.
+    // Com max, o eixo maior vai de -0.5 a 0.5 sempre, e a faixa le como uma
+    // fatia do campo, seja ela larga ou alta.
+    '  vec2 p = (gl_FragCoord.xy - 0.5 * u_resolution.xy) / max(u_resolution.x, u_resolution.y);',
+    '  p *= u_scale;',
+    '  if (abs(u_rotate) > 0.0001) { float cr = cos(u_rotate), sr = sin(u_rotate); p = mat2(cr, -sr, sr, cr) * p; }',
+    '  p += u_offset;',
+    '  if (u_drift > 0.0001) p += u_drift * vec2(sin(u_time * 0.31), cos(u_time * 0.23));',
+    '  if (u_warp > 0.0) p += u_warp * (vec2(fbm(p * u_detail + u_seed), fbm(p * u_detail + vec2(5.2, 1.3))) - 0.5);',
+    '  vec3 col = shade(p, u_time);',
+    '  if (abs(u_contrast - 1.0) > 0.0001) col = (col - 0.5) * u_contrast + 0.5;',
+    '  if (abs(u_saturation - 1.0) > 0.0001) { float luma = dot(col, vec3(0.299, 0.587, 0.114)); col = mix(vec3(luma), col, u_saturation); }',
+    '  if (abs(u_brightness) > 0.0001) col += u_brightness;',
+    '  if (u_vignette > 0.0001) { float vd = length(screenUv - 0.5) * 1.41421356; col *= 1.0 - u_vignette * smoothstep(0.35, 1.0, vd); }',
+    '  if (u_grain > 0.0001) col += (grainHash(gl_FragCoord.xy + vec2(u_seed * 17.0, u_seed * 31.0)) - 0.5) * u_grain;',
+    '  gl_FragColor = vec4(clamp(col, 0.0, 1.0), 1.0);',
+    '}'
+  ].join('\n');
+
+  // Paleta: o navy de fundo, o valor da faixa, um azul de luz e o verde
+  // profundo da marca. O preset original era um degrade azul-claro; aqui as
+  // quatro massas moram todas dentro do registro claro do site.
+  var COLORS = [
+    0.071, 0.133, 0.204,   // #122234 — navy de base, a sombra do campo
+    0.090, 0.161, 0.235,   // #17293c — o valor da faixa
+    0.114, 0.227, 0.322,   // #1d3a52 — a luz
+    // O verde e a massa que mais separava: numa faixa estreita e alta o recorte
+    // caia inteiro dentro dele e a faixa ia a L 47. Puxado para perto do navy.
+    0.110, 0.259, 0.227    // #1b423a — verde profundo da marca
   ];
+  while (COLORS.length < 24) COLORS.push(COLORS[COLORS.length - 3]);
+
+  var U = {
+    colorCount: 4,
+    scale: 1.5, intensity: 0.2, warp: 0.18,
+    // contraste 1.14 do preset: (v - 0.5) * c + 0.5 esmaga valor escuro — o
+    // #15273a caia para quase preto. Numa paleta que mora toda abaixo de 0.5
+    // o contraste nao acrescenta nada: a profundidade vem das massas.
+    detail: 1.664, contrast: 1.0, brightness: 0.0, saturation: 1.05,
+    // 0.34 no preset: numa faixa de largura inteira a vinheta lia como caixa
+    vignette: 0.10, grain: 0.028,
+    seed: 8816.0, rotate: 0.3316, drift: 0.048,
+    offsetX: -0.13, offsetY: -0.12,
+    timeScale: 0.936
+  };
 
   function build(host) {
     var cv = document.createElement('canvas');
     cv.className = 'bl-mesh';
     cv.setAttribute('aria-hidden', 'true');
-    host.insertBefore(cv, host.firstChild);
-    var ctx = cv.getContext('2d');
-    if (!ctx) { cv.remove(); return null; }
-    var w = 0, h = 0, running = false, raf = 0, last = 0;
+    var gl = cv.getContext('webgl', { antialias: false, alpha: false, powerPreference: 'low-power' });
+    if (!gl) return null;
 
+    function sh(type, src) {
+      var s = gl.createShader(type); gl.shaderSource(s, src); gl.compileShader(s);
+      return gl.getShaderParameter(s, gl.COMPILE_STATUS) ? s : null;
+    }
+    var vs = sh(gl.VERTEX_SHADER, VERT), fs = sh(gl.FRAGMENT_SHADER, FRAG);
+    if (!vs || !fs) return null;
+    var prog = gl.createProgram();
+    gl.attachShader(prog, vs); gl.attachShader(prog, fs); gl.linkProgram(prog);
+    gl.deleteShader(vs); gl.deleteShader(fs);
+    if (!gl.getProgramParameter(prog, gl.LINK_STATUS)) return null;
+    gl.useProgram(prog);
+
+    var buf = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+    // um triangulo que cobre a tela: 3 vertices em vez de 4
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW);
+    var aloc = gl.getAttribLocation(prog, 'a_position');
+    gl.enableVertexAttribArray(aloc);
+    gl.vertexAttribPointer(aloc, 2, gl.FLOAT, false, 0, 0);
+
+    var L = {
+      colors: gl.getUniformLocation(prog, 'u_colors'),
+      scene: gl.getUniformLocation(prog, 'u_scene'),
+      shape: gl.getUniformLocation(prog, 'u_shape'),
+      surface: gl.getUniformLocation(prog, 'u_surface'),
+      finish: gl.getUniformLocation(prog, 'u_finish'),
+      transform: gl.getUniformLocation(prog, 'u_transform'),
+      space: gl.getUniformLocation(prog, 'u_space')
+    };
+    gl.uniform3fv(L.colors, new Float32Array(COLORS));
+    gl.uniform4f(L.shape, U.scale, U.intensity, 0.0, U.warp);
+    gl.uniform4f(L.surface, U.detail, U.contrast, U.brightness, U.saturation);
+    gl.uniform4f(L.finish, 0.0, U.vignette, 0.0, U.grain);
+    gl.uniform4f(L.transform, U.seed, U.rotate, U.drift, 0.0);
+    gl.uniform4f(L.space, U.offsetX, U.offsetY, 0.0, 0.0);
+
+    host.insertBefore(cv, host.firstChild);
+
+    var running = false, raf = 0, t0 = 0;
+
+    // Meia resolucao: o campo nao tem borda, o olho nao ve, e custa 4x menos.
+    // Teto de 1.2 Mpx para a faixa do "como funciona", que tem 2600px de alto.
     function resize() {
       var r = host.getBoundingClientRect();
-      if (!r.width) return;
-      // Buffer fixo em largura; altura acompanha a proporcao da faixa, com teto.
-      w = 200;
-      h = Math.max(80, Math.min(400, Math.round(w * (r.height / r.width))));
-      if (cv.width !== w || cv.height !== h) { cv.width = w; cv.height = h; }
-      draw(last);
+      if (!r.width || !r.height) return;
+      var dpr = Math.min(window.devicePixelRatio || 1, 2) * 0.5;
+      var w = Math.max(1, Math.round(r.width * dpr));
+      var h = Math.max(1, Math.round(r.height * dpr));
+      var k = Math.min(1, Math.sqrt(1200000 / Math.max(1, w * h)));
+      w = Math.max(1, Math.round(w * k)); h = Math.max(1, Math.round(h * k));
+      if (cv.width !== w || cv.height !== h) {
+        cv.width = w; cv.height = h; gl.viewport(0, 0, w, h);
+      }
+      draw(t0);
     }
 
     function draw(t) {
-      if (!w || !h) return;
-      var s = t * 0.001;
-      ctx.fillStyle = '#15273a';
-      ctx.fillRect(0, 0, w, h);
-      for (var i = 0; i < MASSES.length; i++) {
-        var m = MASSES[i];
-        var x = (m.cx + Math.cos(s * m.fx * 6.283 + m.px) * m.sx) * w;
-        var y = (m.cy + Math.sin(s * m.fy * 6.283 + m.py) * m.sy) * h;
-        var rad = m.r * Math.max(w, h);
-        var g = ctx.createRadialGradient(x, y, 0, x, y, rad);
-        g.addColorStop(0, 'rgba(' + m.color + ',' + m.a + ')');
-        g.addColorStop(0.55, 'rgba(' + m.color + ',' + (m.a * 0.32).toFixed(3) + ')');
-        g.addColorStop(1, 'rgba(' + m.color + ',0)');
-        ctx.fillStyle = g;
-        ctx.fillRect(0, 0, w, h);
-      }
-      last = t;
+      if (!cv.width) return;
+      gl.uniform4f(L.scene, cv.width, cv.height, t * 0.001 * U.timeScale, U.colorCount);
+      gl.drawArrays(gl.TRIANGLES, 0, 3);
     }
-
-    // 15fps: a deriva tem periodo de 16 a 38 segundos — nada se perde, e o
-    // quadro custa quatro fillRect num buffer de 200px.
-    function loop(t) {
-      if (!running) return;
-      if (t - last > 66) draw(t);
-      raf = requestAnimationFrame(loop);
-    }
+    function loop(t) { if (!running) return; t0 = t; draw(t); raf = requestAnimationFrame(loop); }
     function start() { if (running || reduced) return; running = true; raf = requestAnimationFrame(loop); }
     function stop() { running = false; if (raf) cancelAnimationFrame(raf); raf = 0; }
 
@@ -1547,23 +1685,23 @@
   var fields = bands.map(build).filter(Boolean);
   if (!fields.length) return;
 
-  var ro = 'ResizeObserver' in window ? new ResizeObserver(function (es) {
-    es.forEach(function (e) {
-      for (var i = 0; i < fields.length; i++) if (fields[i].host === e.target) fields[i].resize();
+  function find(target) {
+    for (var i = 0; i < fields.length; i++) if (fields[i].host === target) return fields[i];
+    return null;
+  }
+  if ('ResizeObserver' in window) {
+    var ro = new ResizeObserver(function (es) {
+      es.forEach(function (e) { var f = find(e.target); if (f) f.resize(); });
     });
-  }) : null;
-  fields.forEach(function (f) { if (ro) ro.observe(f.host); });
-  if (!ro) window.addEventListener('resize', function () { fields.forEach(function (f) { f.resize(); }); });
+    fields.forEach(function (f) { ro.observe(f.host); });
+  } else {
+    window.addEventListener('resize', function () { fields.forEach(function (f) { f.resize(); }); });
+  }
 
   if (reduced) return;
   if ('IntersectionObserver' in window) {
     var io = new IntersectionObserver(function (es) {
-      es.forEach(function (e) {
-        for (var i = 0; i < fields.length; i++) {
-          if (fields[i].host !== e.target) continue;
-          if (e.isIntersecting) fields[i].start(); else fields[i].stop();
-        }
-      });
+      es.forEach(function (e) { var f = find(e.target); if (!f) return; if (e.isIntersecting) f.start(); else f.stop(); });
     }, { threshold: 0.02 });
     fields.forEach(function (f) { io.observe(f.host); });
   } else { fields.forEach(function (f) { f.start(); }); }

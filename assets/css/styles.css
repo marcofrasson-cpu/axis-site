@@ -999,7 +999,21 @@ button { font: inherit; cursor: pointer; background: none; border: none; color: 
 
 .team-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--sp-32) var(--sp-20); }
 /* team-02: sem caixa — a foto e o cartao; o texto assenta abaixo, alinhado a esquerda */
-.team-card { display: flex; flex-direction: column; gap: var(--sp-20); }
+/* subgrid: o Arthur nao tem CRM, entao o fio dele subia uma linha e quebrava a
+   horizontal que os quatro fios formam. Com as seis faixas (foto, cargo, nome,
+   especialidade, registro, bio) herdadas da grade, cada degrau da escada fica
+   na mesma altura nos quatro cartoes — inclusive onde um degrau esta vazio.
+   Onde nao houver subgrid, a declaracao cai e volta o comportamento de antes. */
+.team-card { display: grid; grid-template-rows: subgrid; grid-row: span 6; row-gap: 0; }
+.team-info { display: contents; }
+/* Faixa fixa por elemento, nao posicionamento automatico: o cartao sem registro
+   deixa a faixa 5 vazia em vez de puxar a biografia para cima. */
+.team-media { grid-row: 1; margin-bottom: var(--sp-20); }
+.team-role { grid-row: 2; }
+.team-info h3 { grid-row: 3; }
+.team-specialty { grid-row: 4; }
+.team-meta { grid-row: 5; }
+.team-bio { grid-row: 6; }
 .team-media { position: relative; overflow: hidden; border-radius: var(--r-surface); }
 /* veu de credenciais: sobe no hover (ponteiro fino); no toque fica sempre, discreto */
 .team-veil {
@@ -1039,12 +1053,36 @@ button { font: inherit; cursor: pointer; background: none; border: none; color: 
   letter-spacing: 0.1em;
 }
 
-.team-info { padding: 0; display: flex; flex-direction: column; gap: var(--sp-4); }
-.team-info h3 { font-size: var(--fs-20); font-weight: 600; letter-spacing: -0.01em; line-height: 1.25; }
-.team-specialty { font-size: var(--fs-14); color: var(--text-muted); }
-.team-meta { font-size: var(--fs-12); color: var(--text-subtle); letter-spacing: .02em; font-variant-numeric: tabular-nums; }
-.team-bio { margin-top: var(--sp-8); }
-.team-bio { font-size: var(--fs-14); color: var(--text-muted); line-height: 1.6; }
+/* Eram quatro linhas cinzas do mesmo peso. Cargo na sociedade e registro
+   medico sao fatos de naturezas diferentes e estavam na mesma linha, separados
+   pelo mesmo ponto ("Vice-presidente · CRM-PR 47986 · RQE 37027"). O cargo
+   sobe para sobrancelha — o mesmo tratamento do chip sobre a foto, em oleo — e
+   o registro desce sozinho, em tabular. Sobra uma escada de quatro degraus:
+   cargo, nome, especialidade, registro. Depois o fio, e so entao a biografia. */
+.team-role {
+  font-family: var(--font-body); font-size: var(--fs-12); font-weight: 600;
+  text-transform: uppercase; letter-spacing: .12em; color: var(--oil-hi);
+  margin-bottom: var(--sp-8);
+}
+.team-info h3 { font-size: var(--fs-20); font-weight: 600; letter-spacing: -0.01em; line-height: 1.25; text-wrap: pretty; }
+.team-specialty { font-size: var(--fs-14); color: var(--text-muted); margin-top: var(--sp-4); }
+.team-meta { font-size: var(--fs-12); color: var(--text-subtle); letter-spacing: .02em; font-variant-numeric: tabular-nums; margin-top: var(--sp-4); }
+/* O fio separa identidade de biografia — sem ele os dois blocos liam como uma
+   massa so de cinza. hyphens: a medida em quatro colunas e de ~26 caracteres, e
+   "musculoesqueletica" sozinha numa linha abria rios no paragrafo. */
+.team-bio {
+  margin-top: var(--sp-12); padding-top: var(--sp-12);
+  border-top: 1px solid var(--border-hairline);
+  font-size: var(--fs-14); color: var(--text-muted); line-height: 1.65;
+  -webkit-hyphens: auto; hyphens: auto;
+  /* Sem limite, o motor quebrava "presenci-al" e "medici-nal". So palavra de 10
+     letras ou mais, com 5 antes e 4 depois — sobra a hifenizacao dos compostos
+     medicos, que e a que o portugues quer. */
+  -webkit-hyphenate-limit-before: 5; -webkit-hyphenate-limit-after: 4;
+  hyphenate-limit-chars: 10 5 4;
+}
+/* Nome proprio nao se hifeniza. */
+.team-bio .nb { -webkit-hyphens: none; hyphens: none; }
 
 @media (max-width: 1100px) { .team-grid { grid-template-columns: repeat(2, 1fr); } }
 @media (max-width: 900px) {
