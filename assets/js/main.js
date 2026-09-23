@@ -1214,10 +1214,11 @@
 })();
 
 // ========== Contato: fumaca (Smokey, WebGL) ==========
-// Shader do componente: distorcao iterada em cosseno gera ondas que se
-// deformam; o ponteiro desloca a fase (ripple). Cor: verde profundo da
-// paleta. Meia resolucao; anima so com a secao em tela; sob reduced-motion
-// desenha um quadro e para.
+// Campo de gradiente: tres massas de cor amplas que derivam devagar sobre o
+// navy, somadas por peso gaussiano — sem a distorcao iterada em cosseno do
+// componente original, que marmorizava a tela (lia como fumaca). O ponteiro
+// so inclina o campo. Meia resolucao; anima so com a secao em tela; sob
+// reduced-motion desenha um quadro e para.
 (function () {
   var stage = document.querySelector('.sk'), canvas = stage && stage.querySelector('.sk-field');
   if (!stage || !canvas) return;
@@ -1227,13 +1228,27 @@
   var VERT = 'attribute vec2 a; void main(){ gl_Position = vec4(a, 0.0, 1.0); }';
   var FRAG = [
     'precision mediump float; uniform vec2 iResolution; uniform float iTime; uniform vec2 iMouse; uniform vec3 u_color;',
+    'float hash(vec2 p){ return fract(sin(dot(p, vec2(12.9898, 78.233))) * 43758.5453); }',
     'void main(){',
-    '  vec2 c = (2.0 * gl_FragCoord.xy - iResolution.xy) / min(iResolution.x, iResolution.y);',
-    // rc * 0.35: o ponteiro inclina o campo de leve. A 1.0 a fumaca girava atras do cursor.
-    '  float t = iTime * 0.5; vec2 m = iMouse / iResolution; vec2 rc = (2.0 * m - 1.0) * 0.35; vec2 d = c;',
-    '  for (float i = 1.0; i < 8.0; i++) { d.x += 0.5 / i * cos(i * 2.0 * d.y + t + rc.x * 3.1415); d.y += 0.5 / i * cos(i * 2.0 * d.x + t + rc.y * 3.1415); }',
-    '  float wave = abs(sin(d.x + d.y + t)); float glow = smoothstep(0.9, 0.2, wave);',
-    '  gl_FragColor = vec4(u_color * glow, 1.0); }'
+    '  float ratio = iResolution.x / iResolution.y;',
+    '  vec2 p = (gl_FragCoord.xy / iResolution - 0.5) * vec2(ratio, 1.0);',
+    '  float t = iTime * 0.045;',                                   // deriva lenta
+    '  vec2 m = (iMouse / iResolution - 0.5) * 0.14;',              // o ponteiro so inclina o campo
+    // Massas de cor amplas que derivam: cada uma e um peso gaussiano sobre o
+    // navy. Sem iteracao em cosseno, sem bandas — gradiente, nao fumaca.
+    '  p += 0.06 * vec2(sin(p.y * 1.7 + t * 1.6), cos(p.x * 1.5 - t * 1.3));',
+    '  vec2 c1 = vec2(cos(t * 0.8) * 0.42, sin(t * 0.6) * 0.30) + m;',
+    '  vec2 c2 = vec2(cos(t * 0.5 + 2.1) * 0.52, sin(t * 0.7 + 1.2) * 0.36) + m * 0.6;',
+    '  vec2 c3 = vec2(cos(t * 0.37 + 4.2) * 0.46, sin(t * 0.44 + 3.1) * 0.40) - m * 0.4;',
+    '  float w1 = exp(-dot(p - c1, p - c1) * 3.3);',
+    '  float w2 = exp(-dot(p - c2, p - c2) * 4.4);',
+    '  float w3 = exp(-dot(p - c3, p - c3) * 5.4);',
+    '  vec3 col = vec3(0.031, 0.067, 0.110);',                      // navy do site
+    '  col = mix(col, u_color, clamp(w1 * 0.72, 0.0, 1.0));',
+    '  col = mix(col, vec3(0.075, 0.243, 0.196), clamp(w2 * 0.6, 0.0, 1.0));',
+    '  col = mix(col, vec3(0.043, 0.137, 0.118), clamp(w3 * 0.55, 0.0, 1.0));',
+    '  col += (hash(gl_FragCoord.xy) - 0.5) * 0.012;',              // grao: mata o banding
+    '  gl_FragColor = vec4(col, 1.0); }'
   ].join('\n');
   function sh(type, src) { var s = gl.createShader(type); gl.shaderSource(s, src); gl.compileShader(s); return gl.getShaderParameter(s, gl.COMPILE_STATUS) ? s : null; }
   var vs = sh(gl.VERTEX_SHADER, VERT), fs = sh(gl.FRAGMENT_SHADER, FRAG); if (!vs || !fs) return;
@@ -1242,7 +1257,7 @@
   var buf = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, buf); gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 1, -1, -1, 1, 1, 1]), gl.STATIC_DRAW);
   var loc = gl.getAttribLocation(prog, 'a'); gl.enableVertexAttribArray(loc); gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
   var U = { res: gl.getUniformLocation(prog, 'iResolution'), t: gl.getUniformLocation(prog, 'iTime'), m: gl.getUniformLocation(prog, 'iMouse'), c: gl.getUniformLocation(prog, 'u_color') };
-  gl.uniform3f(U.c, 0x1c / 255, 0x5a / 255, 0x45 / 255);   // verde profundo da paleta
+  gl.uniform3f(U.c, 0x1a / 255, 0x55 / 255, 0x42 / 255);   // verde profundo da paleta
   var mx = 0.5, my = 0.5, tx = 0.5, ty = 0.5, hover = false, dpr = 0.5;
   function resize() { var r = stage.getBoundingClientRect(); dpr = Math.min(window.devicePixelRatio || 1, 2) * 0.5; canvas.width = Math.max(1, Math.round(r.width * dpr)); canvas.height = Math.max(1, Math.round(r.height * dpr)); gl.viewport(0, 0, canvas.width, canvas.height); if (reduced) draw(0); }
   // 0.015: o campo persegue o ponteiro devagar — reage, sem correr atras do cursor
