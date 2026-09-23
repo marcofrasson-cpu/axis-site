@@ -3472,3 +3472,25 @@ body { overflow-x: clip; }
   .pf-rt { max-width: none; }
   .pf-bottom { flex-direction: row; flex-wrap: wrap; justify-content: space-between; gap: var(--sp-4) var(--sp-12); font-size: var(--fs-12); }
 }
+
+/* ==================== Contador: painel de instrumento ==================== */
+.stats--panel { padding: 0 0 var(--space-section); background: var(--brand-navy); }
+.stats--panel .stats-kicker { text-align: center; color: var(--text-subtle); margin: 0 0 var(--sp-12); }
+.stats--panel .stats-grid {
+  margin: 0; display: grid; grid-template-columns: repeat(3, 1fr); gap: 0;
+  border: 1px solid var(--border-hairline); border-radius: var(--r-surface); background: var(--ground-raised); overflow: hidden;
+}
+.stats.stats--panel .stat-card {
+  display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center;
+  padding: var(--sp-32) var(--sp-20); border: 0; border-left: 1px solid var(--border-hairline);
+}
+.stats.stats--panel .stat-card:first-child { border-left: 0; padding-left: var(--sp-20); }
+.stats--panel .stat-number { font-size: clamp(40px, 4.4vw, 64px); }
+.stats--panel .stat-label { margin: var(--sp-8) 0 0; max-width: 16ch; font-size: var(--fs-14); }
+@media (max-width: 768px) {
+  .stats--panel { padding-bottom: var(--sp-56); }
+  .stats.stats--panel .stat-card { display: flex; grid-template-columns: none; column-gap: 0; padding: var(--sp-20) var(--sp-8); border-top: 0; border-left: 1px solid var(--border-hairline); }
+  .stats.stats--panel .stat-card:first-child { border-left: 0; border-top: 0; padding-top: var(--sp-20); }
+  .stats--panel .stat-number { font-size: 32px; }
+  .stats--panel .stat-label { margin-top: var(--sp-4); font-size: var(--fs-12); line-height: 1.35; max-width: 12ch; }
+}
