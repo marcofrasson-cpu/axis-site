@@ -595,7 +595,7 @@ button { font: inherit; cursor: pointer; background: none; border: none; color: 
   display: inline-block; font-family: var(--font-body); font-size: var(--fs-12); font-weight: 600;
   letter-spacing: 0.14em; text-transform: uppercase; color: var(--brand-green); margin-bottom: 14px;
 }
-.bm-cat h3 {
+.bm-cat h2 {
   font-family: var(--font-display); font-weight: 600; font-size: clamp(24px, 2.6vw, 34px);
   line-height: 1.1; letter-spacing: -0.02em; color: var(--text-primary); margin: 0 0 18px;
 }
@@ -1007,7 +1007,7 @@ button { font: inherit; cursor: pointer; background: none; border: none; color: 
    deixa a faixa 5 vazia em vez de puxar a biografia para cima. */
 .team-media { grid-row: 1; margin-bottom: var(--sp-20); }
 .team-role { grid-row: 2; }
-.team-info h3 { grid-row: 3; }
+.team-info h2 { grid-row: 3; }
 .team-specialty { grid-row: 4; }
 .team-meta { grid-row: 5; }
 .team-bio { grid-row: 6; }
@@ -1061,7 +1061,7 @@ button { font: inherit; cursor: pointer; background: none; border: none; color: 
   text-transform: uppercase; letter-spacing: .12em; color: var(--oil-hi);
   margin-bottom: var(--sp-8);
 }
-.team-info h3 { font-size: var(--fs-20); font-weight: 600; letter-spacing: -0.01em; line-height: 1.25; text-wrap: pretty; }
+.team-info h2 { font-size: var(--fs-20); font-weight: 600; letter-spacing: -0.01em; line-height: 1.25; text-wrap: pretty; }
 .team-specialty { font-size: var(--fs-14); color: var(--text-muted); margin-top: var(--sp-4); }
 .team-meta { font-size: var(--fs-12); color: var(--text-subtle); letter-spacing: .02em; font-variant-numeric: tabular-nums; margin-top: var(--sp-4); }
 /* O fio separa identidade de biografia — sem ele os dois blocos liam como uma
@@ -2583,7 +2583,7 @@ body { overflow-x: clip; }
    empilharia as tres colunas na mesma faixa */
 .pf-mark { width: 64px; height: 64px; }
 .pf-tagline { margin: 0 0 var(--sp-12); font-family: var(--font-display); font-weight: 500; font-size: var(--fs-20); line-height: 1.3; letter-spacing: -.01em; color: var(--text-primary); max-width: 22ch; }
-.pf-col h3 { font-size: var(--fs-14); font-weight: 600; color: var(--text-primary); margin-bottom: var(--sp-12); }
+.pf-col h2 { font-size: var(--fs-14); font-weight: 600; color: var(--text-primary); margin-bottom: var(--sp-12); }
 .pf-col ul { list-style: none; display: grid; gap: 12px; margin: 0; padding: 0; }
 /* alvo de toque: os links do rodapé mediam 19px de altura — abaixo do piso de
    24px da WCAG 2.2. O padding vai no <li> (ritmo uniforme entre itens de texto
@@ -2986,12 +2986,18 @@ body { overflow-x: clip; }
    blur + subida, escalonada em 45ms, uma vez, quando o titulo entra em tela.
    O JS envolve so os nos de texto (.hl, .accent, <br> ficam). Sob
    prefers-reduced-motion o JS nao envolve nada e nada disto se aplica. */
+/* Estava fora do vocabulario em quatro pontos ao mesmo tempo: 700ms (o teto e
+   300), uma segunda curva (a .215/.61/.355 aparecia 846x no site contra 255x
+   do --ease-settle, e o token nao era o dominante), 45ms de escalonamento (o
+   teto e 40) e filter: blur animado — o mesmo blur que saiu do .reveal, com
+   comentario escrito, porque repintava a banda inteira a cada quadro. A
+   entrada ja e dita pela subida. */
 .rt .rt-w {
-  display: inline-block; opacity: 0; transform: translateY(.45em); filter: blur(8px);
-  transition: opacity .7s cubic-bezier(.215, .61, .355, 1), transform .7s cubic-bezier(.215, .61, .355, 1), filter .7s cubic-bezier(.215, .61, .355, 1);
-  transition-delay: calc(var(--i, 0) * 45ms);
+  display: inline-block; opacity: 0; transform: translateY(.42em);
+  transition: opacity var(--reveal-dur) var(--ease-settle), transform var(--reveal-dur) var(--ease-settle);
+  transition-delay: calc(var(--i, 0) * 40ms);
 }
-.rt.rt-in .rt-w { opacity: 1; transform: none; filter: none; }
+.rt.rt-in .rt-w { opacity: 1; transform: none; }
 /* o h1 do heroi ja entra palavra a palavra: sai da subida em bloco */
 .nh-inner > .nh-title { animation: none; }
 
@@ -3346,7 +3352,7 @@ body { overflow-x: clip; }
   .pf-mark { width: 44px; height: 44px; }
   .pf-col--brand .pf-mark { margin-bottom: var(--sp-12); }
   .pf-tagline { font-size: var(--fs-16); margin-bottom: var(--sp-8); }
-  .pf-col h3 { margin-bottom: var(--sp-4); }
+  .pf-col h2 { margin-bottom: var(--sp-4); }
   .pf-col ul { gap: 0; }
   .pf-col ul li a { padding-block: 6px; }
   .pf-col--nav ul { gap: 0 var(--sp-20); }
@@ -3460,7 +3466,11 @@ body { overflow-x: clip; }
    a mascara puxa para a esquerda, onde esta o titulo; o feixe alinha a esquerda */
 .bm-head--sparks { position: relative; }
 .bm-head--sparks > .bm-head-l, .bm-head--sparks > .bm-head-r { position: relative; z-index: 1; }
-.bm-head--sparks .sp-field { top: -48px; left: -40px; width: calc(100% + 80px); height: calc(100% + 80px);   /* canvas absoluto com width:auto cai no intrinseco 300x150 */
+/* A sangria horizontal de 40px por lado saia do cabecalho, que nao clipa, e
+   virava 20px de barra horizontal no celular (410 num viewport de 390). A
+   mascara ja apaga as particulas antes da borda, entao a sangria lateral nao
+   mostrava nada — some. A vertical fica: e ela que da curso as particulas. */
+.bm-head--sparks .sp-field { top: -48px; left: 0; width: 100%; height: calc(100% + 80px);   /* canvas absoluto com width:auto cai no intrinseco 300x150 */
   -webkit-mask-image: radial-gradient(60% 100% at 25% 50%, #000 25%, transparent 100%);
   mask-image: radial-gradient(60% 100% at 25% 50%, #000 25%, transparent 100%); }
 .sp-beam--left { margin-left: 0; margin-right: auto; width: min(420px, 90%); margin-top: var(--sp-20); margin-bottom: 0; }
