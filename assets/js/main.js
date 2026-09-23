@@ -1465,3 +1465,110 @@
   host.addEventListener('pointerleave', function () { host.classList.remove('is-hover'); });
   window.addEventListener('resize', measure);
 })();
+
+// ========== Mesh gradient das faixas claras (.band-lift) ==========
+// O valor chapado (#15273a) lia como cinza morto numa area de largura inteira.
+// Por baixo de cada faixa vai um campo de quatro massas de cor que derivam
+// devagar — o mesmo principio do campo do /contato, mas em canvas 2D e num
+// buffer minusculo: um mesh gradient e so baixa frequencia, entao ~200px de
+// largura sobem para 1440 sem perder nada, e a interpolacao do browser mata o
+// banding que um gradiente escuro teria em 8 bits.
+// Custo: quatro gradientes radiais por quadro num canvas de ~200x300, a 15fps,
+// so com a faixa em tela. Sem WebGL — varias faixas por pagina nao esbarram no
+// limite de contextos.
+(function () {
+  var bands = [].slice.call(document.querySelectorAll('.band-lift'));
+  if (!bands.length) return;
+  var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // Massas: duas de valor (a luz e a sombra do navy) e duas de cor (o verde da
+  // marca e o oleo), estas em alfa baixo. A faixa continua lendo como uma
+  // superficie so — o campo da vida, nao desenha.
+  var MASSES = [
+    { color: '29,53,80',  a: 0.58, r: 0.62, sx: 0.30, sy: 0.24, fx: 0.061, fy: 0.043, px: 0.0, py: 1.1, cx: 0.32, cy: 0.34 },
+    { color: '10,26,42',  a: 0.92, r: 0.66, sx: 0.28, sy: 0.26, fx: 0.047, fy: 0.055, px: 2.3, py: 0.4, cx: 0.74, cy: 0.66 },
+    { color: '31,84,70',  a: 0.34, r: 0.50, sx: 0.26, sy: 0.22, fx: 0.037, fy: 0.029, px: 4.1, py: 2.7, cx: 0.60, cy: 0.24 },
+    { color: '104,70,33', a: 0.17, r: 0.44, sx: 0.24, sy: 0.20, fx: 0.026, fy: 0.034, px: 5.6, py: 3.9, cx: 0.26, cy: 0.78 }
+  ];
+
+  function build(host) {
+    var cv = document.createElement('canvas');
+    cv.className = 'bl-mesh';
+    cv.setAttribute('aria-hidden', 'true');
+    host.insertBefore(cv, host.firstChild);
+    var ctx = cv.getContext('2d');
+    if (!ctx) { cv.remove(); return null; }
+    var w = 0, h = 0, running = false, raf = 0, last = 0;
+
+    function resize() {
+      var r = host.getBoundingClientRect();
+      if (!r.width) return;
+      // Buffer fixo em largura; altura acompanha a proporcao da faixa, com teto.
+      w = 200;
+      h = Math.max(80, Math.min(400, Math.round(w * (r.height / r.width))));
+      if (cv.width !== w || cv.height !== h) { cv.width = w; cv.height = h; }
+      draw(last);
+    }
+
+    function draw(t) {
+      if (!w || !h) return;
+      var s = t * 0.001;
+      ctx.fillStyle = '#15273a';
+      ctx.fillRect(0, 0, w, h);
+      for (var i = 0; i < MASSES.length; i++) {
+        var m = MASSES[i];
+        var x = (m.cx + Math.cos(s * m.fx * 6.283 + m.px) * m.sx) * w;
+        var y = (m.cy + Math.sin(s * m.fy * 6.283 + m.py) * m.sy) * h;
+        var rad = m.r * Math.max(w, h);
+        var g = ctx.createRadialGradient(x, y, 0, x, y, rad);
+        g.addColorStop(0, 'rgba(' + m.color + ',' + m.a + ')');
+        g.addColorStop(0.55, 'rgba(' + m.color + ',' + (m.a * 0.32).toFixed(3) + ')');
+        g.addColorStop(1, 'rgba(' + m.color + ',0)');
+        ctx.fillStyle = g;
+        ctx.fillRect(0, 0, w, h);
+      }
+      last = t;
+    }
+
+    // 15fps: a deriva tem periodo de 16 a 38 segundos — nada se perde, e o
+    // quadro custa quatro fillRect num buffer de 200px.
+    function loop(t) {
+      if (!running) return;
+      if (t - last > 66) draw(t);
+      raf = requestAnimationFrame(loop);
+    }
+    function start() { if (running || reduced) return; running = true; raf = requestAnimationFrame(loop); }
+    function stop() { running = false; if (raf) cancelAnimationFrame(raf); raf = 0; }
+
+    resize();
+    return { host: host, resize: resize, start: start, stop: stop };
+  }
+
+  var fields = bands.map(build).filter(Boolean);
+  if (!fields.length) return;
+
+  var ro = 'ResizeObserver' in window ? new ResizeObserver(function (es) {
+    es.forEach(function (e) {
+      for (var i = 0; i < fields.length; i++) if (fields[i].host === e.target) fields[i].resize();
+    });
+  }) : null;
+  fields.forEach(function (f) { if (ro) ro.observe(f.host); });
+  if (!ro) window.addEventListener('resize', function () { fields.forEach(function (f) { f.resize(); }); });
+
+  if (reduced) return;
+  if ('IntersectionObserver' in window) {
+    var io = new IntersectionObserver(function (es) {
+      es.forEach(function (e) {
+        for (var i = 0; i < fields.length; i++) {
+          if (fields[i].host !== e.target) continue;
+          if (e.isIntersecting) fields[i].start(); else fields[i].stop();
+        }
+      });
+    }, { threshold: 0.02 });
+    fields.forEach(function (f) { io.observe(f.host); });
+  } else { fields.forEach(function (f) { f.start(); }); }
+
+  document.addEventListener('visibilitychange', function () {
+    if (document.visibilityState !== 'visible') fields.forEach(function (f) { f.stop(); });
+  });
+})();

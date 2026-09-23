@@ -1443,11 +1443,25 @@ button { font: inherit; cursor: pointer; background: none; border: none; color: 
 .ground-deep { background: linear-gradient(180deg, var(--brand-navy) 0, var(--ground-deep) 88px, var(--ground-deep) calc(100% - 88px), var(--brand-navy) 100%); }
 /* As seções revezam três registros de fundo — navy uniforme, superfície um
    degrau mais clara e fotografia em destaque — para que a troca de assunto
-   seja vista antes de ser lida. Aqui a superfície clara: chapada, com fio nas
-   duas pontas. Sem rampa: a borda definida é o que faz perceber a mudança. */
+   seja vista antes de ser lida. Aqui a superfície clara.
+   O valor chapado lia como cinza morto numa área desse tamanho: por baixo vai
+   um mesh gradient (massas de cor que derivam devagar, o mesmo princípio do
+   campo do /contato). Fio nas duas pontas continua sendo o que marca a troca.
+   Os fios são border, não box-shadow inset: assim o canvas (inset: 0, dentro
+   da caixa de padding) passa por baixo deles em vez de cobri-los. */
 .band-lift {
+  position: relative; isolation: isolate;
   background: var(--ground-lift);
-  box-shadow: inset 0 1px 0 var(--border-hairline), inset 0 -1px 0 var(--border-hairline);
+  border-top: 1px solid var(--border-hairline);
+  border-bottom: 1px solid var(--border-hairline);
+}
+/* z-index negativo: pinta acima do fundo da faixa e abaixo de todo o conteudo,
+   sem precisar posicionar cada filho. O canvas e minusculo (~200px de largura)
+   e o browser interpola na subida — mesh gradient e so baixa frequencia, e a
+   interpolacao ainda mata o banding. */
+.bl-mesh {
+  position: absolute; inset: 0; z-index: -1;
+  display: block; width: 100%; height: 100%; pointer-events: none;
 }
 
 /* ---- 2. Aura verde (uma receita: radial <= .10, ancorada, clipada) ---- */
@@ -2155,13 +2169,8 @@ body { overflow-x: clip; }
 
 /* Valores (faixa full-bleed) */
 /* Era um branco a 2.8% sobre o navy: degrau de +3 no medidor, invisivel ao
-   lado da secao seguinte. Passa a usar o mesmo valor das outras faixas claras
-   do site — um registro so, nao dois parecidos. */
-.ab-band {
-  padding-block: var(--space-section);
-  background: var(--ground-lift);
-  border-top: 1px solid var(--border-hairline); border-bottom: 1px solid var(--border-hairline);
-}
+   lado da secao seguinte. Fundo e fios vem de .band-lift — um registro so. */
+.ab-band { padding-block: var(--space-section); }
 .ab-band-label {
   font-family: var(--font-body); font-size: var(--fs-12); font-weight: 600;
   letter-spacing: 0.16em; text-transform: uppercase; color: var(--brand-green); margin-bottom: 32px;
