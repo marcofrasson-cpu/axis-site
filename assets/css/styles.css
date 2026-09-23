@@ -2654,7 +2654,8 @@ body { overflow-x: clip; }
 }
 .pc-bg {
   position: absolute; inset: 0; z-index: -2;
-  width: 100%; height: 100%; object-fit: cover; object-position: 74% 38%;
+  /* campo de vias: a fonte fica a direita, o lado escuro segura o texto */
+  width: 100%; height: 100%; object-fit: cover; object-position: 60% 50%;
   opacity: 0; transform: scale(1.035);
   transition: opacity var(--reveal-dur) var(--ease-settle), transform var(--reveal-dur) var(--ease-settle);
 }
