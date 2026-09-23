@@ -54,6 +54,10 @@
   --ground-deep: #0a1522;
   --ground-raised: #0f1c2b;
   --ground-deepest: #08111c;
+  /* Um degrau acima do navy, para a seção que precisa se anunciar como outro
+     assunto. Pequeno em valor (dL ~ +11 no medidor de gutter) e grande em
+     área: é a largura inteira que faz o degrau ser lido. */
+  --ground-lift: #15273a;
   /* Motion — uma curva "settle" (clinica, sem overshoot) + unidades compartilhadas */
   --ease-settle: cubic-bezier(0.22, 1, 0.36, 1);
   --reveal-dist: 18px;
@@ -1437,6 +1441,14 @@ button { font: inherit; cursor: pointer; background: none; border: none; color: 
 /* ---- 1. Superficies tonais (profundidade, nao cor) ---- */
 .ground-raised { background: linear-gradient(180deg, var(--brand-navy) 0, var(--ground-raised) 88px, var(--ground-raised) calc(100% - 88px), var(--brand-navy) 100%); }
 .ground-deep { background: linear-gradient(180deg, var(--brand-navy) 0, var(--ground-deep) 88px, var(--ground-deep) calc(100% - 88px), var(--brand-navy) 100%); }
+/* As seções revezam três registros de fundo — navy uniforme, superfície um
+   degrau mais clara e fotografia em destaque — para que a troca de assunto
+   seja vista antes de ser lida. Aqui a superfície clara: chapada, com fio nas
+   duas pontas. Sem rampa: a borda definida é o que faz perceber a mudança. */
+.band-lift {
+  background: var(--ground-lift);
+  box-shadow: inset 0 1px 0 var(--border-hairline), inset 0 -1px 0 var(--border-hairline);
+}
 
 /* ---- 2. Aura verde (uma receita: radial <= .10, ancorada, clipada) ---- */
 .aura { position: relative; overflow: hidden; }
@@ -2142,9 +2154,12 @@ body { overflow-x: clip; }
 .ab-principles p { font-family: var(--font-body); font-size: var(--fs-14); line-height: 1.62; color: var(--text-muted); }
 
 /* Valores (faixa full-bleed) */
+/* Era um branco a 2.8% sobre o navy: degrau de +3 no medidor, invisivel ao
+   lado da secao seguinte. Passa a usar o mesmo valor das outras faixas claras
+   do site — um registro so, nao dois parecidos. */
 .ab-band {
   padding-block: var(--space-section);
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.028), rgba(255, 255, 255, 0.006));
+  background: var(--ground-lift);
   border-top: 1px solid var(--border-hairline); border-bottom: 1px solid var(--border-hairline);
 }
 .ab-band-label {
@@ -3327,7 +3342,7 @@ body { overflow-x: clip; }
    largura fixa e altura cheia — sempre ha tres na tela, e some o vao vazio que
    a trilha de hastes deixava. O painel no centro acende; a regua embaixo diz
    onde se esta. */
-.hz { position: relative; background: var(--brand-navy); }
+.hz { position: relative; }
 .hz-pin { position: sticky; top: 0; height: 100svh; overflow: hidden; display: flex; align-items: center; }
 .hz-track { display: flex; align-items: stretch; gap: clamp(16px, 1.6vw, 28px); padding: 0 clamp(20px, 4vw, 64px); height: clamp(360px, 54vh, 520px); width: max-content; will-change: transform; }
 .hz-panel { flex: none; display: flex; flex-direction: column; }
@@ -3464,7 +3479,7 @@ body { overflow-x: clip; }
 }
 
 /* ==================== Contador: painel de instrumento ==================== */
-.stats--panel { padding: 0 0 var(--space-section); background: var(--brand-navy); }
+.stats--panel { padding: var(--space-section) 0; }
 .stats--panel .stats-kicker { text-align: center; color: var(--text-subtle); margin: 0 0 var(--sp-12); }
 .stats--panel .stats-grid {
   margin: 0; display: grid; grid-template-columns: repeat(3, 1fr); gap: 0;
@@ -3478,7 +3493,7 @@ body { overflow-x: clip; }
 .stats--panel .stat-number { font-size: clamp(40px, 4.4vw, 64px); }
 .stats--panel .stat-label { margin: var(--sp-8) 0 0; max-width: 16ch; font-size: var(--fs-14); }
 @media (max-width: 768px) {
-  .stats--panel { padding-bottom: var(--sp-56); }
+  .stats--panel { padding: var(--space-section-tight) 0; }
   .stats.stats--panel .stat-card { display: flex; grid-template-columns: none; column-gap: 0; padding: var(--sp-20) var(--sp-8); border-top: 0; border-left: 1px solid var(--border-hairline); }
   .stats.stats--panel .stat-card:first-child { border-left: 0; border-top: 0; padding-top: var(--sp-20); }
   .stats--panel .stat-number { font-size: 32px; }
