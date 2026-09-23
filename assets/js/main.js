@@ -1430,9 +1430,13 @@
   var host = document.querySelector('[data-hover-word]');
   if (!host) return;
   var lens = host.querySelector('.pf-lens'), inner = host.querySelector('.pf-word--fill');
+  var sign = document.querySelector('.pf-sign');
   if ('IntersectionObserver' in window) {
-    new IntersectionObserver(function (es, io) { es.forEach(function (e) { if (e.isIntersecting) { host.classList.add('is-in'); io.disconnect(); } }); }, { threshold: 0.2 }).observe(host);
-  } else host.classList.add('is-in');
+    var io = new IntersectionObserver(function (es) {
+      es.forEach(function (e) { if (e.isIntersecting) { e.target.classList.add('is-in'); io.unobserve(e.target); } });
+    }, { threshold: 0.2 });
+    io.observe(host); if (sign) io.observe(sign);
+  } else { host.classList.add('is-in'); if (sign) sign.classList.add('is-in'); }
   if (!lens || !inner || !window.matchMedia('(hover: hover)').matches) return;
   var tx = 0, ty = 0, cx = 0, cy = 0, raf = 0, half = { x: 0, y: 0 };
   function measure() { half.x = lens.offsetWidth / 2; half.y = lens.offsetHeight / 2; }

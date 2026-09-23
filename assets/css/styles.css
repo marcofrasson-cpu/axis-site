@@ -3524,3 +3524,28 @@ body { overflow-x: clip; }
 
 /* Trilha: o corpo termina logo depois da ultima etapa — a linha nao sobra */
 .jn-body { width: calc(22vw + 4 * 16.5vw + 27vw); }
+
+/* ==================== Rodape: assinatura (marca + wordmark) ====================
+   A marca saiu da coluna de texto — era ela que empurrava a tagline para baixo
+   e desalinhava a primeira coluna das outras tres. Agora fecha o rodape,
+   centrada acima do wordmark, com o traco se desenhando e os nos pulsando. */
+.pf-sign { display: block; width: 72px; margin: var(--sp-32) auto 0; }
+.pf-mk { display: block; width: 100%; height: auto; overflow: visible; }
+.pf-mk-hex, .pf-mk-a { stroke-dasharray: 360; stroke-dashoffset: 360; }
+.pf-mk-dot { opacity: 0; transform-box: fill-box; transform-origin: center; }
+.pf-sign.is-in .pf-mk-hex--l { animation: pfDraw 1.1s var(--ease-settle) forwards; }
+.pf-sign.is-in .pf-mk-hex--r { animation: pfDraw 1.1s var(--ease-settle) .18s forwards; }
+.pf-sign.is-in .pf-mk-a { animation: pfDraw .8s var(--ease-settle) .5s forwards; }
+.pf-sign.is-in .pf-mk-dot { animation: pfDotIn .5s var(--ease-settle) .95s forwards, pfDotBeat 3.2s ease-in-out 1.6s infinite; }
+.pf-sign.is-in .pf-mk-dot--2 { animation-delay: 1.1s, 1.9s; }
+@keyframes pfDraw { to { stroke-dashoffset: 0; } }
+@keyframes pfDotIn { from { opacity: 0; transform: scale(.4); } to { opacity: 1; transform: none; } }
+@keyframes pfDotBeat { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.35); } }
+.pf-sign:hover .pf-mk-hex--r, .pf-sign:focus-visible .pf-mk-hex--r { stroke: var(--brand-green-hover); }
+/* a coluna da marca agora comeca na mesma linha das outras */
+.pf-col--brand .pf-tagline { margin-top: 0; }
+@media (prefers-reduced-motion: reduce) {
+  .pf-mk-hex, .pf-mk-a { stroke-dashoffset: 0; }
+  .pf-mk-dot { opacity: 1; }
+  .pf-sign.is-in .pf-mk-hex--l, .pf-sign.is-in .pf-mk-hex--r, .pf-sign.is-in .pf-mk-a, .pf-sign.is-in .pf-mk-dot { animation: none; }
+}

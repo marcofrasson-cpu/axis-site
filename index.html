@@ -28,7 +28,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Spectral:wght@400;500;600;700&family=Hanken+Grotesk:wght@400;500;600;700&display=swap">
 <link rel="icon" type="image/svg+xml" href="/assets/img/logo.svg">
-<link rel="stylesheet" href="/assets/css/styles.css?v=202609231110">
+<link rel="stylesheet" href="/assets/css/styles.css?v=202609231127">
 <noscript><style>.reveal,.reveal-stagger [class*="-card"],.blog-highlight.reveal .blog-feature-image,.blog-highlight.reveal .blog-feature-content{opacity:1!important;transform:none!important;filter:none!important}</style></noscript>
 <script type="application/ld+json">
 {"@context":"https://schema.org","@type":"MedicalClinic","name":"Axis FitoMed","url":"https://axisfitomed.com.br/","description":"Associação médica de cannabis medicinal com rigor científico, em Curitiba, Paraná.","email":"contato@axisfitomed.com.br","medicalSpecialty":"Cannabis medicinal e medicina endocanabinoide","areaServed":{"@type":"City","name":"Curitiba"},"address":{"@type":"PostalAddress","addressLocality":"Curitiba","addressRegion":"PR","addressCountry":"BR"},"logo":"https://axisfitomed.com.br/assets/img/logo.svg","@id":"https://axisfitomed.com.br/#clinica","openingHoursSpecification":{"@type":"OpeningHoursSpecification","dayOfWeek":["Monday","Tuesday","Wednesday","Thursday","Friday"],"opens":"08:00","closes":"18:00"}}
@@ -603,7 +603,6 @@
   <div class="container">
     <div class="pf-top">
       <div class="pf-col pf-col--brand">
-        <a class="brand" href="/" aria-label="Axis FitoMed — início"><img class="pf-mark" src="/assets/img/logo.svg" alt="" width="256" height="256"></a>
         <p class="pf-tagline">Cannabis medicinal com rigor clínico.</p>
         <p class="pf-rt">Responsável técnico<br>Dr. Marco Aurélio Frasson · <span style="white-space:nowrap">CRM-PR 47986</span></p>
       </div>
@@ -639,6 +638,19 @@
       <span>© 2026 Axis FitoMed. Todos os direitos reservados.</span>
       <span>Conforme Anvisa · uso sob prescrição médica.</span>
     </div>
+    <!-- Assinatura: a marca centrada acima do wordmark. Inline para o traco poder
+         se desenhar quando o rodape entra em tela; os dois nos pulsam de leve. -->
+    <a class="pf-sign" href="/" aria-label="Axis FitoMed — início">
+      <svg class="pf-mk" viewBox="0 0 256 256" fill="none" aria-hidden="true">
+        <g transform="translate(128,128) scale(1.42) translate(-99.8,-90)" fill="none" stroke-linejoin="miter">
+          <polygon class="pf-mk-hex pf-mk-hex--l" points="60,46 99.8,68 99.8,112 60,134 20.2,112 20.2,68" stroke="#3a4a52" stroke-width="5"/>
+          <polygon class="pf-mk-hex pf-mk-hex--r" points="99.8,68 139.6,46 179.4,68 179.4,112 139.6,134 99.8,112" stroke="#5fc89b" stroke-width="5"/>
+          <path class="pf-mk-a" d="M 126.6 116 L 139.6 58 L 152.6 116 M 131.1 95 L 148.1 95" stroke="#5fc89b" stroke-width="5" stroke-linecap="butt"/>
+          <circle class="pf-mk-dot" cx="99.8" cy="68" r="6" fill="#5fc89b"/>
+          <circle class="pf-mk-dot pf-mk-dot--2" cx="99.8" cy="112" r="6" fill="#5fc89b"/>
+        </g>
+      </svg>
+    </a>
     <div class="pf-hover" data-hover-word>
       <span class="pf-word pf-word--base">Axis FitoMed</span>
       <span class="pf-lens" aria-hidden="true"><span class="pf-word pf-word--fill">Axis FitoMed</span></span>
@@ -646,7 +658,7 @@
   </div>
 </footer>
 
-<script src="/assets/js/main.js?v=202609231110"></script>
+<script src="/assets/js/main.js?v=202609231127"></script>
 <script defer src="/_vercel/insights/script.js"></script>
 </body>
 </html>
