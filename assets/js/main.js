@@ -949,7 +949,14 @@
   function resize() {
     var r = stage.getBoundingClientRect();
     var textBottom = copy ? copy.getBoundingClientRect().bottom - r.top : r.height * 0.45;
+    // A secao tem que caber numa tela: o disco (0.36 unidade acima e abaixo do
+    // centro) comeca 44px abaixo do texto, entao 0.72 * unit <= altura livre.
+    // A secao sobe por baixo do header (margin negativa), que soma ao espaco.
+    // A secao sobe por baixo do header (margin negativa), entao ela comeca no
+    // topo da viewport: o espaco de uma tela e innerHeight, menos uma folga.
+    var avail = window.innerHeight - 24;
     var unit = Math.max(370, Math.min(560, r.width * 0.385));
+    unit = Math.max(240, Math.min(unit, (avail - textBottom - 44) / 0.72));
     var centerTop = textBottom + 44 + 0.36 * unit;
     var need = Math.round(centerTop + 0.36 * unit);
     if (Math.abs(need - r.height) > 1) { stage.style.minHeight = need + 'px'; r = stage.getBoundingClientRect(); }
@@ -1222,7 +1229,8 @@
     'precision mediump float; uniform vec2 iResolution; uniform float iTime; uniform vec2 iMouse; uniform vec3 u_color;',
     'void main(){',
     '  vec2 c = (2.0 * gl_FragCoord.xy - iResolution.xy) / min(iResolution.x, iResolution.y);',
-    '  float t = iTime * 0.5; vec2 m = iMouse / iResolution; vec2 rc = 2.0 * m - 1.0; vec2 d = c;',
+    // rc * 0.35: o ponteiro inclina o campo de leve. A 1.0 a fumaca girava atras do cursor.
+    '  float t = iTime * 0.5; vec2 m = iMouse / iResolution; vec2 rc = (2.0 * m - 1.0) * 0.35; vec2 d = c;',
     '  for (float i = 1.0; i < 8.0; i++) { d.x += 0.5 / i * cos(i * 2.0 * d.y + t + rc.x * 3.1415); d.y += 0.5 / i * cos(i * 2.0 * d.x + t + rc.y * 3.1415); }',
     '  float wave = abs(sin(d.x + d.y + t)); float glow = smoothstep(0.9, 0.2, wave);',
     '  gl_FragColor = vec4(u_color * glow, 1.0); }'
@@ -1237,7 +1245,8 @@
   gl.uniform3f(U.c, 0x1c / 255, 0x5a / 255, 0x45 / 255);   // verde profundo da paleta
   var mx = 0.5, my = 0.5, tx = 0.5, ty = 0.5, hover = false, dpr = 0.5;
   function resize() { var r = stage.getBoundingClientRect(); dpr = Math.min(window.devicePixelRatio || 1, 2) * 0.5; canvas.width = Math.max(1, Math.round(r.width * dpr)); canvas.height = Math.max(1, Math.round(r.height * dpr)); gl.viewport(0, 0, canvas.width, canvas.height); if (reduced) draw(0); }
-  function draw(t) { mx += (tx - mx) * 0.06; my += (ty - my) * 0.06; gl.uniform2f(U.res, canvas.width, canvas.height); gl.uniform1f(U.t, t * 0.001); gl.uniform2f(U.m, mx * canvas.width, my * canvas.height); gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4); }
+  // 0.015: o campo persegue o ponteiro devagar — reage, sem correr atras do cursor
+  function draw(t) { mx += (tx - mx) * 0.015; my += (ty - my) * 0.015; gl.uniform2f(U.res, canvas.width, canvas.height); gl.uniform1f(U.t, t * 0.001); gl.uniform2f(U.m, mx * canvas.width, my * canvas.height); gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4); }
   var running = false, raf = 0;
   function loop(t) { if (!running) return; draw(t); raf = requestAnimationFrame(loop); }
   function start() { if (running || reduced) return; running = true; raf = requestAnimationFrame(loop); }
@@ -1413,20 +1422,41 @@
 });
 
 // ========== Rodape: wordmark com hover (TextHoverEffect em vanilla) ==========
-// O traco verde se desenha quando o rodape entra em tela (classe is-in). Com o
-// ponteiro sobre o SVG, a mascara radial (cx/cy em unidades do viewBox) segue
-// o cursor com suavizacao e o gradiente aparece so ali (is-hover).
+// O contorno se revela uma vez quando o rodape entra em tela (is-in). Com o
+// ponteiro sobre o wordmark, a lente persegue o cursor: dois transforms por
+// quadro (a lente e o texto dentro dela, em sentidos opostos) — nada repinta.
+// O loop so roda enquanto ha distancia a percorrer.
 (function () {
-  var svg = document.querySelector('[data-hover-text]');
-  if (!svg) return;
-  var reveal = svg.querySelector('#pfReveal');
+  var host = document.querySelector('[data-hover-word]');
+  if (!host) return;
+  var lens = host.querySelector('.pf-lens'), inner = host.querySelector('.pf-word--fill');
   if ('IntersectionObserver' in window) {
-    new IntersectionObserver(function (es, io) { es.forEach(function (e) { if (e.isIntersecting) { svg.classList.add('is-in'); io.disconnect(); } }); }, { threshold: 0.2 }).observe(svg);
-  } else svg.classList.add('is-in');
-  if (!window.matchMedia('(hover: hover)').matches || !reveal) return;
-  var tx = 150, ty = 30, cx = 150, cy = 30, raf = 0;
-  function tick() { raf = 0; cx += (tx - cx) * 0.18; cy += (ty - cy) * 0.18; reveal.setAttribute('cx', cx.toFixed(1)); reveal.setAttribute('cy', cy.toFixed(1)); if (Math.abs(tx - cx) > 0.2 || Math.abs(ty - cy) > 0.2) raf = requestAnimationFrame(tick); }
-  svg.addEventListener('pointermove', function (e) { var r = svg.getBoundingClientRect(); tx = (e.clientX - r.left) / r.width * 300; ty = (e.clientY - r.top) / r.height * 60; if (!raf) raf = requestAnimationFrame(tick); }, { passive: true });
-  svg.addEventListener('pointerenter', function () { svg.classList.add('is-hover'); });
-  svg.addEventListener('pointerleave', function () { svg.classList.remove('is-hover'); });
+    new IntersectionObserver(function (es, io) { es.forEach(function (e) { if (e.isIntersecting) { host.classList.add('is-in'); io.disconnect(); } }); }, { threshold: 0.2 }).observe(host);
+  } else host.classList.add('is-in');
+  if (!lens || !inner || !window.matchMedia('(hover: hover)').matches) return;
+  var tx = 0, ty = 0, cx = 0, cy = 0, raf = 0, half = { x: 0, y: 0 };
+  function measure() { half.x = lens.offsetWidth / 2; half.y = lens.offsetHeight / 2; }
+  function place() {
+    var lx = cx - half.x, ly = cy - half.y;
+    lens.style.transform = 'translate3d(' + lx.toFixed(1) + 'px,' + ly.toFixed(1) + 'px,0)';
+    inner.style.transform = 'translate3d(' + (-lx).toFixed(1) + 'px,' + (-ly).toFixed(1) + 'px,0)';
+  }
+  function tick() {
+    cx += (tx - cx) * 0.2; cy += (ty - cy) * 0.2;
+    place();
+    raf = (Math.abs(tx - cx) > 0.3 || Math.abs(ty - cy) > 0.3) ? requestAnimationFrame(tick) : 0;
+  }
+  measure();
+  host.addEventListener('pointermove', function (e) {
+    var r = host.getBoundingClientRect();
+    tx = e.clientX - r.left; ty = e.clientY - r.top;
+    if (!raf) raf = requestAnimationFrame(tick);
+  }, { passive: true });
+  host.addEventListener('pointerenter', function (e) {
+    var r = host.getBoundingClientRect();
+    cx = tx = e.clientX - r.left; cy = ty = e.clientY - r.top;
+    measure(); place(); host.classList.add('is-hover');
+  });
+  host.addEventListener('pointerleave', function () { host.classList.remove('is-hover'); });
+  window.addEventListener('resize', measure);
 })();

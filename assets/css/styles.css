@@ -3439,22 +3439,40 @@ body { overflow-x: clip; }
 }
 
 /* ==================== Rodape: wordmark com hover (TextHoverEffect em vanilla) ====================
-   Tres camadas do mesmo texto: contorno neutro (aparece no hover), traco verde
-   que se desenha quando o rodape entra em tela (stroke-dashoffset), e um
-   gradiente da paleta revelado so em volta do cursor (mascara radial que o JS
-   move). Sem ponteiro fino, fica o traco verde desenhado. */
-.pf-hover { position: relative; z-index: 1; width: 100%; margin-top: var(--sp-32); margin-bottom: -2%; }
-.pf-hover-svg { display: block; width: 100%; height: auto; user-select: none; cursor: default; overflow: visible; }
-.pf-t { font-family: var(--font-display); font-weight: 700; font-size: 44px; letter-spacing: -.02em; fill: transparent; stroke-width: .35; paint-order: stroke; }
-.pf-t--base { stroke: rgba(241,245,249,.35); opacity: 0; transition: opacity 300ms ease; }
-.pf-hover-svg.is-hover .pf-t--base { opacity: .7; }
-.pf-t--draw { stroke: rgba(95,200,155,.45); stroke-dasharray: 1000; stroke-dashoffset: 1000; }
-.pf-hover-svg.is-in .pf-t--draw { animation: pfDraw 4s ease-in-out forwards; }
-@keyframes pfDraw { to { stroke-dashoffset: 0; } }
-.pf-t--grad { stroke: url(#pfGrad); stroke-width: .5; opacity: 0; transition: opacity 200ms ease; }
-.pf-hover-svg.is-hover .pf-t--grad { opacity: 1; }
-@media (max-width: 860px) { .pf-hover { margin-top: var(--sp-12); } .pf-t { font-size: 46px; } }
-@media (prefers-reduced-motion: reduce) { .pf-hover-svg.is-in .pf-t--draw { animation: none; stroke-dashoffset: 0; } }
+   O porte anterior mutava um gradiente SVG e remascarava um texto gigante a
+   cada quadro — no Safari isso repinta a camada inteira e trava. Aqui nada
+   repinta durante o gesto: o wordmark de contorno fica parado e uma "lente"
+   com o mesmo texto preenchido pelo gradiente da paleta anda por cima. A
+   lente (caixa com mascara radial estatica e overflow hidden) move por
+   translate3d e o texto dentro dela faz o contra-movimento — dois transforms,
+   resolvidos pelo compositor. */
+.pf-hover { position: relative; z-index: 1; margin-top: var(--sp-32); margin-bottom: -1.5%; container-type: inline-size; overflow: hidden; }
+.pf-word {
+  display: block; margin: 0; font-family: var(--font-display); font-weight: 700;
+  font-size: 15cqi; line-height: 1.06; letter-spacing: -.02em; white-space: nowrap; text-align: center;
+  color: transparent; user-select: none;
+}
+.pf-word--base { -webkit-text-stroke: 1px rgba(241,245,249,.16); clip-path: inset(0 100% 0 0); }
+.pf-hover.is-in .pf-word--base { animation: pfWipe 1.4s var(--ease-settle) forwards; }
+@keyframes pfWipe { to { clip-path: inset(0 0 0 0); } }
+.pf-lens {
+  position: absolute; left: 0; top: 0; width: 42cqi; height: 42cqi; overflow: hidden;
+  opacity: 0; transition: opacity 260ms ease; will-change: transform; pointer-events: none;
+  -webkit-mask-image: radial-gradient(closest-side, #000 18%, transparent 76%);
+  mask-image: radial-gradient(closest-side, #000 18%, transparent 76%);
+}
+.pf-hover.is-hover .pf-lens { opacity: 1; }
+.pf-word--fill {
+  position: absolute; left: 0; top: 0; width: 100cqi; will-change: transform;
+  background-image: linear-gradient(90deg, var(--brand-green), var(--brand-cream) 48%, var(--oil-hi));
+  -webkit-background-clip: text; background-clip: text;
+}
+@media (hover: none) { .pf-lens { display: none; } }
+@media (prefers-reduced-motion: reduce) {
+  .pf-word--base { clip-path: none; }
+  .pf-hover.is-in .pf-word--base { animation: none; }
+  .pf-lens { transition: none; }
+}
 
 /* Rodape no celular, enxuto e simetrico: marca em cima; Navegar em duas colunas
    (4+3); Institucional e Contato lado a lado; links de 30px. */
@@ -3494,3 +3512,14 @@ body { overflow-x: clip; }
   .stats--panel .stat-number { font-size: 32px; }
   .stats--panel .stat-label { margin-top: var(--sp-4); font-size: var(--fs-12); line-height: 1.35; max-width: 12ch; }
 }
+/* Blog: abertura com sparkles (mesma receita de /equipe e /servicos) */
+.bl-top--sparks { position: relative; isolation: isolate; overflow: hidden; margin-top: calc(-1 * var(--header-box)); padding-top: calc(var(--header-box) + var(--space-hero-top)); }
+.bl-top--sparks > .container { position: relative; z-index: 1; }
+.bl-top--sparks .sp-field { position: absolute; inset: 0; width: 100%; height: 100%;
+  -webkit-mask-image: radial-gradient(60% 100% at 30% 50%, #000 25%, transparent 100%);
+  mask-image: radial-gradient(60% 100% at 30% 50%, #000 25%, transparent 100%); }
+.bl-top--sparks .sp-beam--left { margin-top: var(--sp-20); margin-bottom: 0; }
+@media (max-width: 768px) { main > .bl-top--sparks:first-child, .bl-top--sparks { padding-top: calc(var(--header-box) + 16px); } }
+
+/* Trilha: o corpo termina logo depois da ultima etapa — a linha nao sobra */
+.jn-body { width: calc(22vw + 4 * 16.5vw + 27vw); }
