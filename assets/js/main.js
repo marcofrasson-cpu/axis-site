@@ -1708,3 +1708,28 @@
     if (document.visibilityState !== 'visible') fields.forEach(function (f) { f.stop(); });
   });
 })();
+
+// ========== Mapa do corpo: abrir uma condicao no celular ==========
+// No celular a lista fica ao lado da figura, com ~220px de largura: o corpo de
+// uma condicao (descricao, referencias, data) cresce ~600px e empurra tudo para
+// baixo. Quem abria ficava com o texto abaixo da dobra e tinha que rolar para
+// ler, rolar de volta para fechar, e de novo na proxima.
+// Duas medidas: o <details name> fecha a condicao anterior (accordion nativo,
+// sem JS), e aqui o resumo sobe para o topo util quando o corpo nao couber.
+// Captura porque o evento toggle nao borbulha.
+(function () {
+  var list = document.querySelector('.bm-list');
+  if (!list) return;
+  var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  document.addEventListener('toggle', function (e) {
+    var d = e.target;
+    if (!d || !d.matches || !d.matches('.bm-cond-item') || !d.open) return;
+    if (window.innerWidth > 768) return;
+    var body = d.querySelector('.bm-cond-body');
+    if (!body) return;
+    // ja cabe: nao mexe na rolagem de quem nao pediu
+    if (body.getBoundingClientRect().bottom <= window.innerHeight - 16) return;
+    var top = d.querySelector('summary').getBoundingClientRect().top + window.scrollY - 76;
+    window.scrollTo({ top: top, behavior: reduced ? 'auto' : 'smooth' });
+  }, true);
+})();
