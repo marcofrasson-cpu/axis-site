@@ -1492,7 +1492,7 @@
     'uniform vec4 u_scene;',      // resolution.xy, time, contagem de cores
     'uniform vec4 u_shape;',      // scale, intensity, -, warp
     'uniform vec4 u_surface;',    // detail, contrast, brightness, saturation
-    'uniform vec4 u_finish;',     // -, vignette, -, grain
+    'uniform vec4 u_finish;',     // -, vignette, -, -
     'uniform vec4 u_transform;',  // seed, rotation, drift, -
     'uniform vec4 u_space;',      // offset.xy
     '#define u_resolution u_scene.xy',
@@ -1506,7 +1506,6 @@
     '#define u_brightness u_surface.z',
     '#define u_saturation u_surface.w',
     '#define u_vignette u_finish.y',
-    '#define u_grain u_finish.w',
     '#ifdef GL_FRAGMENT_PRECISION_HIGH',
     '#define u_seed u_transform.x',
     '#else',
@@ -1523,14 +1522,6 @@
     '  p = fract(p * vec2(234.34, 435.345));',
     '  p += dot(p, p + 34.23);',
     '  return fract(p.x * p.y);',
-    '}',
-    // Hash de Dave Hoskins para o grao: o hash de multiplicacao acima serve
-    // para o ruido de valor, mas em coordenada inteira mostra uma malha
-    // alinhada aos eixos — le como rede sobre area chapada.
-    'float grainHash(vec2 p) {',
-    '  vec3 p3 = fract(vec3(p.xyx) * 0.1031);',
-    '  p3 += dot(p3, p3.yzx + 33.33);',
-    '  return fract((p3.x + p3.y) * p3.z);',
     '}',
     'float noise(vec2 p) {',
     '  vec2 i = floor(p); vec2 f = fract(p);',
@@ -1574,7 +1565,6 @@
     '  if (abs(u_saturation - 1.0) > 0.0001) { float luma = dot(col, vec3(0.299, 0.587, 0.114)); col = mix(vec3(luma), col, u_saturation); }',
     '  if (abs(u_brightness) > 0.0001) col += u_brightness;',
     '  if (u_vignette > 0.0001) { float vd = length(screenUv - 0.5) * 1.41421356; col *= 1.0 - u_vignette * smoothstep(0.35, 1.0, vd); }',
-    '  if (u_grain > 0.0001) col += (grainHash(gl_FragCoord.xy + vec2(u_seed * 17.0, u_seed * 31.0)) - 0.5) * u_grain;',
     '  gl_FragColor = vec4(clamp(col, 0.0, 1.0), 1.0);',
     '}'
   ].join('\n');
@@ -1600,7 +1590,7 @@
     // o contraste nao acrescenta nada: a profundidade vem das massas.
     detail: 1.664, contrast: 1.0, brightness: 0.0, saturation: 1.05,
     // 0.34 no preset: numa faixa de largura inteira a vinheta lia como caixa
-    vignette: 0.10, grain: 0.028,
+    vignette: 0.10,
     seed: 8816.0, rotate: 0.3316, drift: 0.048,
     offsetX: -0.13, offsetY: -0.12,
     timeScale: 0.936
@@ -1645,7 +1635,7 @@
     gl.uniform3fv(L.colors, new Float32Array(COLORS));
     gl.uniform4f(L.shape, U.scale, U.intensity, 0.0, U.warp);
     gl.uniform4f(L.surface, U.detail, U.contrast, U.brightness, U.saturation);
-    gl.uniform4f(L.finish, 0.0, U.vignette, 0.0, U.grain);
+    gl.uniform4f(L.finish, 0.0, U.vignette, 0.0, 0.0);
     gl.uniform4f(L.transform, U.seed, U.rotate, U.drift, 0.0);
     gl.uniform4f(L.space, U.offsetX, U.offsetY, 0.0, 0.0);
 
@@ -1653,15 +1643,19 @@
 
     var running = false, raf = 0, t0 = 0;
 
-    // Meia resolucao: o campo nao tem borda, o olho nao ve, e custa 4x menos.
-    // Teto de 1.2 Mpx para a faixa do "como funciona", que tem 2600px de alto.
+    // O grao do preset saiu: era a unica alta frequencia do campo, e em meia
+    // resolucao cada amostra virava um bloco de 2x2 na tela — o que pixelava.
+    // Quem dita o grao e a camada de filme do site (body::after), que e fixa e
+    // roda na resolucao nativa. Sobrando so baixa frequencia, a subida do
+    // canvas e invisivel; ainda assim a amostragem sobe de 0.5 para 0.85 do
+    // dpr, com teto de 3 Mpx, para nao haver degrau em faixa muito alta.
     function resize() {
       var r = host.getBoundingClientRect();
       if (!r.width || !r.height) return;
-      var dpr = Math.min(window.devicePixelRatio || 1, 2) * 0.5;
+      var dpr = Math.min(window.devicePixelRatio || 1, 2) * 0.85;
       var w = Math.max(1, Math.round(r.width * dpr));
       var h = Math.max(1, Math.round(r.height * dpr));
-      var k = Math.min(1, Math.sqrt(1200000 / Math.max(1, w * h)));
+      var k = Math.min(1, Math.sqrt(3000000 / Math.max(1, w * h)));
       w = Math.max(1, Math.round(w * k)); h = Math.max(1, Math.round(h * k));
       if (cv.width !== w || cv.height !== h) {
         cv.width = w; cv.height = h; gl.viewport(0, 0, w, h);
