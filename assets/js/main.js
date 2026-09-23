@@ -1593,7 +1593,11 @@
     vignette: 0.10,
     seed: 8816.0, rotate: 0.3316, drift: 0.048,
     offsetX: -0.13, offsetY: -0.12,
-    timeScale: 0.936
+    // 0.936 do preset: mudanca media de 2.47/255 por 2s na faixa da equipe.
+    // O campo do /contato, no ritmo que ja esta certo, muda 0.26 — o preset
+    // corria 9x mais que o resto do site. Aqui fica em ~1.25, metade do que
+    // era: a deriva continua visivel e para de puxar o olho.
+    timeScale: 0.45
   };
 
   function build(host) {
