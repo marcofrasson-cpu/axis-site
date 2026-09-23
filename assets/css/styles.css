@@ -3321,79 +3321,50 @@ body { overflow-x: clip; }
 }
 @media (prefers-reduced-motion: reduce) { .df-bg { opacity: 1; transform: none; transition: none; } }
 
-/* ==================== Como funciona: trilha horizontal pinada (.jn) ====================
-   Porte em vanilla do timeline (Hyperiux Vault). Geometria em vw para a trilha
-   escalar com a tela; o progresso do scroll (0..1 ao longo dos 200vw da secao)
-   vira: translateX da trilha, largura da linha, e por etapa a haste (scaleY),
-   o ponto (scale) e o texto (translateY sob mascara). */
-.jn { position: relative; height: 200vw; background: var(--brand-navy); }
-.jn-pin { position: sticky; top: 0; height: 100vh; height: 100svh; overflow: hidden; display: flex; align-items: center; }
-.jn-track {
-  display: flex; align-items: center; gap: 5vw; padding: 0 5vw; height: 32vw; width: max-content;
-  will-change: transform;
+/* ==================== Como funciona: rolagem lateral (.hz) ====================
+   A altura da secao vem da largura real da faixa: a distancia vertical iguala a
+   horizontal, entao o deslize acompanha o scroll na mesma medida. Paineis de
+   largura fixa e altura cheia — sempre ha tres na tela, e some o vao vazio que
+   a trilha de hastes deixava. O painel no centro acende; a regua embaixo diz
+   onde se esta. */
+.hz { position: relative; background: var(--brand-navy); }
+.hz-pin { position: sticky; top: 0; height: 100svh; overflow: hidden; display: flex; align-items: center; }
+.hz-track { display: flex; align-items: stretch; gap: clamp(16px, 1.6vw, 28px); padding: 0 clamp(20px, 4vw, 64px); height: clamp(360px, 54vh, 520px); width: max-content; will-change: transform; }
+.hz-panel { flex: none; display: flex; flex-direction: column; }
+.hz-panel--intro { width: min(30vw, 420px); justify-content: center; padding-right: clamp(12px, 1.6vw, 28px); }
+.hz-panel--intro h2 { font-size: clamp(26px, 2.6vw, 40px); line-height: 1.12; letter-spacing: -.02em; margin-top: var(--sp-12); }
+.hz-lead { margin-top: var(--gap-title-lead); font-family: var(--font-body); font-size: var(--fs-16); line-height: 1.55; color: var(--text-muted); }
+.hz-panel--media { width: min(26vw, 380px); margin: 0; border-radius: var(--r-surface); overflow: hidden; border: 1px solid var(--border-hairline); }
+.hz-panel--media picture { display: block; width: 100%; height: 100%; }
+.hz-panel--media img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: 58% 42%; }
+.hz-card {
+  width: min(23vw, 340px); justify-content: flex-end; padding: clamp(20px, 2vw, 32px);
+  border: 1px solid var(--border-hairline); border-radius: var(--r-surface); background: var(--ground-raised);
+  transition: border-color 260ms var(--ease-settle), background 260ms var(--ease-settle), transform 260ms var(--ease-settle);
 }
-.jn-photo { flex: none; width: 30vw; height: 100%; border-radius: var(--r-surface); overflow: hidden; }
-.jn-photo img { width: 100%; height: 100%; object-fit: cover; object-position: 60% 40%; display: block; filter: saturate(.9); }
-/* corpo: 5 etapas com 33vw de passo; as de cima nascem em 22vw, as de baixo deslocadas 16.5vw */
-.jn-body { position: relative; height: 100%; width: calc(22vw + 5 * 33vw); }
-.jn-head { position: absolute; left: 0; top: 0; width: 20vw; }
-.jn-head h2 { font-size: clamp(24px, 2.4vw, 36px); line-height: 1.1; margin-top: var(--sp-12); }
-.jn-period { position: absolute; left: 0; bottom: 0; margin: 0; font-size: var(--fs-14); color: var(--text-subtle); font-variant-numeric: tabular-nums; }
-.jn-line { position: absolute; left: 0; right: 0; top: 50%; height: 1px; background: var(--border-hairline); }
-.jn-line-fill { position: absolute; left: 0; top: 0; height: 100%; width: 100%; background: var(--brand-green); transform: scaleX(0); transform-origin: left center; }
-.jn-line::before, .jn-line::after { content: ""; position: absolute; top: 50%; width: 8px; height: 8px; border-radius: var(--r-circle); background: var(--brand-green); transform: translate(-50%, -50%); }
-.jn-line::before { left: 0; } .jn-line::after { left: 100%; }
-.jn-item { position: absolute; width: 27vw; height: 50%; padding-left: 2.2vw; }
-.jn-item--top { bottom: 50%; left: calc(22vw + var(--i) * 16.5vw); }
-.jn-item--bottom { top: 50%; left: calc(22vw + var(--i) * 16.5vw); }
-.jn-stem { position: absolute; left: 0; width: 1px; height: 90%; background: var(--brand-green); transform: scaleY(0); }
-.jn-item--top .jn-stem { bottom: 0; transform-origin: bottom; }
-.jn-item--bottom .jn-stem { top: 0; transform-origin: top; }
-.jn-dot { position: absolute; left: 0; width: 12px; height: 12px; border-radius: var(--r-circle); background: var(--brand-green); transform: translateX(-50%) scale(0); box-shadow: 0 0 0 4px rgba(95,200,155,.16); }
-.jn-item--top .jn-dot { top: 10%; transform: translate(-50%, -50%) scale(0); }
-.jn-item--bottom .jn-dot { bottom: 10%; transform: translate(-50%, 50%) scale(0); }
-.jn-text { position: absolute; left: 2.2vw; right: 0; display: flex; flex-direction: column; gap: var(--sp-8); }
-.jn-item--top .jn-text { top: 10%; transform: translateY(-50%); }
-.jn-item--bottom .jn-text { bottom: 10%; transform: translateY(50%); }
-.jn-mask { overflow: hidden; }
-.jn-mask > * { transform: translateY(110%); }
-.jn-item h3 { font-size: clamp(20px, 1.9vw, 28px); font-weight: 600; letter-spacing: -.01em; line-height: 1.1; color: var(--text-primary); display: flex; align-items: baseline; gap: var(--sp-12); }
-.jn-n { font-size: var(--fs-12); font-weight: 600; letter-spacing: .1em; color: var(--brand-green); font-variant-numeric: tabular-nums; }
-.jn-item p { font-size: var(--fs-16); line-height: 1.5; color: var(--text-muted); margin: 0; max-width: 34ch; }
-/* Celular (≤700px): a trilha horizontal pinada nao funciona no toque — vira
-   lista vertical sem pino: foto, titulo, etapas com ponto e haste a esquerda. */
-@media (max-width: 700px) {
-  .jn, .jn[data-jn-ready] { height: auto; }
-  .jn .jn-pin { position: static; height: auto; overflow: visible; display: block; padding: var(--sp-56) 0; }
-  .jn .jn-track { flex-direction: column; align-items: stretch; width: auto; height: auto; gap: var(--sp-32); padding: 0 var(--sp-20); transform: none !important; }
-  .jn-photo { display: none; }   /* no celular a foto sai: a trilha e o conteudo */
-  .jn-body { width: auto; height: auto; display: flex; flex-direction: column; gap: 0; }
-  .jn-head { position: static; width: auto; margin-bottom: var(--sp-32); }
-  .jn-head h2 { font-size: 26px; }
-  .jn-period { position: static; order: 99; margin-top: var(--sp-20); }
-  .jn-line { display: none; }
-  .jn-item, .jn-item--top, .jn-item--bottom { position: relative; left: auto; top: auto; bottom: auto; width: auto; height: auto; padding: 0 0 var(--sp-32) 28px; }
-  .jn-item:last-of-type { padding-bottom: 0; }
-  /* trilha animada pelo scroll: --q (0..1, JS) preenche a haste em verde de
-     cima para baixo, acende o ponto e sobe o texto */
-  .jn-stem, .jn-item--top .jn-stem, .jn-item--bottom .jn-stem { top: 18px; bottom: 0; height: auto; left: 5.5px; transform: none !important; background: var(--border-strong); overflow: hidden; }
-  .jn-stem::after { content: ""; position: absolute; inset: 0; background: var(--brand-green); transform: scaleY(var(--q, 0)); transform-origin: top; }
-  .jn-item--static .jn-dot { background: rgba(95,200,155,.35); box-shadow: none; transition: background 200ms ease, box-shadow 200ms ease; }
-  .jn-item--static.is-on .jn-dot { background: var(--brand-green); box-shadow: 0 0 0 3px rgba(95,200,155,.18); }
-  .jn-item--static .jn-text { opacity: calc(.25 + .75 * var(--q, 0)); transform: translateY(calc((1 - var(--q, 0)) * 10px)); }
-  .jn-item:last-of-type .jn-stem { display: none; }
-  .jn-dot, .jn-item--top .jn-dot, .jn-item--bottom .jn-dot { top: 5px; bottom: auto; left: 0; transform: none !important; }
-  .jn-text, .jn-item--top .jn-text, .jn-item--bottom .jn-text { position: static; left: auto; }
-  .jn-mask > * { transform: none !important; }
-  .jn-item h3 { font-size: 20px; } .jn-item p { font-size: var(--fs-14); }
-}
-/* sem JS / reduced-motion: nada pina; a trilha rola na horizontal, tudo visivel */
-.jn:not([data-jn-ready]), .jn[data-jn-static] { height: auto; }
-.jn:not([data-jn-ready]) .jn-pin, .jn[data-jn-static] .jn-pin { position: static; height: auto; overflow-x: auto; padding: var(--space-section) 0; }
-.jn:not([data-jn-ready]) .jn-line-fill, .jn[data-jn-static] .jn-line-fill { transform: none; }
-.jn:not([data-jn-ready]) .jn-stem, .jn[data-jn-static] .jn-stem { transform: none; }
-.jn:not([data-jn-ready]) .jn-dot, .jn[data-jn-static] .jn-dot { transform: translate(-50%, -50%) scale(1); }
-.jn:not([data-jn-ready]) .jn-mask > *, .jn[data-jn-static] .jn-mask > * { transform: none; }
+.hz-card.is-on { border-color: rgba(95,200,155,.45); background: var(--bg-card); transform: translateY(-6px); }
+.hz-n { font-family: var(--font-display); font-weight: 600; font-size: clamp(30px, 3vw, 44px); line-height: 1; color: var(--text-subtle); font-variant-numeric: tabular-nums; transition: color 260ms ease; }
+.hz-card.is-on .hz-n { color: var(--brand-green); }
+.hz-card h3 { margin: var(--sp-20) 0 var(--sp-8); font-size: var(--fs-20); font-weight: 600; letter-spacing: -.01em; line-height: 1.25; color: var(--text-primary); }
+.hz-card p { margin: 0; font-size: var(--fs-14); line-height: 1.6; color: var(--text-muted); }
+.hz-rail { position: absolute; left: clamp(20px, 4vw, 64px); right: clamp(20px, 4vw, 64px); bottom: clamp(28px, 5vh, 56px); height: 2px; border-radius: var(--r-pill); background: var(--border-hairline); }
+.hz-rail-fill { display: block; height: 100%; width: 100%; border-radius: inherit; background: var(--brand-green); transform: scaleX(0); transform-origin: left center; }
+.hz-count { position: absolute; right: clamp(20px, 4vw, 64px); bottom: calc(clamp(28px, 5vh, 56px) + var(--sp-20)); font-size: var(--fs-12); font-weight: 600; letter-spacing: .1em; color: var(--text-subtle); font-variant-numeric: tabular-nums; }
+.hz-count span { color: var(--brand-green); }
+/* painel de fecho: da destino ao fim da rolagem e deixa a ultima etapa chegar ao centro */
+.hz-panel--cta { width: min(26vw, 360px); justify-content: center; align-items: flex-start; gap: var(--sp-20); padding: clamp(20px, 2vw, 32px); border: 1px dashed var(--border-strong); border-radius: var(--r-surface); }
+.hz-cta-t { margin: 0; font-family: var(--font-display); font-size: var(--fs-20); font-weight: 600; line-height: 1.25; color: var(--text-primary); }
+.hz-cta-s { margin: 0; font-size: var(--fs-12); color: var(--text-subtle); }
+/* Celular e reduced-motion: lista vertical, sem pino e sem deslize */
+.hz[data-hz-static] { height: auto !important; }
+.hz[data-hz-static] .hz-pin { position: static; height: auto; display: block; padding: var(--space-section) 0; }
+.hz[data-hz-static] .hz-track { flex-direction: column; width: auto; height: auto; gap: var(--sp-20); transform: none !important; padding: 0 var(--sp-20); }
+.hz[data-hz-static] .hz-panel--intro { width: auto; padding: 0 0 var(--sp-12); }
+.hz[data-hz-static] .hz-panel--media { width: auto; height: 46vw; }
+.hz[data-hz-static] .hz-card, .hz[data-hz-static] .hz-panel--cta { width: auto; transform: none; }
+.hz[data-hz-static] .hz-panel--cta { align-items: stretch; text-align: center; }
+.hz[data-hz-static] .hz-panel--cta .btn { justify-content: center; }
+.hz[data-hz-static] .hz-rail, .hz[data-hz-static] .hz-count { display: none; }
 
 /* ==================== Equipe: sparkles no hero ==================== */
 .page-hero--sparks::before { display: none; }   /* o pontilhado estatico sai: as particulas assumem */
@@ -3522,8 +3493,6 @@ body { overflow-x: clip; }
 .bl-top--sparks .sp-beam--left { margin-top: var(--sp-20); margin-bottom: 0; }
 @media (max-width: 768px) { main > .bl-top--sparks:first-child, .bl-top--sparks { padding-top: calc(var(--header-box) + 16px); } }
 
-/* Trilha: o corpo termina logo depois da ultima etapa — a linha nao sobra */
-.jn-body { width: calc(22vw + 4 * 16.5vw + 27vw); }
 
 /* ==================== Rodape: assinatura (marca + wordmark) ====================
    A marca saiu da coluna de texto — era ela que empurrava a tagline para baixo

@@ -825,7 +825,7 @@
 (function () {
   if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
   var heads = [].slice.call(document.querySelectorAll('h1, h2')).filter(function (h) {
-    return !h.classList.contains('stats-kicker') && !h.closest('.lg-doc') && !h.closest('.jn');   // .jn: a trilha ja anima o proprio titulo
+    return !h.classList.contains('stats-kicker') && !h.closest('.lg-doc');
   });
   if (!heads.length) return;
   function wrap(node, st) {
@@ -1325,68 +1325,54 @@
   paint();
 })();
 
-// ========== Como funciona: trilha horizontal pinada (timeline em vanilla) ==========
-// Progresso p = quanto da secao (menos uma tela) ja rolou, 0..1. A trilha
-// desliza ate a ultima etapa encostar na direita; a linha se desenha de 5% a
-// 90%; cada etapa tem uma janela [a,b] de p: nos primeiros 40% a haste sobe e
-// o ponto acende, depois titulo e texto sobem sob a mascara (ease-out).
-// Loop continuo enquanto a secao esta em tela: o progresso desenhado persegue
-// o do scroll com suavizacao — sem saltos a cada evento. No celular (≤700px)
-// o CSS empilha em lista vertical sem pino e nada anima.
+// ========== Como funciona: rolagem lateral (.hz) ==========
+// A altura da secao vem da largura real da faixa: distancia vertical =
+// distancia horizontal, entao o deslize acompanha o scroll na mesma medida.
+// O progresso desenhado persegue o do scroll com suavizacao, num loop que so
+// roda com a secao em tela. Abaixo de 900px (ou sob reduced-motion) a secao
+// vira lista vertical e nada desliza.
 (function () {
-  var sec = document.querySelector('[data-journey]');
+  var sec = document.querySelector('[data-hz]');
   if (!sec) return;
+  var track = sec.querySelector('[data-hz-track]'), fill = sec.querySelector('[data-hz-fill]');
+  var idx = sec.querySelector('[data-hz-i]'), cards = [].slice.call(sec.querySelectorAll('[data-hz-card]'));
+  if (!track) return;
   var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  if (reduced) { sec.setAttribute('data-jn-static', ''); return; }
-  var track = sec.querySelector('[data-jn-track]'), line = sec.querySelector('[data-jn-line]');
-  var items = [].slice.call(sec.querySelectorAll('[data-jn-item]')).map(function (el) {
-    return { el: el, stem: el.querySelector('.jn-stem'), dot: el.querySelector('.jn-dot'), masks: [].slice.call(el.querySelectorAll('.jn-mask > *')) };
-  });
-  var WIN = [[6, 26], [16, 36], [26, 46], [35, 55], [45, 65]];
-  var raf = 0, cur = 0, inView = false;
+  var raf = 0, cur = 0, inView = false, dist = 0, active = -1;
   function clamp(n) { return Math.min(1, Math.max(0, n)); }
-  function easeOut(t) { return 1 - Math.pow(1 - t, 2); }
-  function isMobile() { return window.innerWidth <= 700; }
+  function isStatic() { return reduced || window.innerWidth <= 900; }
+  function layout() {
+    if (isStatic()) { sec.setAttribute('data-hz-static', ''); sec.style.height = ''; track.style.transform = ''; return; }
+    sec.removeAttribute('data-hz-static');
+    dist = Math.max(0, track.scrollWidth - window.innerWidth);
+    sec.style.height = Math.round(window.innerHeight + dist * 1.05) + 'px';
+  }
   function paint() {
-    var r = sec.getBoundingClientRect(), vh = window.innerHeight, vw = window.innerWidth;
-    var target = clamp(-r.top / (r.height - vh));
-    cur += (target - cur) * 0.14; if (Math.abs(target - cur) < 0.0005) cur = target;
-    var p = cur, maxX = Math.max(0, track.scrollWidth - vw);
-    track.style.transform = 'translate3d(' + (-maxX * clamp(p / 0.92)).toFixed(1) + 'px,0,0)';
-    line.style.transform = 'scaleX(' + clamp((p - 0.05) / 0.85).toFixed(4) + ')';
-    items.forEach(function (it, i) {
-      var w = WIN[i] || WIN[WIN.length - 1];
-      var q = clamp((p * 100 - w[0]) / (w[1] - w[0]));
-      var a = clamp(q / 0.4);
-      it.stem.style.transform = 'scaleY(' + a.toFixed(4) + ')';
-      var up = it.el.classList.contains('jn-item--top');
-      it.dot.style.transform = 'translate(-50%,' + (up ? '-50%' : '50%') + ') scale(' + a.toFixed(4) + ')';
-      it.masks.forEach(function (m, k) { var d = easeOut(clamp((q - 0.25 - k * 0.06) / 0.7)); m.style.transform = 'translateY(' + ((1 - d) * 110).toFixed(2) + '%)'; });
+    var r = sec.getBoundingClientRect(), vh = window.innerHeight;
+    var target = clamp(-r.top / Math.max(1, r.height - vh));
+    cur += (target - cur) * 0.16; if (Math.abs(target - cur) < 0.0004) cur = target;
+    track.style.transform = 'translate3d(' + (-dist * cur).toFixed(1) + 'px,0,0)';
+    if (fill) fill.style.transform = 'scaleX(' + cur.toFixed(4) + ')';
+    var mid = window.innerWidth / 2, best = -1, bestD = Infinity;
+    cards.forEach(function (c, i) {
+      var b = c.getBoundingClientRect(), d = Math.abs(b.left + b.width / 2 - mid);
+      if (d < bestD) { bestD = d; best = i; }
     });
+    if (best !== active) {
+      active = best;
+      cards.forEach(function (c, i) { c.classList.toggle('is-on', i === best); });
+      if (idx) idx.textContent = '0' + (best + 1);
+    }
   }
-  // Celular: lista vertical; cada etapa recebe --q pelo scroll (chega a 1 quando
-  // o topo da etapa passa 70% da tela) — a haste se preenche, o ponto acende.
-  function paintMobile() {
-    var vh = window.innerHeight;
-    items.forEach(function (it) {
-      var r = it.el.getBoundingClientRect();
-      var q = clamp((vh * 0.7 - r.top) / Math.max(1, r.height * 0.9));
-      it.el.style.setProperty('--q', q.toFixed(3));
-      it.el.classList.toggle('is-on', q > 0.05);
-    });
-  }
-  function loop() { if (!inView) { raf = 0; return; } if (isMobile()) paintMobile(); else paint(); raf = requestAnimationFrame(loop); }
+  function loop() { if (!inView || isStatic()) { raf = 0; return; } paint(); raf = requestAnimationFrame(loop); }
   function start() { if (!raf) raf = requestAnimationFrame(loop); }
-  function mode() {
-    if (isMobile()) { sec.setAttribute('data-jn-static', ''); sec.removeAttribute('data-jn-ready'); items.forEach(function (it) { it.el.classList.add('jn-item--static'); }); }
-    else { sec.removeAttribute('data-jn-static'); sec.setAttribute('data-jn-ready', ''); items.forEach(function (it) { it.el.classList.remove('jn-item--static'); it.el.style.removeProperty('--q'); }); }
-    start();
-  }
+  layout();
   if ('IntersectionObserver' in window) {
     new IntersectionObserver(function (es) { inView = es[0].isIntersecting; if (inView) start(); }, { rootMargin: '10% 0px' }).observe(sec);
-  } else inView = true;
-  window.addEventListener('resize', mode);
-  mode();
+  } else { inView = true; start(); }
+  window.addEventListener('resize', function () { layout(); start(); });
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(function () { layout(); start(); });
+  start();
 })();
 
 // ========== Sparkles ([data-sparks]: hero de /equipe, cabecalho de /servicos — canvas 2D) ==========
