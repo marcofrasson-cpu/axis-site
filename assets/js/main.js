@@ -148,36 +148,6 @@
     });
   }
 
-  // ========== Filtros Ciencia ==========
-  var filterGroups = document.querySelectorAll('.filter-chips');
-  var paperCards = document.querySelectorAll('.paper-card');
-  var papersEmpty = document.querySelector('.papers-empty');
-  if (filterGroups.length && paperCards.length) {
-    var filterState = { area: 'all', type: 'all' };
-    function applyFilters() {
-      var visible = 0;
-      paperCards.forEach(function (card) {
-        var matchArea = filterState.area === 'all' || card.dataset.area === filterState.area;
-        var matchType = filterState.type === 'all' || card.dataset.type === filterState.type;
-        var show = matchArea && matchType;
-        card.hidden = !show;
-        if (show) visible++;
-      });
-      if (papersEmpty) papersEmpty.hidden = visible > 0;
-    }
-    filterGroups.forEach(function (group) {
-      var filterName = group.dataset.filter;
-      group.querySelectorAll('.filter-chip').forEach(function (chip) {
-        chip.addEventListener('click', function () {
-          group.querySelectorAll('.filter-chip').forEach(function (c) { c.classList.remove('is-active'); });
-          chip.classList.add('is-active');
-          filterState[filterName] = chip.dataset.value;
-          applyFilters();
-        });
-      });
-    });
-  }
-
   // ========== Formulario de contato (monta mailto) ==========
   var contatoForm = document.getElementById('contatoForm');
   if (contatoForm) {
@@ -1732,4 +1702,346 @@
     var top = d.querySelector('summary').getBoundingClientRect().top + window.scrollY - 76;
     window.scrollTo({ top: top, behavior: reduced ? 'auto' : 'smooth' });
   }, true);
+})();
+
+// ========== Barra de filtros dos artigos (token bar) ==========
+// Porte em vanilla do filter-token-bar (21st.dev). Eram duas fileiras de chips
+// atras de um botao: 137px de altura, um valor por campo e sem negacao. Cada
+// filtro vira um token de tres segmentos — campo · operador · valor — e a lista
+// abre com busca e teclado.
+// O que o React fazia e aqui nao precisa: useState vira um array, o portal vira
+// um filho do body em position: fixed, e a animacao de entrada e uma classe.
+// Os campos, operadores e opcoes vem do JSON na pagina — editar la, nao aqui.
+(function () {
+  var barra = document.querySelector('[data-ftb]');
+  var dados = document.querySelector('[data-ftb-campos]');
+  var cartoes = [].slice.call(document.querySelectorAll('.paper-card'));
+  if (!barra || !dados || !cartoes.length) return;
+
+  var CAMPOS;
+  try { CAMPOS = JSON.parse(dados.textContent); } catch (e) { return; }
+
+  var vazio = document.querySelector('.papers-empty');
+  var conta = document.querySelector('[data-ftb-conta]');
+  var btnAdd = barra.querySelector('[data-ftb-add]');
+  var rotuloAdd = barra.querySelector('[data-ftb-add-rotulo]');
+  var reduzido = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  var filtros = [];      // { id, campo, op, valores[] }
+  var pop = null;        // { el, ancora, fechar }
+  var seq = 0;
+
+  function campoDe(id) { return CAMPOS[id]; }
+  function opDe(campo, v) {
+    var lista = campo ? campo.operadores : [];
+    for (var i = 0; i < lista.length; i++) if (lista[i].v === v) return lista[i];
+    return null;
+  }
+  function rotuloOpcao(campo, v) {
+    for (var i = 0; i < campo.opcoes.length; i++) if (campo.opcoes[i][0] === v) return campo.opcoes[i][1];
+    return v;
+  }
+  function resumo(campo, valores) {
+    if (!valores.length) return { texto: 'escolher', vazio: true };
+    if (valores.length === 1) return { texto: rotuloOpcao(campo, valores[0]), vazio: false };
+    if (valores.length === 2) return { texto: valores.map(function (v) { return rotuloOpcao(campo, v); }).join(', '), vazio: false };
+    return { texto: rotuloOpcao(campo, valores[0]) + ' +' + (valores.length - 1), vazio: false };
+  }
+
+  // ---- aplicar ----
+  // Filtro sem valor nao restringe: o token recem-criado nao esconde tudo.
+  function aplica() {
+    var visiveis = 0;
+    cartoes.forEach(function (c) {
+      var passa = filtros.every(function (f) {
+        if (!f.valores.length) return true;
+        var atual = c.dataset[f.campo === 'type' ? 'type' : f.campo];
+        var dentro = f.valores.indexOf(atual) !== -1;
+        return (f.op === 'nao' || f.op === 'nenhuma') ? !dentro : dentro;
+      });
+      c.hidden = !passa;
+      if (passa) visiveis++;
+    });
+    if (vazio) vazio.hidden = visiveis > 0;
+    if (conta) {
+      conta.textContent = filtros.length
+        ? (visiveis === cartoes.length ? 'Mostrando os ' + cartoes.length + ' artigos'
+           : visiveis + ' de ' + cartoes.length + ' artigos')
+        : '';
+    }
+    if (rotuloAdd) rotuloAdd.textContent = filtros.length ? 'Filtro' : 'Filtrar artigos';
+  }
+
+  // ---- popover ----
+  function fechaPop(devolveFoco) {
+    if (!pop) return;
+    var a = pop.ancora;
+    pop.el.remove();
+    document.removeEventListener('pointerdown', pop.fora, true);
+    document.removeEventListener('keydown', pop.tecla, true);
+    window.removeEventListener('resize', pop.posiciona);
+    window.removeEventListener('scroll', pop.posiciona, true);
+    pop = null;
+    if (a) { a.setAttribute('aria-expanded', 'false'); if (devolveFoco) a.focus(); }
+  }
+
+  function abrePop(ancora, opcoes, cfg) {
+    fechaPop(false);
+    var el = document.createElement('div');
+    el.className = 'ftb-pop';
+    el.setAttribute('role', 'dialog');
+    el.setAttribute('aria-label', cfg.rotulo);
+
+    var busca = null;
+    if (opcoes.length > 6) {
+      var wrap = document.createElement('div');
+      wrap.className = 'ftb-busca';
+      busca = document.createElement('input');
+      busca.type = 'text'; busca.autocomplete = 'off'; busca.spellcheck = false;
+      busca.placeholder = 'Buscar…';
+      busca.setAttribute('aria-label', cfg.rotulo);
+      wrap.appendChild(busca); el.appendChild(wrap);
+    }
+
+    var ul = document.createElement('ul');
+    ul.className = 'ftb-lista';
+    ul.setAttribute('role', 'listbox');
+    if (cfg.multi) ul.setAttribute('aria-multiselectable', 'true');
+    ul.setAttribute('aria-label', cfg.rotulo);
+    el.appendChild(ul);
+    document.body.appendChild(el);
+
+    var cursor = 0, visiveis = [];
+    function desenha() {
+      var q = busca ? busca.value.trim().toLowerCase() : '';
+      ul.textContent = '';
+      visiveis = opcoes.filter(function (o) { return !q || o.rotulo.toLowerCase().indexOf(q) !== -1; });
+      if (!visiveis.length) {
+        var p = document.createElement('li');
+        p.className = 'ftb-vazio'; p.textContent = 'Nada encontrado';
+        ul.appendChild(p); return;
+      }
+      if (cursor > visiveis.length - 1) cursor = visiveis.length - 1;
+      visiveis.forEach(function (o, i) {
+        var li = document.createElement('li');
+        li.className = 'ftb-opt' + (i === cursor ? ' is-cursor' : '');
+        li.setAttribute('role', 'option');
+        li.setAttribute('aria-selected', o.marcada ? 'true' : 'false');
+        if (cfg.multi) {
+          var box = document.createElement('span');
+          box.className = 'ftb-box'; box.setAttribute('aria-hidden', 'true');
+          box.innerHTML = '<svg width="10" height="10" viewBox="0 0 12 12" fill="none"><path d="M2.5 6.2l2.2 2.3L9.5 3.7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+          li.appendChild(box);
+        }
+        var t = document.createElement('span');
+        t.textContent = o.rotulo; li.appendChild(t);
+        // Sem caixa de marcacao (escolha unica), a opcao ativa so mudava de cor.
+        // Um tique a direita diz qual esta valendo.
+        if (!cfg.multi && o.marcada) {
+          var tick = document.createElement('span');
+          tick.className = 'ftb-tick'; tick.setAttribute('aria-hidden', 'true');
+          tick.innerHTML = '<svg width="11" height="11" viewBox="0 0 12 12" fill="none"><path d="M2.5 6.2l2.2 2.3L9.5 3.7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+          li.appendChild(tick);
+        }
+        li.addEventListener('mouseenter', function () { cursor = i; marcaCursor(); });
+        li.addEventListener('click', function () { cfg.escolher(o.valor); });
+        ul.appendChild(li);
+      });
+    }
+    function marcaCursor() {
+      [].slice.call(ul.children).forEach(function (li, i) { li.classList.toggle('is-cursor', i === cursor); });
+      var alvo = ul.children[cursor];
+      if (alvo && alvo.scrollIntoView) alvo.scrollIntoView({ block: 'nearest' });
+    }
+
+    function posiciona() {
+      var r = ancora.getBoundingClientRect();
+      var w = el.offsetWidth, h = el.offsetHeight, folga = 6;
+      var left = Math.max(8, Math.min(r.left, window.innerWidth - w - 8));
+      var top = r.bottom + folga;
+      if (top + h > window.innerHeight - 8) top = Math.max(8, r.top - folga - h);
+      el.style.left = Math.round(left) + 'px';
+      el.style.top = Math.round(top) + 'px';
+    }
+    function fora(e) {
+      if (!el.contains(e.target) && !ancora.contains(e.target)) fechaPop(false);
+    }
+    function tecla(e) {
+      if (e.key === 'Escape') { e.stopPropagation(); fechaPop(true); return; }
+      if (e.key === 'ArrowDown') { e.preventDefault(); cursor = Math.min(cursor + 1, visiveis.length - 1); marcaCursor(); }
+      else if (e.key === 'ArrowUp') { e.preventDefault(); cursor = Math.max(cursor - 1, 0); marcaCursor(); }
+      else if (e.key === 'Home') { e.preventDefault(); cursor = 0; marcaCursor(); }
+      else if (e.key === 'End') { e.preventDefault(); cursor = visiveis.length - 1; marcaCursor(); }
+      else if (e.key === 'Enter') { e.preventDefault(); if (visiveis[cursor]) cfg.escolher(visiveis[cursor].valor); }
+    }
+
+    desenha(); posiciona();
+    if (!reduzido) requestAnimationFrame(function () { el.classList.add('is-in'); });
+    else el.classList.add('is-in');
+    if (busca) { busca.addEventListener('input', function () { cursor = 0; desenha(); }); busca.focus(); }
+    else { el.tabIndex = -1; el.focus(); }
+    document.addEventListener('pointerdown', fora, true);
+    document.addEventListener('keydown', tecla, true);
+    window.addEventListener('resize', posiciona);
+    window.addEventListener('scroll', posiciona, true);
+    ancora.setAttribute('aria-expanded', 'true');
+    pop = { el: el, ancora: ancora, fora: fora, tecla: tecla, posiciona: posiciona, redesenha: desenha };
+  }
+
+  // ---- teclado da barra: um tabstop, setas andam ----
+  function itens() { return [].slice.call(barra.querySelectorAll('button')); }
+  function focaItem(i) {
+    var l = itens(); if (!l.length) return;
+    var k = Math.max(0, Math.min(i, l.length - 1));
+    l.forEach(function (b, n) { b.tabIndex = n === k ? 0 : -1; });
+    l[k].focus();
+  }
+  barra.addEventListener('keydown', function (e) {
+    if (pop) return;
+    var l = itens(), i = l.indexOf(document.activeElement);
+    if (i < 0) return;
+    if (e.key === 'ArrowRight') { e.preventDefault(); focaItem(i >= l.length - 1 ? 0 : i + 1); }
+    else if (e.key === 'ArrowLeft') { e.preventDefault(); focaItem(i <= 0 ? l.length - 1 : i - 1); }
+    else if (e.key === 'Home') { e.preventDefault(); focaItem(0); }
+    else if (e.key === 'End') { e.preventDefault(); focaItem(l.length - 1); }
+    else if (e.key === 'Backspace' || e.key === 'Delete') {
+      var tok = document.activeElement.closest('.ftb-token');
+      if (tok) { e.preventDefault(); remove(tok.dataset.id, i); }
+    }
+  });
+
+  // ---- acoes ----
+  function adiciona(campoId) {
+    var campo = campoDe(campoId); if (!campo) return;
+    var f = { id: 'f' + (++seq), campo: campoId, op: campo.operadores[0].v, valores: [] };
+    filtros.push(f);
+    desenhaBarra();
+    aplica();
+    var alvo = barra.querySelector('[data-id="' + f.id + '"] .ftb-seg--valor');
+    if (alvo) abreValor(f, alvo);
+  }
+  function remove(id, idx) {
+    filtros = filtros.filter(function (f) { return f.id !== id; });
+    fechaPop(false); desenhaBarra(); aplica();
+    requestAnimationFrame(function () { focaItem(Math.max(0, (idx || 1) - 1)); });
+  }
+  function limpa() { filtros = []; fechaPop(false); desenhaBarra(); aplica(); requestAnimationFrame(function () { focaItem(0); }); }
+
+  function abreValor(f, ancora) {
+    var campo = campoDe(f.campo);
+    var op = opDe(campo, f.op);
+    var multi = !!(op && op.multi);
+    abrePop(ancora, campo.opcoes.map(function (o) {
+      return { valor: o[0], rotulo: o[1], marcada: f.valores.indexOf(o[0]) !== -1 };
+    }), {
+      rotulo: campo.rotulo, multi: multi,
+      escolher: function (v) {
+        if (!multi) { f.valores = [v]; }
+        else {
+          var k = f.valores.indexOf(v);
+          if (k === -1) f.valores.push(v); else f.valores.splice(k, 1);
+        }
+        desenhaBarra(); aplica();
+        if (!multi) { fechaPop(false); focaSeg(f.id, 'valor'); }
+        else {
+          // a lista continua aberta: marcar varios e um gesto so
+          var novo = barra.querySelector('[data-id="' + f.id + '"] .ftb-seg--valor');
+          if (pop && novo) { pop.ancora = novo; novo.setAttribute('aria-expanded', 'true'); }
+          if (pop) { atualizaMarcas(f, campo); }
+        }
+      }
+    });
+  }
+  function atualizaMarcas(f, campo) {
+    if (!pop) return;
+    [].slice.call(pop.el.querySelectorAll('.ftb-opt')).forEach(function (li, i) {
+      var rot = li.lastChild.textContent;
+      var par = campo.opcoes.filter(function (o) { return o[1] === rot; })[0];
+      if (par) li.setAttribute('aria-selected', f.valores.indexOf(par[0]) !== -1 ? 'true' : 'false');
+    });
+  }
+  function focaSeg(id, papel) {
+    var el = barra.querySelector('[data-id="' + id + '"] .ftb-seg--' + papel);
+    if (el) el.focus();
+  }
+
+  // ---- desenho ----
+  function seg(classe, texto, rotuloAria) {
+    var b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'ftb-seg ' + classe;
+    b.textContent = texto;
+    b.tabIndex = -1;
+    b.setAttribute('aria-haspopup', 'listbox');
+    b.setAttribute('aria-expanded', 'false');
+    b.setAttribute('aria-label', rotuloAria);
+    return b;
+  }
+  function desenhaBarra() {
+    [].slice.call(barra.querySelectorAll('.ftb-token, .ftb-limpar')).forEach(function (n) { n.remove(); });
+    filtros.forEach(function (f) {
+      var campo = campoDe(f.campo);
+      var op = opDe(campo, f.op);
+      var r = resumo(campo, f.valores);
+      var tok = document.createElement('div');
+      tok.className = 'ftb-token'; tok.dataset.id = f.id;
+
+      var sCampo = seg('ftb-seg--campo', campo.rotulo, 'Campo: ' + campo.rotulo + '. Trocar campo.');
+      sCampo.addEventListener('click', function () {
+        abrePop(sCampo, Object.keys(CAMPOS).map(function (k) {
+          return { valor: k, rotulo: CAMPOS[k].rotulo, marcada: k === f.campo };
+        }), { rotulo: 'Campo', multi: false, escolher: function (v) {
+          f.campo = v; f.op = CAMPOS[v].operadores[0].v; f.valores = [];
+          fechaPop(false); desenhaBarra(); aplica();
+          var alvo = barra.querySelector('[data-id="' + f.id + '"] .ftb-seg--valor');
+          if (alvo) abreValor(f, alvo);
+        } });
+      });
+
+      var sOp = seg('ftb-seg--op', op ? op.r : f.op, 'Operador: ' + (op ? op.r : f.op) + '. Trocar operador.');
+      sOp.addEventListener('click', function () {
+        abrePop(sOp, campo.operadores.map(function (o) {
+          return { valor: o.v, rotulo: o.r, marcada: o.v === f.op };
+        }), { rotulo: 'Operador', multi: false, escolher: function (v) {
+          var novo = opDe(campo, v);
+          f.op = v;
+          // de multi para simples: sobra o primeiro valor
+          if (!(novo && novo.multi)) f.valores = f.valores.slice(0, 1);
+          fechaPop(false); desenhaBarra(); aplica(); focaSeg(f.id, 'op');
+        } });
+      });
+
+      var sVal = seg('ftb-seg--valor' + (r.vazio ? ' ftb-seg--vazio' : ''), r.texto,
+        'Valor: ' + (r.vazio ? 'nenhum' : r.texto) + '. Escolher valor.');
+      sVal.addEventListener('click', function () { abreValor(f, sVal); });
+
+      var x = document.createElement('button');
+      x.type = 'button'; x.className = 'ftb-x'; x.tabIndex = -1;
+      x.setAttribute('aria-label', 'Remover filtro de ' + campo.rotulo);
+      x.innerHTML = '<svg width="11" height="11" viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M3 3l6 6M9 3l-6 6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>';
+      x.addEventListener('click', function () { remove(f.id, itens().indexOf(x)); });
+
+      tok.appendChild(sCampo); tok.appendChild(sOp); tok.appendChild(sVal); tok.appendChild(x);
+      barra.insertBefore(tok, btnAdd);
+    });
+
+    if (filtros.length > 1) {
+      var lim = document.createElement('button');
+      lim.type = 'button'; lim.className = 'ftb-limpar'; lim.textContent = 'Limpar'; lim.tabIndex = -1;
+      lim.addEventListener('click', limpa);
+      barra.appendChild(lim);
+    }
+    var l = itens();
+    if (l.length && !l.some(function (b) { return b.tabIndex === 0; })) l[0].tabIndex = 0;
+  }
+
+  btnAdd.tabIndex = 0;
+  btnAdd.addEventListener('click', function () {
+    abrePop(btnAdd, Object.keys(CAMPOS).map(function (k) {
+      return { valor: k, rotulo: CAMPOS[k].rotulo, marcada: false };
+    }), { rotulo: 'Campo', multi: false, escolher: function (v) { fechaPop(false); adiciona(v); } });
+  });
+
+  desenhaBarra();
+  aplica();
 })();

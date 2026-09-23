@@ -28,7 +28,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Spectral:wght@400;500;600;700&family=Hanken+Grotesk:wght@400;500;600;700&display=swap">
 <link rel="icon" type="image/svg+xml" href="/assets/img/logo.svg">
-<link rel="stylesheet" href="/assets/css/styles.css?v=202609231843">
+<link rel="stylesheet" href="/assets/css/styles.css?v=202609231930">
 <noscript><style>.reveal,.reveal-stagger [class*="-card"],.blog-highlight.reveal .blog-feature-image,.blog-highlight.reveal .blog-feature-content{opacity:1!important;transform:none!important;filter:none!important}.ecs-scene{opacity:1!important}</style></noscript>
 <script type="application/ld+json">
 {"@context":"https://schema.org","@type":"MedicalWebPage","url":"https://axisfitomed.com.br/ciencia","name":"O que a ciência diz sobre cannabis medicinal","description":"Seleção comentada de estudos clínicos e revisões sobre cannabis medicinal, organizada por área e por tipo de evidência.","inLanguage":"pt-BR","isPartOf":{"@type":"WebSite","url":"https://axisfitomed.com.br/"},"about":{"@type":"MedicalTherapy","name":"Cannabis medicinal"},"publisher":{"@type":"MedicalClinic","name":"Axis FitoMed","@id":"https://axisfitomed.com.br/#clinica"},"audience":{"@type":"MedicalAudience","audienceType":"Pacientes, familiares e profissionais de saúde"}}
@@ -192,39 +192,46 @@
   </div>
 </section>
 
-<section class="ciencia-filters">
+<section class="ciencia-filters" aria-label="Filtros dos artigos">
   <div class="container">
-    <button class="cf-toggle" id="filterToggle" aria-expanded="false" aria-controls="filtersPanel">
-      <span class="cf-lines" aria-hidden="true"><span></span><span></span><span></span></span>
-      <span>Filtrar artigos</span>
-      <span class="cf-caret" aria-hidden="true">▾</span>
-    </button>
-    <div class="ciencia-filters__panel" id="filtersPanel" hidden>
-    <div class="filter-group">
-      <span class="filter-label">Área:</span>
-      <div class="filter-chips" data-filter="area">
-        <button class="filter-chip is-active" data-value="all">Todas</button>
-        <button class="filter-chip" data-value="dor">Dor e inflamação</button>
-        <button class="filter-chip" data-value="neuro">Neurologia</button>
-        <button class="filter-chip" data-value="mental">Saúde mental</button>
-        <button class="filter-chip" data-value="onco">Oncologia</button>
-        <button class="filter-chip" data-value="gastro">Gastroenterologia</button>
-        <button class="filter-chip" data-value="ginecologia">Saúde da mulher</button>
-        <button class="filter-chip" data-value="geral">Geral / Farmacologia</button>
-      </div>
+    <div class="ftb" role="toolbar" aria-label="Filtros dos artigos" data-ftb>
+      <button class="ftb-add" type="button" data-ftb-add aria-haspopup="listbox" aria-expanded="false">
+        <span class="ftb-plus" aria-hidden="true"></span><span data-ftb-add-rotulo>Filtrar artigos</span>
+      </button>
     </div>
-    <div class="filter-group">
-      <span class="filter-label">Tipo:</span>
-      <div class="filter-chips" data-filter="type">
-        <button class="filter-chip is-active" data-value="all">Todos</button>
-        <button class="filter-chip" data-value="meta">Meta-análise</button>
-        <button class="filter-chip" data-value="revisao">Revisão sistemática</button>
-        <button class="filter-chip" data-value="rct">RCT</button>
-        <button class="filter-chip" data-value="observacional">Observacional</button>
-        <button class="filter-chip" data-value="basico">Farmacologia</button>
-      </div>
-    </div>
-    </div>
+    <p class="ftb-conta" role="status" data-ftb-conta></p>
+    <!-- Campos, operadores e opcoes do filtro. Editar aqui, nao no JS. -->
+    <script type="application/json" data-ftb-campos>
+    {
+      "area": {
+        "rotulo": "Área",
+        "operadores": [
+          { "v": "e",        "r": "é" },
+          { "v": "nao",      "r": "não é" },
+          { "v": "qualquer", "r": "é qualquer uma de", "multi": true },
+          { "v": "nenhuma",  "r": "não é nenhuma de",  "multi": true }
+        ],
+        "opcoes": [
+          ["dor", "Dor e inflamação"], ["neuro", "Neurologia"], ["mental", "Saúde mental"],
+          ["onco", "Oncologia"], ["gastro", "Gastroenterologia"],
+          ["ginecologia", "Saúde da mulher"], ["geral", "Geral / Farmacologia"]
+        ]
+      },
+      "type": {
+        "rotulo": "Tipo",
+        "operadores": [
+          { "v": "e",        "r": "é" },
+          { "v": "nao",      "r": "não é" },
+          { "v": "qualquer", "r": "é qualquer um de", "multi": true },
+          { "v": "nenhuma",  "r": "não é nenhum de",  "multi": true }
+        ],
+        "opcoes": [
+          ["meta", "Meta-análise"], ["revisao", "Revisão sistemática"], ["rct", "RCT"],
+          ["observacional", "Observacional"], ["basico", "Farmacologia"]
+        ]
+      }
+    }
+    </script>
   </div>
 </section>
 
@@ -437,7 +444,7 @@
   </div>
 </footer>
 
-<script src="/assets/js/main.js?v=202609231843"></script>
+<script src="/assets/js/main.js?v=202609231930"></script>
 <script defer src="/_vercel/insights/script.js"></script>
 </body>
 </html>

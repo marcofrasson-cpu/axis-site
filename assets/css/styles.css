@@ -1334,40 +1334,103 @@ button { font: inherit; cursor: pointer; background: none; border: none; color: 
 }
 
 /* Filtros */
-.ciencia-filters { padding: 12px 0 0; }
-.cf-toggle {
-  display: inline-flex; align-items: center; gap: 12px; cursor: pointer; font: inherit;
-  padding: 11px 20px; border-radius: var(--r-pill); border: 1px solid var(--border-hairline);
-  background: rgba(16, 31, 49, 0.6); color: var(--text-primary); font-size: var(--fs-14); font-weight: 500;
-  transition: border-color 200ms ease, background 200ms ease;
+/* ---------- Barra de filtros dos artigos (token bar) ----------
+   Porte em vanilla do filter-token-bar (21st.dev). Eram duas fileiras de chips
+   atras de um botao "Filtrar artigos": 137px de altura, um valor por campo e
+   sem negacao. Cada filtro agora e um token de tres segmentos — campo ·
+   operador · valor — que abre uma lista com busca. Sem React, sem
+   framer-motion, sem portal: o popover e um filho do body posicionado em
+   fixed. Os campos, operadores e opcoes vem do JSON na pagina. */
+.ciencia-filters { padding: var(--sp-12) 0 0; }
+.ftb { display: flex; flex-wrap: wrap; align-items: center; gap: var(--sp-8); }
+.ftb-token {
+  display: flex; align-items: stretch; overflow: hidden;
+  border: 1px solid var(--border-hairline); border-radius: var(--r-nested);
+  background: var(--bg-card);
 }
-.cf-toggle:hover { border-color: rgba(95, 200, 155, 0.4); }
-.cf-lines { display: inline-flex; flex-direction: column; gap: 3px; width: 16px; }
-.cf-lines span { height: 2px; border-radius: var(--r-pill); background: var(--brand-green); width: 100%; }
-.cf-lines span:nth-child(2) { width: 68%; }
-.cf-lines span:nth-child(3) { width: 42%; }
-.cf-caret { color: var(--text-muted); font-size: var(--fs-12); transition: transform 200ms ease; }
-.cf-toggle[aria-expanded="true"] .cf-caret { transform: rotate(180deg); }
-.ciencia-filters__panel {
-  margin-top: 14px; padding: 20px; border: 1px solid var(--border-hairline); border-radius: var(--r-surface);
-  background: rgba(16, 31, 49, 0.5);
-  backdrop-filter: saturate(140%) blur(10px); -webkit-backdrop-filter: saturate(140%) blur(10px);
+.ftb-seg {
+  font: inherit; font-size: var(--fs-14); line-height: 1.35;
+  padding: var(--sp-8) var(--sp-12); white-space: nowrap; background: transparent;
+  color: var(--text-muted); cursor: pointer;
+  transition: background 160ms var(--ease-settle), color 160ms var(--ease-settle);
 }
-.ciencia-filters__panel[hidden] { display: none; }
-.filter-group { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; margin-bottom: 12px; }
-.filter-group:last-child { margin-bottom: 0; }
-.filter-label { font-size: var(--fs-12); color: var(--text-subtle); font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; min-width: 44px; }
-.filter-chips { display: flex; flex-wrap: wrap; gap: 8px; }
-.filter-chip {
-  padding: 7px 15px; background: transparent; border: 1px solid var(--border-hairline);
-  border-radius: var(--r-pill); font-size: var(--fs-14); color: var(--text-muted); font-family: inherit;
-  cursor: pointer; transition: background 180ms ease, border-color 180ms ease, color 180ms ease;
+.ftb-seg + .ftb-seg, .ftb-x { border-left: 1px solid var(--border-hairline); }
+.ftb-seg--campo { color: var(--text-primary); font-weight: 600; }
+.ftb-seg--valor { color: var(--text-primary); }
+.ftb-seg--vazio { color: var(--text-subtle); font-style: italic; }
+.ftb-seg:hover { background: var(--bg-card-hover); color: var(--text-primary); }
+.ftb-seg[aria-expanded="true"] { background: var(--bg-card-hover); color: var(--text-primary); }
+.ftb-x {
+  display: flex; align-items: center; padding: 0 var(--sp-8); color: var(--text-subtle);
+  background: transparent; cursor: pointer;
+  transition: background 160ms var(--ease-settle), color 160ms var(--ease-settle);
 }
-.filter-chip:hover { border-color: rgba(95, 200, 155, 0.4); color: var(--text-primary); }
-.filter-chip.is-active { background: var(--brand-green); border-color: var(--brand-green); color: var(--brand-navy); font-weight: 600; }
+.ftb-x:hover { background: var(--bg-card-hover); color: var(--text-primary); }
+.ftb-x svg { display: block; }
+/* Tracejado: o botao que ainda nao e um filtro, e sim o convite a criar um. */
+.ftb-add {
+  display: inline-flex; align-items: center; gap: var(--sp-8);
+  font: inherit; font-size: var(--fs-14); font-weight: 500;
+  padding: var(--sp-8) var(--sp-12); border-radius: var(--r-pill);
+  border: 1px dashed var(--border-strong); color: var(--text-muted);
+  background: transparent; cursor: pointer;
+  transition: border-color 160ms var(--ease-settle), color 160ms var(--ease-settle), background 160ms var(--ease-settle);
+}
+.ftb-add:hover { border-color: rgba(95, 200, 155, .45); color: var(--text-primary); background: var(--bg-card); }
+.ftb-plus { position: relative; width: 11px; height: 11px; flex: none; }
+.ftb-plus::before, .ftb-plus::after {
+  content: ""; position: absolute; background: currentColor;
+  left: 50%; top: 50%; transform: translate(-50%, -50%);
+}
+.ftb-plus::before { width: 11px; height: 1.5px; }
+.ftb-plus::after { width: 1.5px; height: 11px; }
+.ftb-limpar {
+  font: inherit; font-size: var(--fs-14); color: var(--text-subtle);
+  padding: var(--sp-8) var(--sp-12); background: transparent; cursor: pointer;
+  border-radius: var(--r-pill); transition: color 160ms var(--ease-settle);
+}
+.ftb-limpar:hover { color: var(--text-primary); }
+.ftb-conta { margin: var(--sp-12) 0 0; font-size: var(--fs-12); color: var(--text-subtle); font-variant-numeric: tabular-nums; }
+/* ---- lista suspensa ---- */
+.ftb-pop {
+  position: fixed; z-index: 60; min-width: 13rem; max-width: 19rem;
+  background: var(--bg-card); border: 1px solid var(--border-strong);
+  border-radius: var(--r-surface); box-shadow: var(--shadow-lg); overflow: hidden;
+  opacity: 0; transform: translateY(-3px);
+  transition: opacity 120ms var(--ease-settle), transform 120ms var(--ease-settle);
+}
+.ftb-pop.is-in { opacity: 1; transform: none; }
+.ftb-busca { padding: var(--sp-4); border-bottom: 1px solid var(--border-hairline); }
+.ftb-busca input {
+  width: 100%; font: inherit; font-size: var(--fs-14); color: var(--text-primary);
+  background: transparent; border: 0; outline: none; padding: var(--sp-4) var(--sp-8);
+}
+.ftb-busca input::placeholder { color: var(--text-subtle); }
+.ftb-lista { list-style: none; max-height: 15rem; overflow-y: auto; margin: 0; padding: var(--sp-4); }
+.ftb-opt {
+  display: flex; align-items: center; gap: var(--sp-8);
+  padding: var(--sp-8); border-radius: var(--r-nested);
+  font-size: var(--fs-14); color: var(--text-muted); cursor: pointer;
+}
+.ftb-opt.is-cursor { background: var(--bg-card-hover); color: var(--text-primary); }
+.ftb-opt[aria-selected="true"] { color: var(--text-primary); }
+/* caixa de marcacao: o unico verde da barra, e so quando marcada */
+.ftb-box {
+  flex: none; width: 14px; height: 14px; border-radius: 3px;
+  border: 1px solid var(--border-strong); display: flex; align-items: center; justify-content: center;
+  transition: background 160ms var(--ease-settle), border-color 160ms var(--ease-settle);
+}
+.ftb-opt[aria-selected="true"] .ftb-box { background: var(--brand-green); border-color: var(--brand-green); color: var(--brand-navy); }
+.ftb-box svg { display: block; opacity: 0; }
+.ftb-opt[aria-selected="true"] .ftb-box svg { opacity: 1; }
+.ftb-tick { margin-left: auto; display: flex; color: var(--brand-green); }
+.ftb-vazio { padding: var(--sp-12) var(--sp-8); font-size: var(--fs-14); color: var(--text-subtle); }
+@media (max-width: 560px) {
+  .ftb-seg, .ftb-add, .ftb-limpar { font-size: var(--fs-12); }
+  .ftb-pop { max-width: calc(100vw - var(--sp-32)); }
+}
+@media (prefers-reduced-motion: reduce) { .ftb-pop { transition: none; } }
 
-/* Cards de papers */
-.ciencia-papers { padding-block: 48px; }   /* era 32/72, assimetria sem motivo */
 .papers-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 22px; }
 .paper-card {
   padding: var(--sp-32) var(--sp-32) var(--sp-20);
