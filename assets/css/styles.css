@@ -613,9 +613,6 @@ button { font: inherit; cursor: pointer; background: none; border: none; color: 
   flex: none; font-family: var(--font-body); font-size: var(--fs-12); font-weight: 700;
   letter-spacing: 0.05em; text-transform: uppercase; padding: 3px 9px; border-radius: var(--r-pill); white-space: nowrap;
 }
-.bm-ev--forte { color: #a8ecca; background: rgba(95, 200, 155, 0.16); }
-.bm-ev--media { color: #7fd6ab; background: rgba(95, 200, 155, 0.09); }
-.bm-ev--prelim { color: var(--text-muted); background: rgba(255, 255, 255, 0.06); }
 .bm-legend { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 18px; font-family: var(--font-body); font-size: var(--fs-12); color: var(--text-muted); }
 
 @media (max-width: 768px) {
@@ -3287,10 +3284,17 @@ body { overflow-x: clip; }
 .bm-tab:hover { color: var(--text-primary); border-color: var(--border-strong); }
 .bm-tab.is-on { background: var(--brand-green); border-color: var(--brand-green); color: var(--brand-navy); font-weight: 600; }
 .bm-tab:focus-visible { outline: 2px solid var(--brand-green); outline-offset: 2px; }
-/* selos: tres aparencias distintas (cheio · contorno · tracejado) */
-.bm-ev--forte { color: var(--brand-navy); background: var(--brand-green); }
-.bm-ev--media { color: var(--brand-green-hover); background: transparent; border: 1px solid rgba(95,200,155,.55); }
-.bm-ev--prelim { color: var(--text-muted); background: transparent; border: 1px dashed var(--border-strong); }
+/* Selos de evidencia: tres aparencias distintas (cheio · contorno · tracejado).
+   A forma ja dizia o nivel — o verde dizia de novo, e nesta pagina verde ja
+   significa marca (sobrancelha), estado (aba ativa) e ilustracao (marcadores
+   do corpo). Forca da evidencia era o quarto significado no mesmo lever, e o
+   unico deles que e informacao clinica: quem lia o selo nao tinha como saber
+   se o verde dizia "Axis" ou "consolidada". Fica so forma e valor.
+   A borda transparente no cheio iguala a caixa dos tres — sem ela o selo
+   preenchido ficava 2px menor que os outros. */
+.bm-ev--forte { color: var(--brand-navy); background: rgba(241,245,249,.86); border: 1px solid transparent; }
+.bm-ev--media { color: var(--text-primary); background: transparent; border: 1px solid var(--border-strong); }
+.bm-ev--prelim { color: var(--text-subtle); background: transparent; border: 1px dashed var(--border-hairline); }
 /* condicao expansivel: nivel explicado, referencias e data */
 .bm-list { display: grid; gap: 0; border-top: 1px solid var(--border-hairline); }
 .bm-cond-item { border-bottom: 1px solid var(--border-hairline); }
@@ -3299,7 +3303,8 @@ body { overflow-x: clip; }
   font-family: var(--font-body); font-size: var(--fs-16); color: var(--lead-color);
 }
 .bm-cond-item summary::-webkit-details-marker { display: none; }
-.bm-cond-item summary::before { content: ""; width: 7px; height: 7px; border-radius: var(--r-circle); background: var(--brand-green); flex: none; }
+/* pontuacao da lista, nao informacao: sai do acento */
+.bm-cond-item summary::before { content: ""; width: 7px; height: 7px; border-radius: var(--r-circle); background: var(--border-strong); flex: none; }
 .bm-cond-item summary::after {
   content: ""; flex: none; width: 8px; height: 8px; margin: -3px 4px 0 2px;
   border-right: 1.5px solid var(--text-subtle); border-bottom: 1.5px solid var(--text-subtle); transform: rotate(45deg); transition: transform 200ms ease;
