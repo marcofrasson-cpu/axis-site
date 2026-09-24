@@ -356,123 +356,99 @@
   }
 })();
 
-// ========== Fluxo do heroi (Gateway Flow, porte em canvas puro) ==========
-// Curvas de Bezier saem das bordas esquerda e direita e convergem num alvo:
-// o centro do hexagono da marca. Particulas percorrem as curvas. Um toque no
-// heroi solta uma onda que empurra as particulas. Respeita prefers-reduced-
-// motion (quadro estatico, sem loop) e so anima com o heroi em tela.
-(function () {
-  var hero = document.querySelector('.nh-hero');
-  var canvas = hero && hero.querySelector('.nh-flow');
-  if (!hero || !canvas || !canvas.getContext) return;
+// ========== Campo de fluxo (Gateway Flow, porte em canvas puro) ==========
+// Curvas de Bezier saem das bordas esquerda e direita e convergem num alvo.
+// Particulas percorrem as curvas; um toque solta uma onda que as empurra.
+// Era um IIFE amarrado ao heroi. Virou funcao porque a mesma peca passou a
+// valer em duas bandas — e duplicar 60 linhas de bezier seria pior. O que
+// muda entre elas e so o ALVO da convergencia e a faixa de nascimento.
+// Respeita prefers-reduced-motion (um quadro, sem loop) e so anima em tela.
+function campoDeFluxo(sec, canvas, opts) {
+  if (!sec || !canvas || !canvas.getContext) return;
   var ctx = canvas.getContext('2d');
   var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  opts = opts || {};
 
   var width = 0, height = 0, target = { x: 0, y: 0 };
-  var band = { top: 0, bottom: 0 };   // faixa vertical do diagrama (mobile)
+  var band = { top: 0, bottom: 0 };
   var paths = [], explosions = [];
   var running = false, frame = 0;
 
   function measureTarget() {
-    // O alvo e a marca; sem ela, o centro do canvas.
-    var mark = hero.querySelector('.axis-mark .hex');
-    var svg = hero.querySelector('.nh-visual svg');
-    var hr = hero.getBoundingClientRect();
-    if (mark) {
-      var mr = mark.getBoundingClientRect();
-      target.x = mr.left + mr.width / 2 - hr.left;
-      target.y = mr.top + mr.height / 2 - hr.top;
-    } else {
-      target.x = width / 2; target.y = height / 2;
+    var t = opts.alvo ? opts.alvo(sec, width, height) : null;
+    target.x = t ? t.x : width / 2;
+    target.y = t ? t.y : height / 2;
+    var f = opts.faixa ? opts.faixa(sec, width, height) : null;
+    band.top = f ? f.top : 0;
+    band.bottom = f ? f.bottom : height;
+    if (opts.props) {
+      sec.style.setProperty('--nh-flow-top', Math.round(band.top) + 'px');
+      sec.style.setProperty('--nh-flow-bottom', Math.round(band.bottom) + 'px');
     }
-    // No mobile o diagrama e uma faixa no meio do heroi: o CSS mascara o canvas
-    // fora dela (--nh-flow-top/bottom) e as curvas nascem dentro dela.
-    if (svg) {
-      var sr = svg.getBoundingClientRect();
-      band.top = sr.top - hr.top; band.bottom = sr.bottom - hr.top;
-    } else {
-      band.top = 0; band.bottom = height;
-    }
-    hero.style.setProperty('--nh-flow-top', Math.round(band.top) + 'px');
-    hero.style.setProperty('--nh-flow-bottom', Math.round(band.bottom) + 'px');
   }
-  // Empilhado (uma coluna) = o breakpoint do .nh-grid no CSS
   function stacked() { return width <= 900; }
   function spawnY(i, count) {
-    if (!stacked()) return (i / count) * height * 1.4 - height * 0.2;
-    // arcos entram de lado, na altura do diagrama, com folga de 12% acima e abaixo
+    if (!opts.faixaNoMobile || !stacked()) return (i / count) * height * 1.4 - height * 0.2;
     var span = band.bottom - band.top;
     return band.top - span * 0.12 + (i / (count - 1)) * span * 1.24;
   }
-
   function buildPaths() {
-    // Densidade acompanha a largura: 80 curvas em 1440px, 24 em 390px.
     var count = Math.max(24, Math.min(80, Math.round(width / 18)));
+    if (opts.densidade) count = Math.round(count * opts.densidade);
     paths = [];
     for (var i = 0; i < count; i++) {
-      paths.push({
-        isLeft: i % 2 === 0,
-        startY: spawnY(i, count),
-        t: Math.random(),
-        speed: 0.0015 + Math.random() * 0.002
-      });
+      paths.push({ isLeft: i % 2 === 0, startY: spawnY(i, count),
+                   t: Math.random(), speed: 0.0015 + Math.random() * 0.002 });
     }
   }
-
   function resize() {
-    var r = hero.getBoundingClientRect();
+    var r = sec.getBoundingClientRect();
     var dpr = Math.min(window.devicePixelRatio || 1, 2);
     width = Math.round(r.width); height = Math.round(r.height);
+    if (!width || !height) return;
     canvas.width = width * dpr; canvas.height = height * dpr;
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     measureTarget();
     buildPaths();
     if (reduced) drawFrame(false);
   }
-
   function bezier(t, p0, p1, p2, p3) {
     var u = 1 - t;
-    return {
-      x: u*u*u*p0.x + 3*u*u*t*p1.x + 3*u*t*t*p2.x + t*t*t*p3.x,
-      y: u*u*u*p0.y + 3*u*u*t*p1.y + 3*u*t*t*p2.y + t*t*t*p3.y
-    };
+    return { x: u*u*u*p0.x + 3*u*u*t*p1.x + 3*u*t*t*p2.x + t*t*t*p3.x,
+             y: u*u*u*p0.y + 3*u*u*t*p1.y + 3*u*t*t*p2.y + t*t*t*p3.y };
   }
+  var corLinha = opts.linha || 'rgba(95, 200, 155, 0.28)';
+  var corPonto = opts.ponto || 'rgba(168, 236, 202, 0.75)';
 
   function drawFrame(advance) {
     ctx.clearRect(0, 0, width, height);
     var tx = target.x, ty = target.y;
-
     if (advance) {
       explosions.forEach(function (e) { e.radius += 15; e.life -= 0.015; });
       explosions = explosions.filter(function (e) { return e.life > 0; });
     }
-
     for (var i = 0; i < paths.length; i++) {
       var path = paths[i];
-      // Os pontos de controle sao os do original, com o alvo no lugar do centro.
       var p0 = { x: path.isLeft ? 0 : width, y: path.startY };
       var p1 = { x: path.isLeft ? tx * 0.5 : width - (width - tx) * 0.5, y: path.startY };
       var p2 = { x: path.isLeft ? tx * 0.8 : width - (width - tx) * 0.8, y: ty };
       var p3 = { x: tx, y: ty };
-
       ctx.beginPath();
       ctx.moveTo(p0.x, p0.y);
       ctx.bezierCurveTo(p1.x, p1.y, p2.x, p2.y, p3.x, p3.y);
-      ctx.strokeStyle = 'rgba(95, 200, 155, 0.28)';
+      ctx.strokeStyle = corLinha;
       ctx.lineWidth = 1;
       ctx.setLineDash([1, 4]);
       ctx.stroke();
       ctx.setLineDash([]);
-
       if (advance) {
         path.t += path.speed;
         if (path.t > 1) {
           path.t = 0; path.startY += (Math.random() - 0.5) * 10;
-          if (stacked()) path.startY = Math.max(band.top - 40, Math.min(band.bottom + 40, path.startY));
+          if (opts.faixaNoMobile && stacked()) path.startY = Math.max(band.top - 40, Math.min(band.bottom + 40, path.startY));
         }
       }
       var pos = bezier(path.t, p0, p1, p2, p3);
-
       var dxT = 0, dyT = 0;
       for (var k = 0; k < explosions.length; k++) {
         var e = explosions[k];
@@ -484,41 +460,73 @@
           dyT += (dy / dist) * force * 80;
         }
       }
-      ctx.fillStyle = 'rgba(168, 236, 202, 0.75)';
+      ctx.fillStyle = corPonto;
       ctx.fillRect(pos.x + dxT - 1.25, pos.y + dyT - 1.25, 2.5, 2.5);
     }
   }
-
-  function loop() {
-    if (!running) return;
-    drawFrame(true);
-    frame = requestAnimationFrame(loop);
-  }
+  function loop() { if (!running) return; drawFrame(true); frame = requestAnimationFrame(loop); }
   function start() { if (running || reduced) return; running = true; frame = requestAnimationFrame(loop); }
   function stop() { running = false; if (frame) cancelAnimationFrame(frame); frame = 0; }
 
   resize();
-  if ('ResizeObserver' in window) new ResizeObserver(resize).observe(hero);
+  if ('ResizeObserver' in window) new ResizeObserver(resize).observe(sec);
   else window.addEventListener('resize', resize);
-  // A grade assenta depois das fontes; o alvo e medido de novo.
   window.addEventListener('load', function () { measureTarget(); if (reduced) drawFrame(false); });
 
-  if (!reduced) {
-    hero.addEventListener('click', function (ev) {
-      var r = hero.getBoundingClientRect();
+  if (reduced) return;
+  if (opts.clique) {
+    sec.addEventListener('click', function (ev) {
+      var r = sec.getBoundingClientRect();
       explosions.push({ x: ev.clientX - r.left, y: ev.clientY - r.top, radius: 0, life: 1 });
     });
-    if ('IntersectionObserver' in window) {
-      new IntersectionObserver(function (entries) {
-        entries.forEach(function (en) { if (en.isIntersecting) start(); else stop(); });
-      }, { threshold: 0.05 }).observe(hero);
-    } else {
-      start();
-    }
-    document.addEventListener('visibilitychange', function () {
-      if (document.visibilityState === 'visible') { if (!running) start(); } else stop();
-    });
   }
+  if ('IntersectionObserver' in window) {
+    new IntersectionObserver(function (entries) {
+      entries.forEach(function (en) { if (en.isIntersecting) start(); else stop(); });
+    }, { threshold: 0.05 }).observe(sec);
+  } else start();
+  document.addEventListener('visibilitychange', function () {
+    if (document.visibilityState === 'visible') { if (!running) start(); } else stop();
+  });
+}
+
+// Heroi: as vias convergem na marca. No mobile o diagrama e uma faixa no meio
+// e o CSS mascara o canvas fora dela (--nh-flow-top/bottom).
+(function () {
+  var hero = document.querySelector('.nh-hero');
+  var canvas = hero && hero.querySelector('.nh-flow');
+  if (!hero || !canvas) return;
+  campoDeFluxo(hero, canvas, {
+    props: true, clique: true, faixaNoMobile: true,
+    alvo: function (sec, w, h) {
+      var mark = sec.querySelector('.axis-mark .hex');
+      var hr = sec.getBoundingClientRect();
+      if (!mark) return { x: w / 2, y: h / 2 };
+      var mr = mark.getBoundingClientRect();
+      return { x: mr.left + mr.width / 2 - hr.left, y: mr.top + mr.height / 2 - hr.top };
+    },
+    faixa: function (sec, w, h) {
+      var svg = sec.querySelector('.nh-visual svg');
+      if (!svg) return { top: 0, bottom: h };
+      var hr = sec.getBoundingClientRect(), sr = svg.getBoundingClientRect();
+      return { top: sr.top - hr.top, bottom: sr.bottom - hr.top };
+    }
+  });
+})();
+
+// Percurso (/servicos): as vias convergem num ponto a direita, onde a fotografia
+// de fibras convergia. O gesto e o mesmo do heroi e diz a mesma coisa — as
+// etapas chegam num lugar. Sem clique: a secao inteira nao e alvo de toque.
+(function () {
+  var sec = document.querySelector('.pc');
+  var canvas = sec && sec.querySelector('.pc-flow');
+  if (!sec || !canvas) return;
+  campoDeFluxo(sec, canvas, {
+    densidade: 0.72,
+    linha: 'rgba(95, 200, 155, 0.20)',
+    ponto: 'rgba(168, 236, 202, 0.62)',
+    alvo: function (s, w, h) { return { x: w * 0.74, y: h * 0.5 }; }
+  });
 })();
 
 // ========== Mapa do corpo: spotlight + figura em perspectiva ==========
@@ -2177,4 +2185,73 @@
   document.addEventListener('visibilitychange', function () {
     if (document.visibilityState !== 'visible' && raf) { cancelAnimationFrame(raf); raf = 0; }
   });
+})();
+
+// ========== Mapa do corpo no celular: carrossel ==========
+// A figura sai abaixo de 900px (a 92px os marcadores nao sao alvo tocavel) e as
+// seis areas viram um carrossel de scroll-snap nativo — sem JS de arrasto, sem
+// biblioteca. Aqui fica so a costura: a pastilha leva ao slide, o deslize
+// atualiza a pastilha, o contador e a regua. No desktop nada disto roda.
+(function () {
+  var painel = document.querySelector('.bm-panel');
+  var pe = document.querySelector('.bm-carrossel-pe');
+  if (!painel || !pe) return;
+  var slides = [].slice.call(painel.querySelectorAll('.bm-cat'));
+  var abas = [].slice.call(document.querySelectorAll('.bm-tab'));
+  var regua = pe.querySelector('[data-bm-regua]');
+  var num = pe.querySelector('[data-bm-n]');
+  if (!slides.length) return;
+
+  function movel() { return window.matchMedia('(max-width: 900px)').matches; }
+
+  function atual() {
+    // o slide cujo centro esta mais perto do centro do painel
+    var c = painel.scrollLeft + painel.clientWidth / 2, melhor = 0, dm = Infinity;
+    slides.forEach(function (s, i) {
+      var d = Math.abs(s.offsetLeft + s.offsetWidth / 2 - c);
+      if (d < dm) { dm = d; melhor = i; }
+    });
+    return melhor;
+  }
+
+  var ultimo = -1;
+  function pinta() {
+    if (!movel()) return;
+    var i = atual();
+    if (i === ultimo) return;
+    ultimo = i;
+    if (regua) regua.style.setProperty('--i', i);
+    if (num) num.textContent = i + 1;
+    var cat = slides[i].getAttribute('data-cat');
+    abas.forEach(function (t) {
+      var on = t.getAttribute('data-cat') === cat;
+      t.classList.toggle('is-on', on);
+      t.setAttribute('aria-selected', on ? 'true' : 'false');
+    });
+  }
+
+  var raf = 0;
+  painel.addEventListener('scroll', function () {
+    if (raf) return;
+    raf = requestAnimationFrame(function () { raf = 0; pinta(); });
+  }, { passive: true });
+
+  // A pastilha vira atalho para o slide. No desktop o clique continua fazendo
+  // o cross-fade de sempre — por isso a guarda, e nao um preventDefault.
+  abas.forEach(function (t) {
+    t.addEventListener('click', function () {
+      if (!movel()) return;
+      var cat = t.getAttribute('data-cat');
+      for (var i = 0; i < slides.length; i++) {
+        if (slides[i].getAttribute('data-cat') === cat) {
+          painel.scrollTo({ left: slides[i].offsetLeft - (painel.clientWidth - slides[i].offsetWidth) / 2,
+                            behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
+          break;
+        }
+      }
+    });
+  });
+
+  window.addEventListener('resize', function () { ultimo = -1; pinta(); });
+  pinta();
 })();

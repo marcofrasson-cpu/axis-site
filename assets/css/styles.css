@@ -162,7 +162,7 @@ h1, h2, .nh-title, .ab-hero h1, .ct-title, .bl-h1, .pf-wordmark span {
    Sem ela o atributo height vira presentational hint, as duas dimensoes ficam
    definidas e o aspect-ratio do CSS e ignorado — a foto estica ate a altura
    original do arquivo. Seletor de elemento (0,0,1): qualquer regra de classe
-   que precise de altura propria (.bl-card-media img, .pc-bg...) continua vencendo. */
+   que precise de altura propria (.bl-card-media img, .qa-bg...) continua vencendo. */
 img { max-width: 100%; height: auto; display: block; }
 a { color: inherit; text-decoration: none; }
 button { font: inherit; cursor: pointer; background: none; border: none; color: inherit; }
@@ -632,16 +632,38 @@ button { font: inherit; cursor: pointer; background: none; border: none; color: 
 .bm-legend { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: var(--sp-20); font-family: var(--font-body); font-size: var(--fs-12); color: var(--text-muted); }
 
 @media (max-width: 768px) {
-  /* A figura ficava em cima e a lista embaixo. Trocar de regiao e ler a
-     condicao exigia subir, tocar, descer, ler, subir de novo — a cada troca.
-     Lado a lado, os 442px de altura da figura entram DENTRO da coluna da lista
-     em vez de somar com ela: a etapa inteira passa a caber numa tela. */
-  .bm-stage {
-    grid-template-columns: 92px minmax(0, 1fr);
-    gap: var(--sp-12); align-items: start; padding: var(--sp-12);
+  /* A figura sai do celular. A 92px os marcadores ficam abaixo de qualquer
+     alvo tocavel — ela era orientacao, nao controle, e ocupava uma coluna
+     inteira sem fazer nada. No lugar dela, as seis areas viram um carrossel:
+     desliza com o dedo, um scroll-snap nativo, sem JS de arrasto. As pastilhas
+     continuam em cima como atalho e se sincronizam com o deslize. */
+  .bm-figure { display: none; }
+  .bm-stage { grid-template-columns: 1fr; padding: 0; border: 0; background: none; overflow: visible; }
+  .bm-panel {
+    min-height: 0; display: flex; gap: var(--sp-12);
+    overflow-x: auto; overflow-y: hidden;
+    scroll-snap-type: x mandatory; scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch; scrollbar-width: none;
+    /* sangra ate as bordas: o slide seguinte espia, e isso e o que diz que ha mais */
+    margin-inline: calc(-1 * var(--sp-20)); padding-inline: var(--sp-20);
   }
-  .bm-figure { width: 92px; height: auto; align-self: center; }   /* ao lado do meio da lista, nao do topo */
+  .bm-panel::-webkit-scrollbar { display: none; }
+  .bm-cat {
+    grid-area: auto; flex: 0 0 min(86%, 340px); scroll-snap-align: center;
+    opacity: 1; transform: none; pointer-events: auto; transition: none;
+    padding: var(--sp-20); border: 1px solid var(--border-hairline);
+    border-radius: var(--r-surface); background: var(--ground-deepest);
+  }
+  .bm-cat[hidden] { display: block; }   /* sem JS o carrossel ja e a lista inteira */
+  /* contador e regua: onde estou e quanto falta — mesmo vocabulario da faixa
+     horizontal da home */
+  .bm-carrossel-pe { display: flex; align-items: center; gap: var(--sp-12); margin-top: var(--sp-12); }
+  .bm-carrossel-regua { flex: 1; height: 2px; background: var(--border-hairline); border-radius: var(--r-pill); overflow: hidden; }
+  .bm-carrossel-regua i { display: block; height: 100%; width: calc(100% / 6); background: var(--brand-green); border-radius: inherit;
+    transform: translateX(calc(var(--i, 0) * 100%)); transition: transform 280ms var(--ease-settle); }
+  .bm-carrossel-n { font-family: var(--font-mono, var(--font-body)); font-size: var(--fs-12); color: var(--text-subtle); font-variant-numeric: tabular-nums; }
 }
+@media (min-width: 901px) { .bm-carrossel-pe { display: none; } }
 @media (prefers-reduced-motion: reduce) {
   .bm-marker.is-on::after { animation: none; display: none; }
   .bm-cat { transition: none; }
@@ -2337,16 +2359,49 @@ body { overflow-x: clip; }
 
 /* Compromissos (grade de duas colunas, réguas hairline) */
 .ab-commit { padding-block: var(--space-section); }
-.ab-commit-list {
-  list-style: none; display: grid; grid-template-columns: repeat(2, 1fr);
-  column-gap: clamp(32px, 5vw, 72px); row-gap: 2px;
-  border-top: 1px solid var(--border-hairline); padding-top: 12px;
+/* ---------- Compromissos ----------
+   Eram seis rotulos de 14px em duas colunas, com um ponto verde cada: liam
+   como rodape, e sao a proposicao inteira da clinica. Cada um vira um cartao
+   com a AFIRMACAO e a PROVA — o numero da norma, o registro, o documento. O
+   que muda nao e o enfeite, e a substancia: rotulo virou compromisso com
+   lastro. O visto se desenha ao entrar, uma vez, porque e isso que a secao
+   diz — verificado. */
+.cm-lista {
+  list-style: none; display: grid; gap: var(--sp-20);
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));   /* 320: da 3+3 a 1440, e nao 4+2 */
+  border-top: 1px solid var(--border-hairline); padding-top: var(--sp-32); margin: 0;
 }
-.ab-commit-list li {
-  display: flex; align-items: center; gap: 13px; padding: 13px 2px;
-  font-family: var(--font-body); font-size: var(--fs-14); color: var(--lead-color);
+.cm-item {
+  display: grid; grid-template-columns: 26px minmax(0, 1fr); gap: var(--sp-12);
+  align-items: start; padding: 0;
 }
-.ab-commit-list li::before { content: ""; width: 7px; height: 7px; border-radius: var(--r-circle); background: var(--brand-green); flex: none; }
+.cm-tick { width: 26px; height: 26px; flex: none; overflow: visible; }
+.cm-anel { stroke: var(--border-strong); stroke-width: 1.2; fill: none; }
+.cm-risco {
+  stroke: var(--brand-green); stroke-width: 2; fill: none;
+  stroke-linecap: round; stroke-linejoin: round;
+  stroke-dasharray: 16; stroke-dashoffset: 16;
+}
+/* o visto so se desenha quando a secao entra — no maximo 40ms entre irmaos */
+.ab-commit.is-visible .cm-risco {
+  animation: cmRisco 380ms var(--ease-settle) forwards;
+  animation-delay: calc(var(--i, 0) * 40ms + 120ms);
+}
+.ab-commit.is-visible .cm-anel {
+  transition: stroke 300ms var(--ease-settle);
+  transition-delay: calc(var(--i, 0) * 40ms + 200ms);
+  stroke: rgba(95, 200, 155, .42);
+}
+@keyframes cmRisco { to { stroke-dashoffset: 0; } }
+.cm-txt { display: flex; flex-direction: column; gap: var(--sp-4); }
+.cm-t { font-size: var(--fs-16); font-weight: 600; color: var(--text-primary); letter-spacing: -.01em; }
+.cm-d { font-family: var(--font-body); font-size: var(--fs-14); line-height: 1.55; color: var(--text-muted); }
+/* Lei do movimento: sob reduced-motion o visto ja esta desenhado — o quadro
+   final, nao o vazio. */
+@media (prefers-reduced-motion: reduce) {
+  .cm-risco { stroke-dashoffset: 0; animation: none; }
+  .cm-anel { stroke: rgba(95, 200, 155, .42); transition: none; }
+}
 
 @media (max-width: 900px) {
   .ab-mast-grid { grid-template-columns: 1fr; gap: 30px; align-items: start; }
@@ -2359,7 +2414,6 @@ body { overflow-x: clip; }
   .ab-rail { position: static; }
   .ab-read { max-width: none; }
   .ab-band .ab-values { grid-template-columns: 1fr; gap: 0; }
-  .ab-commit-list { grid-template-columns: 1fr; }
 }
 @media (max-width: 560px) {
   .ab-principles, .ab-receptors { grid-template-columns: 1fr; }
@@ -2893,30 +2947,28 @@ body { overflow-x: clip; }
   background: var(--ground-deepest);
   padding-block: var(--space-band);
 }
-.pc-bg {
-  position: absolute; inset: 0; z-index: -2;
-  /* campo de vias: a fonte fica a direita, o lado escuro segura o texto */
-  width: 100%; height: 100%; object-fit: cover; object-position: 60% 50%;
-  opacity: 0; transform: scale(1.035);
-  transition: opacity var(--reveal-dur) var(--ease-settle), transform var(--reveal-dur) var(--ease-settle);
-}
-.pc.is-visible .pc-bg { opacity: 1; transform: none; }
-/* veu: horizontal segura a coluna de texto; vertical dissolve a banda no navy
-   da pagina em cima e embaixo (inclusive sobre a foto, sem emenda) */
-.pc-veil {
+/* Campo de fluxo no lugar da foto. A mascara nao depende da cor do fundo —
+   veu de cor sobre campo animado vira retangulo visivel, ja custou uma vez. */
+.pc-field {
   position: absolute; inset: 0; z-index: -1; pointer-events: none;
-  background:
-    linear-gradient(90deg, rgba(8,17,28,.97) 0%, rgba(8,17,28,.93) 30%, rgba(8,17,28,.55) 58%, rgba(8,17,28,.2) 100%),
-    /* fecha cedo embaixo (68%) para dissolver a linha do tampo que existe na foto */
-    linear-gradient(180deg, var(--brand-navy) 0%, rgba(13,27,42,0) 17%, rgba(13,27,42,0) 62%,
-                            rgba(13,27,42,.72) 88%, var(--brand-navy) 100%);
+  opacity: 0; transition: opacity 620ms var(--ease-settle);
+  -webkit-mask-image: linear-gradient(180deg, transparent 0%, #000 15%, #000 85%, transparent 100%);
+  mask-image: linear-gradient(180deg, transparent 0%, #000 15%, #000 85%, transparent 100%);
 }
+.pc.is-visible .pc-field { opacity: 1; }
+/* horizontal: apaga o campo atras da coluna de texto */
+.pc-flow {
+  display: block; width: 100%; height: 100%;
+  -webkit-mask-image: linear-gradient(90deg, transparent 0%, transparent 24%, rgba(0,0,0,.4) 44%, #000 74%);
+  mask-image: linear-gradient(90deg, transparent 0%, transparent 24%, rgba(0,0,0,.4) 44%, #000 74%);
+}
+
 /* o .reveal do site e opacity+translateY+scale+blur; numa banda full-bleed isso
    desfoca a foto inteira. Neutraliza o fade de bloco e deixa o
    IntersectionObserver so marcando .is-visible. */
 /* bandas full-bleed: o .reveal padrao (translateY + scale .985 + blur 6px)
    encolhe a sangria e desfoca a fotografia inteira durante a entrada.
-   Aqui o bloco nao faz fade — quem anima e a foto (.pc-bg / .qa-bg / .fin-bg). */
+   Aqui o bloco nao faz fade — quem anima e o campo/foto (.pc-field / .qa-bg / .fin-bg). */
 .pc.reveal, .manifesto.reveal, .qa.reveal, .ab-pull--scene.reveal {
   opacity: 1; transform: none; filter: none; transition: none; will-change: auto;
 }
@@ -2972,12 +3024,9 @@ body { overflow-x: clip; }
 @media (max-width: 1024px) {
   .pc { padding: clamp(64px, 9vw, 96px) 0; }
   .pc-col { max-width: none; }
-  .pc-bg { object-position: 62% 40%; }
-  /* retrato: o texto ocupa a largura toda, então a foto vira atmosfera —
-     véu bem mais fechado para não competir com a leitura */
-  .pc-veil { background: linear-gradient(180deg,
-    var(--brand-navy) 0%, rgba(8,17,28,.72) 12%, rgba(8,17,28,.93) 34%,
-    rgba(8,17,28,.95) 82%, var(--brand-navy) 100%); }
+  /* retrato: o texto ocupa a largura toda, então a mascara horizontal perde
+     sentido — o campo vira atmosfera atras de tudo, em opacidade baixa */
+  .pc-flow { opacity: .5; -webkit-mask-image: none; mask-image: none; }
   .pc-lead { max-width: 60ch; }
 }
 @media (max-width: 768px) {
@@ -2985,7 +3034,7 @@ body { overflow-x: clip; }
   .pc-step p { font-size: var(--fs-14); max-width: 46ch; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .pc-bg { opacity: 1 !important; transform: none !important; transition: none !important; }
+  .pc-field { opacity: 1 !important; transition: none !important; }
   .pc-step::after, .pc-ind, .pc-ind-n, .pc-ind-ok, .pc-step h3 { transition: none !important; }
 }
 
