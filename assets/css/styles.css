@@ -13,8 +13,8 @@
   --bg-card: #1a2a3f;
   --bg-card-hover: #1f3149;
   --text-primary: #f1f5f9;
-  --text-muted: #94a3b8;
-  --text-subtle: #8291a3;   /* era #64748b: 3.05-3.99:1, reprovava AA em todo fundo */
+  --text-muted: #a2b0c2;    /* era #94a3b8: label do form 4.06:1 e .team-bio 4.47:1 */
+  --text-subtle: #9aa7b8;   /* era #8291a3 (e #64748b antes): .ct-privacy-note 3.51:1 */
   --border-hairline: rgba(255, 255, 255, 0.08);
   --border-strong: rgba(255, 255, 255, 0.14);
   /* Separa plano, nao encena altura: a elevacao vem do hairline e do fundo. */
@@ -1074,6 +1074,14 @@ button { font: inherit; cursor: pointer; background: none; border: none; color: 
   object-fit: cover;
   object-position: 50% 22%;
   filter: saturate(.92) contrast(1.04);   /* aproxima as 3 temperaturas */
+  transition: filter 200ms var(--ease-settle);
+}
+/* A regra acima foi escrita para os tres retratos de estudio. O quarto veio de
+   outra sessao: corredor ocre, 52% de saturacao contra 25% dos outros, e mais
+   escuro. Sem correcao ele quebra a fileira. Valores derivados da medicao do
+   arquivo, nao escolhidos a olho. */
+.team-photo--quente {
+  filter: saturate(.42) contrast(1.04) brightness(1.14);
   display: block;
   transition: transform 600ms var(--ease-settle);
 }
@@ -2924,7 +2932,10 @@ body { overflow-x: clip; }
   background-repeat: no-repeat; background-position: right 4px center; padding-right: 28px; }
 .ct-field select option { background: var(--ground-raised); color: var(--text-primary); }
 .ct-aviso { margin: var(--sp-12) 0 0; font-family: var(--font-body); font-size: var(--fs-14); line-height: 1.6; color: var(--brand-green); }
-.ct-privacy-note { font-size: var(--fs-12); line-height: 1.5; color: var(--text-subtle); background: none; border: 0; border-left: 2px solid var(--brand-green); border-radius: 0; padding: 2px 0 2px var(--sp-12); margin: var(--sp-4) 0 var(--sp-12); }
+/* Aviso de seguranca — nao mandar exame nem laudo por aqui — estava no degrau
+   mais apagado da escala, sobre o cartao translucido: 3.51:1. Instrucao nao e
+   contexto; sobe um degrau de cor. */
+.ct-privacy-note { font-size: var(--fs-12); line-height: 1.5; color: var(--text-muted); background: none; border: 0; border-left: 2px solid var(--brand-green); border-radius: 0; padding: 2px 0 2px var(--sp-12); margin: var(--sp-4) 0 var(--sp-12); }
 .ct-consent { display: flex; gap: var(--sp-12); align-items: flex-start; font-size: var(--fs-12); color: var(--text-muted); margin: 0 0 var(--sp-20); line-height: 1.5; cursor: pointer; }
 .ct-consent input { margin-top: 2px; accent-color: var(--brand-green); flex-shrink: 0; width: 16px; height: 16px; }
 .ct-submit { width: 100%; padding: 14px 20px; font-size: var(--fs-16); font-weight: 600; }
