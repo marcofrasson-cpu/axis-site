@@ -3071,6 +3071,25 @@ body { overflow-x: clip; }
 [data-parallax] .qa-bg,
 [data-parallax] .mf-bg { top: -15%; height: 130%; }
 [data-parallax] [data-parallax-layer] { will-change: transform; }
+/* Quando o navegador tem linha do tempo de scroll, o paralaxe deixa de passar
+   pelo JS: --px-d e medido uma vez e a animacao corre no compositor. E o que
+   destrava o iOS, onde o transform em JS sempre chega depois do scroll. */
+@supports (animation-timeline: view()) {
+  /* a timeline e da SECAO, nao de cada camada: view() em cada elemento mede a
+     progressao dele proprio, e a foto (130% de altura) e o bloco de texto
+     divergiam. Nomeada na secao, as duas camadas leem o mesmo progresso — que
+     e o que a conta antiga fazia com o rect da secao. */
+  [data-parallax] { view-timeline-name: --pxSecao; }
+  [data-parallax] [data-parallax-layer] {
+    animation: pxDeriva linear both;
+    animation-timeline: --pxSecao;
+    animation-range: cover 0% cover 100%;
+  }
+  @keyframes pxDeriva {
+    from { transform: translate3d(0, calc(-1 * var(--px-d, 0px)), 0); }
+    to   { transform: translate3d(0, var(--px-d, 0px), 0); }
+  }
+}
 @media (prefers-reduced-motion: reduce) {
   [data-parallax] .qa-bg, [data-parallax] .mf-bg { top: 0; height: 100%; }
   [data-parallax] [data-parallax-layer] { transform: none !important; }
@@ -3548,6 +3567,11 @@ h1.section-title { font-size: var(--fs-d2); }
      esquerda — a diferenca nao informava nada, so trocava a forma. As abas
      ficam a esquerda: sao controle, e chip centralizado quebra mal ao envolver. */
   .bm-head-l, .bm-head-r > .section-intro { text-align: center; }
+  /* text-align centra o TEXTO, nao a caixa: o h1 tem max-width 16ch e ficava
+     251px encostado na esquerda (centro em 146 contra 195 de todo o resto) —
+     era isso o titulo torto. */
+  .bodymap .section-title { margin-inline: auto; }
+  .bm-tabs { justify-content: center; }
   .bm-head-l .section-eyebrow { display: block; }
   .bm-head-l .sp-beam--left { margin-left: auto; margin-right: auto; }
 }

@@ -1285,6 +1285,28 @@ function campoDeFluxo(sec, canvas, opts) {
   var items = sections.map(function (sec) {
     return { el: sec, layers: [].slice.call(sec.querySelectorAll('[data-parallax-layer]')).map(function (l) { return { el: l, f: parseFloat(l.getAttribute('data-parallax-layer')) || 0 }; }) };
   });
+  // Caminho nativo: o compositor conduz a animacao (animation-timeline: view()).
+  // O caminho por listener de scroll + rAF engasga no iOS — o Safari ja moveu o
+  // conteudo no compositor quando o transform em JS chega, e o atraso le como
+  // travamento. Aqui o JS so mede a distancia uma vez e sai; nao ha listener de
+  // scroll, nao ha quadro perdido.
+  // A faixa 'cover 0% -> cover 100%' e exatamente o -1..1 que a conta antiga
+  // produzia: em cover 0% o topo da secao encosta na base da tela (p = -1) e em
+  // cover 100% a base sai pelo topo (p = +1). Mesmo deslocamento, outro motor.
+  if (window.CSS && CSS.supports && CSS.supports('animation-timeline', 'view()')) {
+    var medir = function () {
+      items.forEach(function (it) {
+        var h = it.el.getBoundingClientRect().height;
+        it.layers.forEach(function (l) { l.el.style.setProperty('--px-d', (l.f * h).toFixed(1) + 'px'); });
+      });
+    };
+    medir();
+    window.addEventListener('resize', medir);
+    window.addEventListener('load', medir);
+    return;
+  }
+
+  // Sem suporte: o porte original, por rAF.
   var raf = 0;
   function paint() {
     raf = 0;
