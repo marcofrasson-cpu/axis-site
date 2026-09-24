@@ -2845,15 +2845,25 @@ body { overflow-x: clip; }
    O cabecalho entra na coluna do formulario: titulo e cartao passam a dividir
    o mesmo eixo vertical, e os canais ficam como coluna de apoio a esquerda. */
 .ct-grid {
-  display: grid; grid-template-columns: minmax(0, 0.8fr) minmax(0, 1fr);
+  display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   gap: clamp(28px, 4vw, 56px); align-items: start;
 }
-.ct-aside { grid-column: 1; grid-row: 1 / span 2; }
-.ct-head  { grid-column: 2; grid-row: 1; text-align: center; margin-bottom: var(--sp-32); }
+.ct-aside { grid-column: 1; grid-row: 2; }
+/* O cabecalho centralizado ocupava so a coluna 2: o eixo dele caia em 1139
+   enquanto o da pagina e 840 — unica coisa centrada da tela, centrada em meia
+   tela. Passa a atravessar as duas colunas, e ai o eixo do titulo e o eixo da
+   pagina sao o mesmo. As duas colunas ficam simetricas embaixo dele. */
+.ct-head  { grid-column: 1 / -1; grid-row: 1; text-align: center; margin-bottom: var(--sp-56); }
 .ct-form  { grid-column: 2; grid-row: 2; }
 /* ---- coluna dos canais ---- */
 .ct-aside { display: flex; flex-direction: column; gap: var(--sp-20); }
-@media (max-width: 900px) { .ct-aside, .ct-head, .ct-form { grid-column: 1; grid-row: auto; } }
+/* Empilhado, a ordem passa a ser a do HTML — onde .ct-aside vem antes, porque
+   no desktop ela ocupa a coluna 1 desde o topo. No celular isso punha a lista
+   de canais na frente do titulo da pagina. */
+@media (max-width: 900px) {
+  .ct-aside, .ct-head, .ct-form { grid-column: 1; grid-row: auto; }
+  .ct-head { order: -1; }
+}
 .ct-aside-t { font-size: var(--fs-20); font-weight: 600; letter-spacing: -.01em; }
 .ct-aside-s { font-family: var(--font-body); font-size: var(--fs-14); color: var(--text-muted); max-width: 34ch; margin: calc(-1 * var(--sp-12)) 0 0; }
 .ct-links { list-style: none; display: grid; gap: var(--sp-12); margin: 0; padding: 0; }
