@@ -2746,15 +2746,48 @@ body { overflow-x: clip; }
 /* veu: desfoque leve sobre a fumaca (o backdrop-blur-sm do original) + escurece as bordas */
 .sk-veil { position: absolute; inset: 0; z-index: 0; pointer-events: none; -webkit-backdrop-filter: blur(4px); backdrop-filter: blur(4px);
   background: radial-gradient(75% 75% at 50% 45%, rgba(8,17,28,.22), rgba(8,17,28,.78)); }
-.ct-wrap { position: relative; z-index: 1; max-width: 520px; margin: 0 auto; width: 100%; }
-/* cartao de vidro */
-.ct-wrap { padding: var(--sp-32); border-radius: var(--r-surface); background: rgba(255,255,255,.07); border: 1px solid rgba(255,255,255,.16);
-  -webkit-backdrop-filter: blur(18px) saturate(140%); backdrop-filter: blur(18px) saturate(140%); box-shadow: 0 30px 80px rgba(0,0,0,.45); }
+/* Era uma coluna so: cabecalho, formulario, e os canais numa tirinha no rodape
+   do cartao. O e-mail e o horario sao a resposta mais rapida da pagina e
+   estavam como nota de rodape. Viram coluna propria ao lado do formulario. */
+.ct-wrap { position: relative; z-index: 1; max-width: var(--max-width); margin: 0 auto; width: 100%; }
+.ct-grid { display: grid; grid-template-columns: minmax(0, 0.8fr) minmax(0, 1fr); gap: clamp(28px, 4vw, 56px); align-items: start; }
 .ct-head { text-align: center; margin-bottom: var(--sp-32); }
+/* ---- coluna dos canais ---- */
+.ct-aside { display: flex; flex-direction: column; gap: var(--sp-20); }
+.ct-aside-t { font-size: var(--fs-20); font-weight: 600; letter-spacing: -.01em; }
+.ct-aside-s { font-family: var(--font-body); font-size: var(--fs-14); color: var(--text-muted); max-width: 34ch; margin: calc(-1 * var(--sp-12)) 0 0; }
+.ct-links { list-style: none; display: grid; gap: var(--sp-12); margin: 0; padding: 0; }
+.ct-links li { display: flex; align-items: center; gap: var(--sp-12); font-family: var(--font-body); font-size: var(--fs-14); color: var(--text-muted); }
+.ct-ico {
+  flex: none; width: 34px; height: 34px; display: flex; align-items: center; justify-content: center;
+  border-radius: var(--r-nested); border: 1px solid var(--border-hairline); background: rgba(255,255,255,.04);
+  color: var(--text-subtle); transition: color 160ms var(--ease-settle), border-color 160ms var(--ease-settle);
+}
+.ct-ico svg { width: 16px; height: 16px; }
+.ct-links li:hover .ct-ico { color: var(--brand-green); border-color: rgba(95,200,155,.4); }
+.ct-links a { color: var(--text-muted); transition: color 160ms var(--ease-settle); }
+.ct-links a:hover { color: var(--text-primary); }
+/* ---- globo ---- */
+.ct-globo { margin: var(--sp-8) 0 0; position: relative; }
+/* A base dissolve por MASCARA, nao por um veu de cor: o fundo desta secao e o
+   campo animado, entao qualquer retangulo de cor solida aparece como caixa. */
+.ct-globo-c {
+  display: block; width: min(100%, 260px); height: auto;
+  -webkit-mask-image: linear-gradient(180deg, #000 62%, transparent 96%);
+  mask-image: linear-gradient(180deg, #000 62%, transparent 96%);
+}
+.ct-globo figcaption {
+  position: relative; z-index: 1; margin-top: calc(-1 * var(--sp-12));
+  font-family: var(--font-body); font-size: var(--fs-12); letter-spacing: .06em; color: var(--text-subtle);
+  font-variant-numeric: tabular-nums;
+}
+/* cartao de vidro: agora so o formulario */
+.ct-form { padding: var(--sp-32); border-radius: var(--r-surface); background: rgba(255,255,255,.07); border: 1px solid rgba(255,255,255,.16);
+  -webkit-backdrop-filter: blur(18px) saturate(140%); backdrop-filter: blur(18px) saturate(140%); box-shadow: 0 30px 80px rgba(0,0,0,.45); }
 .ct-eyebrow { display: block; font-size: var(--fs-12); font-weight: 600; letter-spacing: .18em; text-transform: uppercase; color: var(--text-subtle); margin-bottom: var(--sp-8); }
 .ct-title { font-size: var(--fs-d2); font-weight: 700; letter-spacing: -.02em; line-height: 1.1; margin: 0 0 var(--sp-8); }
 .ct-intro { color: var(--text-muted); font-family: var(--font-body); font-size: var(--fs-14); max-width: 40ch; margin: 0 auto; }
-.ct-form { background: none; border: 0; border-radius: 0; padding: 0; box-shadow: none; }
+
 .ct-row { display: grid; grid-template-columns: 1fr 1fr; gap: var(--sp-20); margin-bottom: 0; }
 /* campo com rotulo flutuante: input primeiro no DOM; o label absoluto le o
    estado do input por :placeholder-shown / :focus e sobe, encolhe e acende */
@@ -2791,9 +2824,14 @@ body { overflow-x: clip; }
 .ct-channels { display: flex; justify-content: center; gap: var(--sp-20); flex-wrap: wrap; margin-top: var(--sp-20); padding-top: var(--sp-20); border-top: 1px solid rgba(255,255,255,.12); font-size: var(--fs-12); color: var(--text-subtle); }
 .ct-channels a { color: var(--text-muted); text-decoration: none; transition: color 200ms; }
 .ct-channels a:hover { color: var(--text-primary); }
+@media (max-width: 900px) {
+  /* Em coluna unica os canais vem antes do formulario: sao a resposta curta. */
+  .ct-grid { grid-template-columns: 1fr; gap: var(--sp-32); }
+  .ct-globo { display: none; }   /* o globo e folego, e no celular nao ha folego */
+}
 @media (max-width: 640px) {
   .ct-row { grid-template-columns: 1fr; gap: 0; }
-  .ct-wrap { padding: var(--sp-20); }
+  .ct-form { padding: var(--sp-20); }
   .sk { align-items: flex-start; padding: var(--sp-20) 0 var(--sp-32); }
 }
 @media (prefers-reduced-motion: reduce) { .ct-field label, .ct-submit svg { transition: none; } }

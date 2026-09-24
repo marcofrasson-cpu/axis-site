@@ -2047,3 +2047,134 @@
   desenhaBarra();
   aplica();
 })();
+
+// ========== Globo do /contato: assenta em Curitiba e para ==========
+// Inspirado no contact-with-globe (21st.dev), que usa d3-geo + topojson e baixa
+// o world-atlas de um CDN. Nada disso entra aqui: projecao ortografica sao dez
+// linhas de trigonometria, e o desenho e so a gaiola de meridianos e paralelos
+// — a mesma linguagem de linha do resto do site, e zero KB de dado de paises.
+// O giro tambem muda de sentido: o original gira para sempre. Este sai de um
+// angulo qualquer, acelera, desacelera e PARA com Curitiba de frente. Girar
+// sem parar seria enfeite; parado no lugar certo, ele diz onde a clinica fica.
+(function () {
+  var cv = document.querySelector('.ct-globo-c');
+  if (!cv) return;
+  var ctx = cv.getContext('2d');
+  if (!ctx) return;
+
+  var reduzido = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var CWB = { lat: -25.4284, lon: -49.2733 };   // Curitiba
+  var GRAU = Math.PI / 180;
+  var W = cv.width, H = cv.height, R = Math.min(W, H) * 0.42;
+  var CX = W / 2, CY = H / 2;
+
+  // Projecao ortografica: gira o ponto pela longitude e pela latitude da camera
+  // e projeta. z > 0 e o hemisferio virado para quem olha.
+  function proj(lat, lon, camLon, camLat) {
+    var a = (lon - camLon) * GRAU, b = lat * GRAU, c = camLat * GRAU;
+    var cosb = Math.cos(b);
+    var x = cosb * Math.sin(a);
+    var y = Math.cos(c) * Math.sin(b) - Math.sin(c) * cosb * Math.cos(a);
+    var z = Math.sin(c) * Math.sin(b) + Math.cos(c) * cosb * Math.cos(a);
+    return { x: CX + x * R, y: CY - y * R, z: z };
+  }
+
+  // Uma linha da gaiola, cortada onde passa para tras da esfera.
+  function traco(pontos, camLon, camLat, frente) {
+    var abriu = false;
+    ctx.beginPath();
+    for (var i = 0; i < pontos.length; i++) {
+      var p = proj(pontos[i][0], pontos[i][1], camLon, camLat);
+      var visivel = frente ? p.z >= 0 : p.z < 0;
+      if (!visivel) { abriu = false; continue; }
+      if (!abriu) { ctx.moveTo(p.x, p.y); abriu = true; } else ctx.lineTo(p.x, p.y);
+    }
+    ctx.stroke();
+  }
+
+  var meridianos = [], paralelos = [];
+  for (var lon = -180; lon < 180; lon += 30) {
+    var m = [];
+    for (var la = -90; la <= 90; la += 3) m.push([la, lon]);
+    meridianos.push(m);
+  }
+  for (var lat = -60; lat <= 60; lat += 30) {
+    var p2 = [];
+    for (var lo = -180; lo <= 180; lo += 3) p2.push([lat, lo]);
+    paralelos.push(p2);
+  }
+
+  function desenha(camLon, camLat, brilhoMarca) {
+    ctx.clearRect(0, 0, W, H);
+
+    // hemisferio de tras, bem apagado: e ele que faz a esfera parecer esfera
+    ctx.lineWidth = 1;
+    ctx.strokeStyle = 'rgba(148,163,184,.10)';
+    meridianos.concat(paralelos).forEach(function (l) { traco(l, camLon, camLat, false); });
+
+    // contorno
+    ctx.beginPath();
+    ctx.arc(CX, CY, R, 0, Math.PI * 2);
+    ctx.strokeStyle = 'rgba(148,163,184,.30)';
+    ctx.lineWidth = 1.1;
+    ctx.stroke();
+
+    // hemisferio da frente
+    ctx.strokeStyle = 'rgba(148,163,184,.26)';
+    ctx.lineWidth = 1;
+    meridianos.concat(paralelos).forEach(function (l) { traco(l, camLon, camLat, true); });
+
+    // equador em destaque
+    ctx.strokeStyle = 'rgba(148,163,184,.40)';
+    traco(paralelos[2] || [], camLon, camLat, true);
+
+    // Curitiba
+    var c = proj(CWB.lat, CWB.lon, camLon, camLat);
+    if (c.z >= 0) {
+      var halo = 5 + brilhoMarca * 7;
+      var g = ctx.createRadialGradient(c.x, c.y, 0, c.x, c.y, halo * 2.4);
+      g.addColorStop(0, 'rgba(95,200,155,' + (0.42 * brilhoMarca).toFixed(3) + ')');
+      g.addColorStop(1, 'rgba(95,200,155,0)');
+      ctx.fillStyle = g;
+      ctx.beginPath(); ctx.arc(c.x, c.y, halo * 2.4, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = 'rgba(95,200,155,' + (0.35 + 0.65 * brilhoMarca).toFixed(3) + ')';
+      ctx.beginPath(); ctx.arc(c.x, c.y, 3.2, 0, Math.PI * 2); ctx.fill();
+    }
+  }
+
+  // Alvo: Curitiba de frente. A camera sai 150 graus antes e chega junto com a
+  // secao — a viagem e o que informa, o quadro final e a resposta.
+  var lonFim = CWB.lon, latFim = CWB.lat * 0.55;
+  var lonIni = lonFim + 150, latIni = 18;
+  var DUR = 2600, t0 = 0, raf = 0, rodou = false;
+
+  if (reduzido) { desenha(lonFim, latFim, 1); return; }
+
+  function quadro(t) {
+    if (!t0) t0 = t;
+    var k = Math.min((t - t0) / DUR, 1);
+    var e = 1 - Math.pow(1 - k, 3);                       // ease-out cubico
+    desenha(lonIni + (lonFim - lonIni) * e,
+            latIni + (latFim - latIni) * e,
+            Math.max(0, (k - 0.55) / 0.45));              // a marca acende no fim
+    if (k < 1) raf = requestAnimationFrame(quadro); else raf = 0;
+  }
+
+  function comeca() {
+    if (rodou) return;
+    rodou = true;
+    raf = requestAnimationFrame(quadro);
+  }
+
+  desenha(lonIni, latIni, 0);
+  if ('IntersectionObserver' in window) {
+    var io = new IntersectionObserver(function (es) {
+      es.forEach(function (e) { if (e.isIntersecting) { comeca(); io.disconnect(); } });
+    }, { threshold: 0.25 });
+    io.observe(cv);
+  } else comeca();
+
+  document.addEventListener('visibilitychange', function () {
+    if (document.visibilityState !== 'visible' && raf) { cancelAnimationFrame(raf); raf = 0; }
+  });
+})();

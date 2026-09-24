@@ -28,7 +28,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Spectral:wght@400;500;600;700&family=Hanken+Grotesk:wght@400;500;600;700&display=swap">
 <link rel="icon" type="image/svg+xml" href="/assets/img/logo.svg">
-<link rel="stylesheet" href="/assets/css/styles.css?v=202609232157">
+<link rel="stylesheet" href="/assets/css/styles.css?v=202609232201">
 <noscript><style>.reveal,.reveal-stagger [class*="-card"],.blog-highlight.reveal .blog-feature-image,.blog-highlight.reveal .blog-feature-content{opacity:1!important;transform:none!important;filter:none!important}</style></noscript>
 <script type="application/ld+json">
 {"@context":"https://schema.org","@type":"ContactPage","url":"https://axisfitomed.com.br/contato","name":"Fale com a equipe — Axis FitoMed","inLanguage":"pt-BR","isPartOf":{"@type":"WebSite","url":"https://axisfitomed.com.br/"},"mainEntity":{"@type":"MedicalClinic","@id":"https://axisfitomed.com.br/#clinica","name":"Axis FitoMed","url":"https://axisfitomed.com.br/","email":"contato@axisfitomed.com.br","contactPoint":{"@type":"ContactPoint","contactType":"agendamento","email":"contato@axisfitomed.com.br","availableLanguage":"Portuguese","areaServed":"BR"},"openingHoursSpecification":{"@type":"OpeningHoursSpecification","dayOfWeek":["Monday","Tuesday","Wednesday","Thursday","Friday"],"opens":"08:00","closes":"18:00"}}}
@@ -79,6 +79,32 @@
       <p class="ct-intro">Agende uma avaliação, tire dúvidas ou peça mais informações. Respondemos em até um dia útil.</p>
     </div>
 
+    <div class="ct-grid">
+    <aside class="ct-aside">
+      <h2 class="ct-aside-t">Canais</h2>
+      <p class="ct-aside-s">Fale por onde preferir. Respondemos em até um dia útil.</p>
+      <ul class="ct-links">
+        <li>
+          <span class="ct-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg></span>
+          <a href="mailto:contato@axisfitomed.com.br">contato@axisfitomed.com.br</a>
+        </li>
+        <li>
+          <span class="ct-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/></svg></span>
+          <span>Segunda a sexta · 8h às 18h</span>
+        </li>
+        <li>
+          <span class="ct-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s7-5.4 7-11a7 7 0 1 0-14 0c0 5.6 7 11 7 11Z"/><circle cx="12" cy="10" r="2.5"/></svg></span>
+          <span>Curitiba · Paraná · atendimento presencial e teleconsulta</span>
+        </li>
+      </ul>
+      <!-- O globo assenta em Curitiba e para. Girar sem parar seria enfeite;
+           parado no lugar certo, ele diz onde a clinica fica. -->
+      <figure class="ct-globo">
+        <canvas class="ct-globo-c" width="440" height="440" aria-hidden="true"></canvas>
+        <figcaption>Curitiba · 25°26′ S, 49°16′ O</figcaption>
+      </figure>
+    </aside>
+
     <form class="ct-form" id="contatoForm" novalidate>
       <div class="ct-row">
         <div class="ct-field"><input type="text" id="nome" name="nome" required autocomplete="given-name" placeholder=" "><label for="nome">Nome *</label></div>
@@ -104,10 +130,6 @@
       <p class="ct-aviso" id="contatoAviso" role="status" hidden></p>
       <p class="ct-note">O envio abre seu app de e-mail com a mensagem já preenchida.</p>
     </form>
-
-    <div class="ct-channels">
-      <a href="mailto:contato@axisfitomed.com.br">contato@axisfitomed.com.br</a>
-      <span>Seg–Sex · 8h–18h</span>
     </div>
   </div>
 </section>
@@ -173,7 +195,7 @@
   </div>
 </footer>
 
-<script src="/assets/js/main.js?v=202609232157"></script>
+<script src="/assets/js/main.js?v=202609232201"></script>
 <script defer src="/_vercel/insights/script.js"></script>
 </body>
 </html>
