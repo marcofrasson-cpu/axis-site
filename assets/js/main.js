@@ -2048,13 +2048,13 @@
   aplica();
 })();
 
-// ========== Globo do /contato: assenta em Curitiba e para ==========
+// ========== Globo do /contato: assenta na sede e para ==========
 // Inspirado no contact-with-globe (21st.dev), que usa d3-geo + topojson e baixa
 // o world-atlas de um CDN. Nada disso entra aqui: projecao ortografica sao dez
 // linhas de trigonometria, e o desenho e so a gaiola de meridianos e paralelos
 // — a mesma linguagem de linha do resto do site, e zero KB de dado de paises.
 // O giro tambem muda de sentido: o original gira para sempre. Este sai de um
-// angulo qualquer, acelera, desacelera e PARA com Curitiba de frente. Girar
+// angulo qualquer, acelera, desacelera e PARA com a sede de frente. Girar
 // sem parar seria enfeite; parado no lugar certo, ele diz onde a clinica fica.
 (function () {
   var cv = document.querySelector('.ct-globo-c');
@@ -2063,7 +2063,7 @@
   if (!ctx) return;
 
   var reduzido = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  var CWB = { lat: -25.4284, lon: -49.2733 };   // Curitiba
+  var SEDE = { lat: -27.5954, lon: -48.5480 };   // Florianópolis · SC
   var GRAU = Math.PI / 180;
   var W = cv.width, H = cv.height, R = Math.min(W, H) * 0.42;
   var CX = W / 2, CY = H / 2;
@@ -2128,8 +2128,8 @@
     ctx.strokeStyle = 'rgba(148,163,184,.40)';
     traco(paralelos[2] || [], camLon, camLat, true);
 
-    // Curitiba
-    var c = proj(CWB.lat, CWB.lon, camLon, camLat);
+    // marcador da sede
+    var c = proj(SEDE.lat, SEDE.lon, camLon, camLat);
     if (c.z >= 0) {
       var halo = 5 + brilhoMarca * 7;
       var g = ctx.createRadialGradient(c.x, c.y, 0, c.x, c.y, halo * 2.4);
@@ -2142,9 +2142,9 @@
     }
   }
 
-  // Alvo: Curitiba de frente. A camera sai 150 graus antes e chega junto com a
+  // Alvo: a sede de frente. A camera sai 150 graus antes e chega junto com a
   // secao — a viagem e o que informa, o quadro final e a resposta.
-  var lonFim = CWB.lon, latFim = CWB.lat * 0.55;
+  var lonFim = SEDE.lon, latFim = SEDE.lat * 0.55;
   var lonIni = lonFim + 150, latIni = 18;
   var DUR = 2600, t0 = 0, raf = 0, rodou = false;
 
