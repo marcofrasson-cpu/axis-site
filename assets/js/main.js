@@ -1446,7 +1446,9 @@
 // suaviza, e cada tap e uma avaliacao inteira do campo).
 // Cada .band-lift ganha o seu. Sem WebGL, fica o --ground-lift chapado do CSS.
 (function () {
-  var bands = [].slice.call(document.querySelectorAll('.band-lift'));
+  // [data-mesh="off"]: a faixa fica clara, mas sem campo. Serve onde a secao
+  // ja tem um efeito proprio — dois na mesma dobra competem e nenhum le.
+  var bands = [].slice.call(document.querySelectorAll('.band-lift:not([data-mesh="off"])'));
   if (!bands.length) return;
   var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 

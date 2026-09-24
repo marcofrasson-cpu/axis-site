@@ -2644,7 +2644,7 @@ body { overflow-x: clip; }
      navy. No desktop nao ha mascara — a figura e o texto ficam em colunas — e a
      faixa clara continua. */
   .ecs.band-lift { background: var(--brand-navy); border-top-color: transparent; border-bottom-color: transparent; }
-  .ecs.band-lift > .bl-mesh { display: none; }
+
   .ecs-sticky { position: static; top: auto; width: 100%; }
   .ecs-svg { max-width: 202px; }
   .ecs-steps { position: relative; z-index: 1; }
