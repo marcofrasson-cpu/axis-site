@@ -517,6 +517,8 @@ button { font: inherit; cursor: pointer; background: none; border: none; color: 
    perspectiva: inclina e vira para o cursor (--bm-rx/--bm-ry, pelo JS), com um
    balanco lento quando o cursor sai. Os marcadores sao filhos da figura e
    acompanham a inclinacao. */
+/* a instrucao do mapa tem duas versoes: figura (toque) e carrossel (deslize) */
+.so-car { display: none; }
 .bm-stage {
   position: relative; isolation: isolate; overflow: hidden;
   padding: clamp(20px, 3vw, 32px);
@@ -637,6 +639,9 @@ button { font: inherit; cursor: pointer; background: none; border: none; color: 
      inteira sem fazer nada. No lugar dela, as seis areas viram um carrossel:
      desliza com o dedo, um scroll-snap nativo, sem JS de arrasto. As pastilhas
      continuam em cima como atalho e se sincronizam com o deslize. */
+/* abaixo de 900px nao ha corpo para tocar: a instrucao acompanha a peca */
+  .so-fig { display: none; }
+  .so-car { display: inline; }
   .bm-figure { display: none; }
   .bm-stage { grid-template-columns: 1fr; padding: 0; border: 0; background: none; overflow: visible; }
   .bm-panel {
