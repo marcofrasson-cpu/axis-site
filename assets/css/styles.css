@@ -2966,9 +2966,16 @@ body { overflow-x: clip; }
 .qa { position: relative; overflow: hidden; padding: clamp(88px, 12vw, 168px) 0; isolation: isolate; }
 .qa-bg { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 62% 50%; z-index: -2; }
 /* paralaxe: a foto tem folga vertical (130%) para deslocar sem mostrar borda */
-[data-parallax] .qa-bg { top: -15%; height: 130%; will-change: transform; }
+/* A foto de fundo de uma banda com paralaxe precisa de folga vertical, senao o
+   deslocamento mostra a borda. Era regra so do .qa-bg; vira regra do sistema —
+   qualquer foto marcada como camada de fundo ganha os 30%. */
+[data-parallax] .qa-bg,
+[data-parallax] .mf-bg { top: -15%; height: 130%; }
 [data-parallax] [data-parallax-layer] { will-change: transform; }
-@media (prefers-reduced-motion: reduce) { [data-parallax] .qa-bg { top: 0; height: 100%; } [data-parallax] [data-parallax-layer] { transform: none !important; } }
+@media (prefers-reduced-motion: reduce) {
+  [data-parallax] .qa-bg, [data-parallax] .mf-bg { top: 0; height: 100%; }
+  [data-parallax] [data-parallax-layer] { transform: none !important; }
+}
 .qa-veil {
   position: absolute; inset: 0; z-index: -1;
   background: linear-gradient(90deg, rgba(8,17,28,.96) 0%, rgba(8,17,28,.86) 34%, rgba(8,17,28,.35) 68%, rgba(8,17,28,.15) 100%);
