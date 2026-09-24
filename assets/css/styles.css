@@ -2677,7 +2677,6 @@ body { overflow-x: clip; }
 /* A marca era filha solta do grid e um grid-row:2 nas colunas a jogava sozinha
    pra primeira linha. Agora ela e uma coluna como as outras. */
 .pf-col--brand .pf-mark { margin-bottom: var(--sp-20); }
-.pf-rt { font-size: var(--fs-14); line-height: 1.55; color: var(--text-muted); max-width: 36ch; margin: 0; }   /* 30ch deixava "47986" orfao */
 /* so no desktop: no @media 860px o grid vira 2 colunas e o grid-row fixo
    empilharia as tres colunas na mesma faixa */
 .pf-mark { width: 64px; height: 64px; }
@@ -3719,7 +3718,6 @@ h1.section-title { font-size: var(--fs-d1); }
   .pf-note, .pf-col--contato .pf-note { margin: 0 0 var(--sp-4); font-size: var(--fs-14); }
   .pf-mail { overflow-wrap: anywhere; }
   .pf-tagline { max-width: 26ch; }
-  .pf-rt { max-width: none; }
   .pf-bottom { flex-direction: row; flex-wrap: wrap; justify-content: space-between; gap: var(--sp-4) var(--sp-12); font-size: var(--fs-12); }
 }
 
