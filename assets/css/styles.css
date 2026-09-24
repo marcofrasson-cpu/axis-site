@@ -5,6 +5,10 @@
   --brand-navy-lighter: #14253a;
   --brand-green: #5fc89b;
   --brand-green-hover: #6fd5a8;
+  /* o verde do wordmark AXIS do /sobre, medido no render: e ele que o
+     CTA primario usa como preenchimento */
+  --brand-green-deep: #2d735a;
+  --brand-green-deep-hover: #35865f;
   --brand-cream: #f4f2ec;
   --bg-card: #1a2a3f;
   --bg-card-hover: #1f3149;
@@ -555,7 +559,7 @@ button { font: inherit; cursor: pointer; background: none; border: none; color: 
 @keyframes bmContourBreathe { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.012); } }
 .bm-svg { width: 100%; height: 100%; display: block; overflow: visible; transform-origin: 50% 42%; animation: bmContourBreathe 6s ease-in-out infinite; }
 @media (prefers-reduced-motion: reduce) { .bm-svg { animation: none; } }
-@media (prefers-reduced-motion: reduce) { .team-photo, .team-veil { transition: none; } }
+@media (prefers-reduced-motion: reduce) { .team-photo { transition: none; } }
 
 .bm-marker {
   position: absolute; transform: translate(-50%, -50%);
@@ -1062,21 +1066,6 @@ button { font: inherit; cursor: pointer; background: none; border: none; color: 
 .team-meta { grid-row: 5; }
 .team-bio { grid-row: 6; }
 .team-media { position: relative; overflow: hidden; border-radius: var(--r-surface); }
-/* veu de credenciais: sobe no hover (ponteiro fino); no toque fica sempre, discreto */
-.team-veil {
-  position: absolute; inset: 0; display: flex; align-items: flex-end; justify-content: flex-start; flex-wrap: wrap; gap: var(--sp-8);
-  padding: var(--sp-12); background: linear-gradient(180deg, rgba(8,17,28,0) 55%, rgba(8,17,28,.78) 100%);
-  opacity: 0; transition: opacity 300ms var(--ease-settle);
-}
-.team-card:hover .team-veil, .team-card:focus-within .team-veil { opacity: 1; }
-@media (hover: none) { .team-veil { opacity: 1; } }
-.team-chip {
-  font-size: var(--fs-12); font-weight: 600; letter-spacing: .04em; color: var(--text-primary);
-  padding: 5px 10px; border-radius: var(--r-pill); background: rgba(13,27,42,.72); border: 1px solid var(--border-strong);
-  -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px);
-}
-.team-chip--role { color: var(--oil-hi); border-color: rgba(245,192,107,.32); text-transform: uppercase; letter-spacing: .1em; }
-
 .team-photo {
   width: 100%;
   height: auto;                 /* sem isso o height="" do HTML fixa a 2a dimensao
@@ -2601,15 +2590,24 @@ body { overflow-x: clip; }
 .nh-inner > *:nth-child(4) { animation-delay: .38s; }
 .nh-inner > *:nth-child(5) { animation-delay: .49s; }
 
-/* Faixa de credibilidade — confiança médica acima da dobra */
-.nh-trust { list-style: none; margin: var(--sp-32) 0 0; padding: 0; display: flex; flex-wrap: wrap; gap: var(--sp-8); }
-.nh-trust li {
-  display: inline-flex; align-items: center; gap: 8px;
-  font-size: var(--fs-14); font-weight: 500; letter-spacing: .01em; color: var(--text-muted);
-  padding: var(--sp-8) var(--sp-12); border: 1px solid var(--border-hairline); border-radius: var(--r-pill);
-  background: linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.01));
+/* Faixa de credibilidade — confiança médica acima da dobra.
+   Eram tres pilulas numa coluna de 565px onde so cabem duas (160+246+166+gaps
+   = 588): a terceira caia sozinha e lia como cartao orfao. Viraram uma linha
+   continua com separador — texto que flui nao tem como orfanar, aguenta
+   rotulo de qualquer tamanho, e e o mesmo tratamento que o mobile ja dava. */
+.nh-trust {
+  list-style: none; margin: var(--sp-32) 0 0; padding: 0;
+  display: flex; flex-wrap: wrap; align-items: center; gap: var(--sp-8) 9px;
 }
-.nh-trust svg { width: 16px; height: 16px; flex: none; color: var(--brand-green); }
+.nh-trust li {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: var(--fs-12); font-weight: 500; letter-spacing: .01em; color: var(--text-muted);
+}
+.nh-trust li + li::before {
+  content: ""; flex: none; width: 1px; height: 11px;
+  margin-right: 9px; background: var(--border-hairline);
+}
+.nh-trust svg { width: 15px; height: 15px; flex: none; color: var(--brand-green); }
 @keyframes nhFade { from { opacity: 0; } to { opacity: 1; } }
 .nh-visual { animation: nhFade 1.1s ease .3s both; }
 
@@ -2620,9 +2618,7 @@ body { overflow-x: clip; }
   .nh-ctas { justify-content: center; gap: var(--sp-12); max-width: 400px; margin-inline: auto; }
   .nh-ctas .btn { flex: 1 1 0; min-width: 0; padding-inline: var(--sp-12); }
   /* Credenciais: linha compacta (sem 3 pílulas empilhadas) */
-  .nh-trust { justify-content: center; gap: var(--sp-8) var(--sp-20); max-width: 480px; margin: var(--sp-20) auto 0; }
-  .nh-trust li { border: 0; background: none; padding: 0; font-size: var(--fs-12); gap: var(--sp-8); }
-  .nh-trust svg { width: 15px; height: 15px; }
+  .nh-trust { justify-content: center; max-width: 480px; margin: var(--sp-20) auto 0; }
   /* Sem order:-1: o diagrama vinha antes do h1 e comia metade da primeira dobra
      no celular — quem chegava pelo Instagram via a constelacao antes de saber o
      que a Axis faz. Agora a tese vem primeiro e o mapa ilustra depois dela. */
@@ -3461,7 +3457,8 @@ body { overflow-x: clip; }
 .btn:hover { transform: scale(1.05); }
 .btn:active { transform: scale(.99); }
 .btn-primary, .btn-primary:hover { background: transparent; border-color: transparent; color: #fff; }
-.btn-primary::before { background: rgba(95,200,155,.24); }
+.btn-primary::before { background: var(--brand-green-deep); transition: background 200ms var(--ease-settle); }
+.btn-primary:hover::before { background: var(--brand-green-deep-hover); }
 .btn-primary::after { box-shadow:
     0 0 8px rgba(0,0,0,.03), 0 2px 6px rgba(0,0,0,.08),
     inset 3px 3px .5px -3.5px rgba(255,255,255,.09), inset -3px -3px .5px -3.5px rgba(255,255,255,.85),
@@ -3528,10 +3525,13 @@ body { overflow-x: clip; }
 }
 .bm-marker:hover .bm-marker-dot { background: rgba(95,200,155,.9); transform: scale(1.15); }
 .bm-marker.is-on .bm-marker-dot { background: var(--brand-green); box-shadow: 0 0 0 4px rgba(95,200,155,.2); transform: scale(1.4); }
-/* O h1 do /servicos usa .section-title, que e o titulo de SECAO (d2). Como
-   titulo de PAGINA ele e d1, igual ao h1 de toda pagina do site — era o unico
-   que abria menor. */
-h1.section-title { font-size: var(--fs-d1); }
+/* O h1 do /servicos usa .section-title. Ja esteve em d1 pela regra "h1 de
+   pagina abre em d1" — mas a regra so vale onde o titulo tem a pagina para si.
+   Aqui ele divide a linha com a intro e os chips, numa coluna de 542px, e
+   logo abaixo vem o palco interativo: em d1 dava 143px de altura, 39% de
+   tudo que existe antes do palco. Volta para d2, que e o degrau do titulo
+   que convive com outra coisa. */
+h1.section-title { font-size: var(--fs-d2); }
 /* cabecalho em duas colunas */
 /* eyebrow em cima; a intro comeca na linha do titulo (padding-top = altura do
    eyebrow + margem), nunca acima dele */
@@ -3621,10 +3621,14 @@ h1.section-title { font-size: var(--fs-d1); }
 .bm-refs span { font-size: var(--fs-12); color: var(--text-subtle); }
 .bm-rev { font-size: var(--fs-12); color: var(--text-subtle); margin: 0 !important; }
 /* mapa mais perto do titulo; intro curta e sem serifa */
-.bodymap { padding: var(--sp-32) 0 var(--space-section); }   /* primeira secao da pagina: o header ja da ar em cima */
+/* O header e sticky e transparente: ele ocupa o ar do topo, nao da. Com
+   sp-32 o conteudo comecava colado na pilula. */
+.bodymap { padding: var(--sp-56) 0 var(--space-section); }
 .bodymap .section-intro { font-family: var(--font-body); font-size: var(--fs-16); line-height: 1.55; color: var(--text-muted); margin: 0; max-width: 46ch; }
 .bodymap .section-title { max-width: 16ch; margin-bottom: 0; }
-.bm-stage { margin-top: var(--sp-20); }
+/* vao externo tem que passar a entrelinha (25.6px) para o olho separar os
+   grupos: com sp-20 dava 0,78x e cabeca e palco liam como um bloco so. */
+.bm-stage { margin-top: var(--sp-56); }
 
 @media (prefers-reduced-motion: reduce) { .bm-hub { animation: none; } }
 
