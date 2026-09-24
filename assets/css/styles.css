@@ -2749,10 +2749,20 @@ body { overflow-x: clip; }
    do cartao. O e-mail e o horario sao a resposta mais rapida da pagina e
    estavam como nota de rodape. Viram coluna propria ao lado do formulario. */
 .ct-wrap { position: relative; z-index: 1; max-width: var(--max-width); margin: 0 auto; width: 100%; }
-.ct-grid { display: grid; grid-template-columns: minmax(0, 0.8fr) minmax(0, 1fr); gap: clamp(28px, 4vw, 56px); align-items: start; }
-.ct-head { text-align: center; margin-bottom: var(--sp-32); }
+/* O titulo estava centrado na PAGINA e o cartao do formulario tem o centro
+   deslocado para a direita — dois eixos competindo, e a composicao lia torta.
+   O cabecalho entra na coluna do formulario: titulo e cartao passam a dividir
+   o mesmo eixo vertical, e os canais ficam como coluna de apoio a esquerda. */
+.ct-grid {
+  display: grid; grid-template-columns: minmax(0, 0.8fr) minmax(0, 1fr);
+  gap: clamp(28px, 4vw, 56px); align-items: start;
+}
+.ct-aside { grid-column: 1; grid-row: 1 / span 2; }
+.ct-head  { grid-column: 2; grid-row: 1; text-align: center; margin-bottom: var(--sp-32); }
+.ct-form  { grid-column: 2; grid-row: 2; }
 /* ---- coluna dos canais ---- */
 .ct-aside { display: flex; flex-direction: column; gap: var(--sp-20); }
+@media (max-width: 900px) { .ct-aside, .ct-head, .ct-form { grid-column: 1; grid-row: auto; } }
 .ct-aside-t { font-size: var(--fs-20); font-weight: 600; letter-spacing: -.01em; }
 .ct-aside-s { font-family: var(--font-body); font-size: var(--fs-14); color: var(--text-muted); max-width: 34ch; margin: calc(-1 * var(--sp-12)) 0 0; }
 .ct-links { list-style: none; display: grid; gap: var(--sp-12); margin: 0; padding: 0; }
