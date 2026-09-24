@@ -3300,9 +3300,15 @@ body { overflow-x: clip; }
 .hub-fade { position: absolute; inset: 0; background: linear-gradient(180deg, var(--ground-deep) 0%, transparent 18%, transparent 82%, var(--ground-deep) 100%); }
 .hub-lines { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
 .hub-rail path { stroke: var(--border-strong); stroke-width: 1; }
+/* O gesto (as vias convergindo no centro) carrega a tese da secao, entao fica.
+   O que sai e o laco: numa secao que se le, movimento perpetuo disputa com o
+   texto. Passa a correr na entrada e parar — mesmo criterio do tique dos
+   compromissos no /sobre. */
 .hub-flow path {
   stroke: url(#hubGrad); stroke-width: 2; stroke-dasharray: 40 160; stroke-dashoffset: -200;
-  animation: hubDash 4s linear infinite; animation-delay: var(--d, 0s);
+}
+.differentials.is-visible .hub-flow path {
+  animation: hubDash 4s linear 3 both; animation-delay: var(--d, 0s);
 }
 @keyframes hubDash { to { stroke-dashoffset: 200; } }   /* offset cresce: o traco anda no sentido do caminho, ate o centro */
 .hub-core {
@@ -3314,9 +3320,17 @@ body { overflow-x: clip; }
 .hub-core-in svg { width: 100%; height: 100%; display: block; }
 .hub-core::after {
   content: ""; position: absolute; inset: -2px; border-radius: var(--r-surface); border: 2px solid rgba(95,200,155,.18);
-  animation: hubPulse 3s ease-in-out infinite;
+  opacity: 0;
+}
+.differentials.is-visible .hub-core::after {
+  animation: hubPulse 3s ease-in-out 3 both;
 }
 @keyframes hubPulse { 0%, 100% { transform: scale(1); opacity: .3; } 50% { transform: scale(1.15); opacity: 0; } }
+@media (prefers-reduced-motion: reduce) {
+  /* fallback e o estado final, nao o vazio: as vias ficam desenhadas no centro */
+  .differentials.is-visible .hub-flow path { animation: none; stroke-dashoffset: 0; }
+  .differentials.is-visible .hub-core::after { animation: none; opacity: .3; }
+}
 .hub-node {
   position: absolute; left: calc(var(--x) / 564 * 100%); top: calc(var(--y) / 410 * 100%); transform: translate(-50%, -50%); z-index: 1;
   display: flex; flex-direction: column; align-items: center; gap: 6px;
