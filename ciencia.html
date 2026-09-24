@@ -28,7 +28,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Spectral:wght@400;500;600;700&family=Hanken+Grotesk:wght@400;500;600;700&display=swap">
 <link rel="icon" type="image/svg+xml" href="/assets/img/logo.svg">
-<link rel="stylesheet" href="/assets/css/styles.css?v=202609232330">
+<link rel="stylesheet" href="/assets/css/styles.css?v=202609232337">
 <noscript><style>.reveal,.reveal-stagger [class*="-card"],.blog-highlight.reveal .blog-feature-image,.blog-highlight.reveal .blog-feature-content{opacity:1!important;transform:none!important;filter:none!important}.ecs-scene{opacity:1!important}</style></noscript>
 <script type="application/ld+json">
 {"@context":"https://schema.org","@type":"MedicalWebPage","url":"https://axisfitomed.com.br/ciencia","name":"O que a ciência diz sobre cannabis medicinal","description":"Seleção comentada de estudos clínicos e revisões sobre cannabis medicinal, organizada por área e por tipo de evidência.","inLanguage":"pt-BR","isPartOf":{"@type":"WebSite","url":"https://axisfitomed.com.br/"},"about":{"@type":"MedicalTherapy","name":"Cannabis medicinal"},"publisher":{"@type":"MedicalClinic","name":"Axis FitoMed","@id":"https://axisfitomed.com.br/#clinica"},"audience":{"@type":"MedicalAudience","audienceType":"Pacientes, familiares e profissionais de saúde"}}
@@ -100,7 +100,29 @@
               <path d="M79.9 48 L94 56 L108 48 L122 56"/>
               <line x1="30" y1="24" x2="30" y2="8"/><line x1="16.1" y1="32" x2="4" y2="24"/>
             </g>
-          </defs>
+          
+          <!-- Frasco (recuperado da secao Full-spectrum, commit 13df742): o desenho
+               volta como ILUSTRACAO DA COMPOSICAO; a tese de superioridade que o
+               acompanhava nao volta. -->
+          <linearGradient id="fsOilGrad" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0" stop-color="#f5c06b"/>
+                        <stop offset="0.45" stop-color="#e8a13c"/>
+                        <stop offset="1" stop-color="#b56a1a"/>
+                      </linearGradient>
+                      <radialGradient id="fsGlow" cx="50%" cy="45%" r="55%">
+                        <stop offset="0" stop-color="rgba(232,161,60,.34)"/>
+                        <stop offset="1" stop-color="rgba(232,161,60,0)"/>
+                      </radialGradient>
+                      <radialGradient id="fsNodeGrad" cx="38%" cy="34%" r="66%">
+                        <stop offset="0" stop-color="#fff7e6"/>
+                        <stop offset="0.42" stop-color="#f5c06b"/>
+                        <stop offset="1" stop-color="rgba(232,161,60,.18)"/>
+                      </radialGradient>
+                      <clipPath id="fsInterior">
+                        <path d="M232 258 L232 506 Q232 526 250 526 L310 526 Q328 526 328 506 L328 258 Z"/>
+                        <rect x="270" y="162" width="20" height="100"/>
+                      </clipPath>
+        </defs>
 
           <ellipse class="ecs-halo" cx="240" cy="212" rx="200" ry="200" fill="url(#ecsGlow)"/>
 
@@ -138,16 +160,60 @@
             <text class="ecs-t small" x="250" y="315" fill="#5fc89b" text-anchor="middle">CBD · THC</text>
           </g>
 
-          <!-- Cena 4: efeito entourage -->
+          <!-- Cena 4: a composicao do extrato -->
           <g class="ecs-scene ecs-s4">
-            <g stroke="rgba(95,200,155,.28)" stroke-width="1.4" fill="none">
-              <path d="M240,210 L120,120 M240,210 L360,120 M240,210 L120,320 M240,210 L360,320"/>
+            <g class="fs-frasco" transform="translate(10.4,3.4) scale(0.82)">
+              <ellipse class="fs-glow" cx="280" cy="360" rx="180" ry="200" fill="url(#fsGlow)"/>
+              <path d="M226 252 L226 508 Q226 532 250 532 L310 532 Q334 532 334 508 L334 252 Z"
+              fill="rgba(232,161,60,.10)" stroke="rgba(245,192,107,.42)" stroke-width="2"/>
+              <path d="M226 252 Q228 224 258 212 L266 200 L294 200 L302 212 Q332 224 334 252 Z"
+              fill="rgba(232,161,60,.08)" stroke="rgba(245,192,107,.38)" stroke-width="2"/>
+              <rect x="266" y="162" width="28" height="44" fill="rgba(232,161,60,.07)" stroke="rgba(245,192,107,.36)" stroke-width="2"/>
+              <g clip-path="url(#fsInterior)">
+              <g class="fs-oil">
+              <rect x="228" y="272" width="108" height="262" fill="url(#fsOilGrad)"/>
+              <ellipse class="fs-meniscus" cx="280" cy="272" rx="50" ry="5" fill="#f9d18f" opacity=".92"/>
+              </g>
+              </g>
+              <g clip-path="url(#fsInterior)" fill="url(#fsNodeGrad)">
+              <circle class="fs-node" style="transition-delay:.40s" cx="258" cy="500" r="5"/>
+              <circle class="fs-node" style="transition-delay:.55s" cx="304" cy="470" r="6"/>
+              <circle class="fs-node" style="transition-delay:.68s" cx="248" cy="442" r="4.5"/>
+              <circle class="fs-node" style="transition-delay:.80s" cx="312" cy="410" r="7"/>
+              <circle class="fs-node" style="transition-delay:.92s" cx="270" cy="382" r="4.5"/>
+              <circle class="fs-node" style="transition-delay:1.02s" cx="300" cy="336" r="6"/>
+              <circle class="fs-node" style="transition-delay:1.12s" cx="254" cy="306" r="4.5"/>
+              <circle class="fs-node" style="transition-delay:1.20s" cx="298" cy="284" r="4.5"/>
+              <circle class="fs-node" style="transition-delay:.48s" cx="286" cy="486" r="2.6"/>
+              <circle class="fs-node" style="transition-delay:.74s" cx="268" cy="420" r="2.6"/>
+              <circle class="fs-node" style="transition-delay:.98s" cx="286" cy="352" r="2.6"/>
+              <circle class="fs-node" style="transition-delay:1.16s" cx="276" cy="300" r="2.6"/>
+              </g>
+              <g clip-path="url(#fsInterior)">
+              <circle class="fs-bubble" cx="260" cy="516" r="3"/>
+              <circle class="fs-bubble" cx="302" cy="522" r="2.2" style="animation-delay:-2.4s"/>
+              <circle class="fs-bubble" cx="286" cy="510" r="2.6" style="animation-delay:-4.3s"/>
+              </g>
+              <!-- Conjunto conta-gotas (sobe/desce como um todo) -->
+              <g class="fs-dropper">
+              <rect x="274" y="160" width="12" height="292" rx="6"
+              fill="rgba(230,240,250,.10)" stroke="rgba(230,240,250,.34)" stroke-width="1.3"/>
+              <g class="fs-pip">
+              <rect x="276" y="248" width="8" height="204" rx="4" fill="url(#fsOilGrad)"/>
+              </g>
+              <g stroke="rgba(230,240,250,.5)" stroke-width="1.1">
+              <line x1="286" y1="214" x2="292" y2="214"/>
+              <line x1="286" y1="230" x2="290" y2="230"/>
+              <line x1="286" y1="246" x2="292" y2="246"/>
+              <line x1="286" y1="262" x2="290" y2="262"/>
+              </g>
+              <!-- colar (cap) + conector + bulbo de borracha -->
+              <rect x="258" y="144" width="44" height="22" rx="4" fill="#0b1521" stroke="rgba(255,255,255,.14)" stroke-width="1"/>
+              <rect x="261" y="147" width="38" height="4" rx="2" fill="rgba(255,255,255,.10)"/>
+              <rect x="274" y="132" width="12" height="16" rx="3" fill="#12293c"/>
+              <rect class="fs-bulb" x="267" y="74" width="26" height="62" rx="13" fill="#1c334a" stroke="rgba(255,255,255,.16)" stroke-width="1.4"/>
+              </g>
             </g>
-            <polygon points="240,160 283.3,185 283.3,235 240,260 196.7,235 196.7,185" stroke="#5fc89b" stroke-width="2.6" fill="rgba(95,200,155,.12)"/>
-            <use class="ecs-m" href="#cbdMol" transform="translate(66,86) scale(.8)"/>
-            <use class="ecs-m" href="#cbdMol" transform="translate(300,86) scale(.8)"/>
-            <use class="ecs-m ecs-terp" href="#cbdMol" transform="translate(66,300) scale(.7)"/>
-            <use class="ecs-m ecs-terp" href="#cbdMol" transform="translate(306,300) scale(.7)"/>
           </g>
         </svg>
       </div>
@@ -167,8 +233,8 @@
         <p>Fitocanabinoides como <b>CBD</b> e <b>THC</b> se ligam a esses receptores — como chave na fechadura — modulando sinais que o corpo já usa. Não impõem: ajustam.</p>
       </article>
       <article class="ecs-step" data-scene="4">
-        <h3>O efeito entourage</h3>
-        <p>No extrato completo, canabinoides e terpenos agem em conjunto: o todo faz mais que a soma das partes. É esse equilíbrio que buscamos na prescrição.</p>
+        <h3>O que vem no extrato completo</h3>
+        <p>Além do CBD, o extrato completo carrega canabinoides menores e terpenos. A hipótese do <em>efeito entourage</em> propõe que eles atuem em conjunto — é hipótese, não fato estabelecido. Isolado, <em>broad</em> ou full-spectrum é decisão clínica, caso a caso, e o laudo diz o que há em cada frasco.</p>
       </article>
     </div>
     </div>
@@ -443,7 +509,7 @@
   </div>
 </footer>
 
-<script src="/assets/js/main.js?v=202609232330"></script>
+<script src="/assets/js/main.js?v=202609232337"></script>
 <script defer src="/_vercel/insights/script.js"></script>
 </body>
 </html>

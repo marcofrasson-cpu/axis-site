@@ -1892,25 +1892,60 @@ body { overflow-x: clip; }
 .fs-title .amber { color: var(--oil); }
 
 /* motion — dispara junto do .reveal do site (.is-visible na secao) */
+/* Frasco do extrato. O HTML da secao Full-spectrum saiu em 21/07/2026 (commit
+   ffbc53d) porque a TESE era de superioridade do full-spectrum; o CSS ficou.
+   O desenho volta agora como cena 4 do ECS — ilustra a composicao, nao a
+   superioridade — e o gatilho passa a ser a cena ativa, nao a secao visivel. */
 .fs-oil { transform: translateY(300px); transition: transform 1.5s var(--ease-settle); }
-.fs.is-visible .fs-oil { transform: translateY(0); }
-.fs.is-visible .fs-node { opacity: 1; }
-.fs.is-visible .fs-ann { opacity: 1; }
+.ecs-s4.is-active .fs-oil { transform: translateY(0); }
+.ecs-s4.is-active .fs-node { opacity: 1; }
+.fs-pip { transform: none; }
+.fs-bulb { transform-box: fill-box; transform-origin: center; }
+.fs-node { opacity: 0; transition: opacity 0.55s ease; }
+/* vida ambiente dentro do oleo: particulas flutuam, bolhas sobem, o brilho
+   respira — periodos diferentes para o loop nao bater junto */
+@keyframes fsBob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
+@keyframes fsRise {
+  0% { transform: translateY(0); opacity: 0; }
+  12% { opacity: .7; }
+  85% { opacity: .45; }
+  100% { transform: translateY(-235px); opacity: 0; }
+}
+@keyframes fsBreath { 0%, 100% { opacity: .72; } 50% { opacity: 1; } }
+.fs-node { animation: fsBob 5.5s ease-in-out infinite; }
+.fs-node:nth-child(2n) { animation-duration: 6.6s; animation-delay: -1.5s; }
+.fs-node:nth-child(3n) { animation-duration: 4.8s; animation-delay: -3s; }
+.fs-node:nth-child(4n) { animation-duration: 7.2s; animation-delay: -2.2s; }
+.fs-bubble { fill: rgba(247, 205, 133, 0.6); animation: fsRise 6.5s ease-in infinite; }
+.fs-glow { animation: fsBreath 6s ease-in-out infinite; }
+.fs-meniscus { animation: fsBreath 4.5s ease-in-out infinite; }
+.ecs-s4.is-active .fs-ann { opacity: 1; }
 .fs-annobox.right { text-align: left; }
 .fs-annobox.left { text-align: right; }
 /* loop ambiente — vida continua depois de encher (nao esvazia) */
 /* Conta-gotas: puxa pra fora, dispensa a gota, volta — loop após encher */
+/* O curso era de 112px quando o frasco ocupava uma secao inteira. Dentro do
+   viewBox do ECS (480x460) isso levava a tampa para fora do quadro. 74px
+   mantem o gesto — sai, dispensa, volta — com o conta-gotas inteiro na tela. */
 @keyframes fsPull {
   0%, 10%   { transform: translateY(0); }
-  32%, 58%  { transform: translateY(-112px); }
+  32%, 58%  { transform: translateY(-74px); }
   82%, 100% { transform: translateY(0); }
 }
 @keyframes fsSqueeze {
   0%, 38%, 60%, 100% { transform: scaleY(1); }
   47% { transform: scaleY(.82); }
 }
-.fs.is-visible .fs-dropper { animation: fsPull 5.4s cubic-bezier(.55, 0, .25, 1) 1.7s infinite; }
-.fs.is-visible .fs-bulb { animation: fsSqueeze 5.4s ease-in-out 1.7s infinite; }
+.ecs-s4.is-active .fs-dropper { animation: fsPull 5.4s cubic-bezier(.55, 0, .25, 1) 1.7s infinite; }
+.ecs-s4.is-active .fs-bulb { animation: fsSqueeze 5.4s ease-in-out 1.7s infinite; }
+@media (prefers-reduced-motion: reduce) {
+  /* o quadro final, nao o vazio: frasco cheio, particulas visiveis, nada se move */
+  .fs-oil { transform: none; transition: none; }
+  .fs-node { opacity: 1; transition: none; }
+  .fs-node, .fs-bubble, .fs-glow, .fs-meniscus,
+  .ecs-s4.is-active .fs-dropper, .ecs-s4.is-active .fs-bulb { animation: none; }
+  .fs-bubble { opacity: 0; }
+}
 
 /* ==================== HEADER — pill flutuante glass ==================== */
 .site-header {
@@ -2612,6 +2647,7 @@ body { overflow-x: clip; }
 .ecs-sub { font-size: 11px; letter-spacing: .14em; text-transform: uppercase; text-anchor: middle; }
 .ecs-scene { opacity: 0; transition: opacity .55s ease; }
 .ecs-scene.is-active { opacity: 1; }
+
 .ecs-dock { opacity: 0; transform: translate(115px, 178px) scale(1.2); transition: transform .7s var(--ease-settle), opacity .5s ease; }
 .ecs-s3.is-active .ecs-dock { opacity: 1; transform: translate(165px, 172px) scale(1.35); }
 .ecs-pocket { opacity: 0; transition: opacity .5s ease .12s; }
@@ -3263,6 +3299,14 @@ body { overflow-x: clip; }
 .gp[data-gp-motion="off"] .gp-hint { display: none; }
 /* o campo dissolve em navy no fim da secao: os capitulos seguem no papel */
 .gp::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 180px; pointer-events: none; background: linear-gradient(180deg, transparent, var(--brand-navy)); }
+/* No celular a ficha (natureza · base · conformidade) cresce e a ultima linha
+   caia dentro do veu — "Conformidade · Anvisa · RDC..." lia desbotada. O veu
+   encurta e a ficha ganha folga maior que ele: nada de conteudo entra na
+   dissolucao. */
+@media (max-width: 900px) {
+  .gp::after { height: 104px; }
+  .gp .ab-mast { padding-bottom: calc(104px + var(--sp-32)); }
+}
 /* a abertura sobre o campo verde: o verde de destaque vira creme, os rotulos clareiam */
 .gp .ab-mast { padding-top: var(--sp-32); }
 .gp .ab-mast-title em { color: var(--brand-cream); }
