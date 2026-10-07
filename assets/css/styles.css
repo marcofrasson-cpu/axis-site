@@ -915,7 +915,6 @@ button { font: inherit; cursor: pointer; background: none; border: none; color: 
               border-color 180ms var(--ease-settle);
 }
 .differential-card:hover {
-  transform: translateY(-4px);
   border-color: rgba(95, 200, 155, 0.4);
 }
 .differential-icon {
@@ -955,14 +954,14 @@ button { font: inherit; cursor: pointer; background: none; border: none; color: 
   font-size: var(--fs-14); font-weight: 500; color: var(--text-muted); text-decoration: none;
   transition: color 180ms var(--ease-settle);
 }
-.dc-proof span { display: inline-block; margin-left: .35em; transition: transform 180ms var(--ease-settle); }   /* o espaco dentro do inline-block colapsa */
+.dc-proof [aria-hidden="true"] { display: inline-block; margin-left: .35em; transition: transform 180ms var(--ease-settle); }   /* o espaco dentro do inline-block colapsa */
 .dc-proof:hover, .dc-proof:focus-visible { color: var(--brand-green); }
-.dc-proof:hover span { transform: translateX(3px); }
+.dc-proof:hover [aria-hidden="true"] { transform: translateX(3px); }
 @media (max-width: 640px) {
   .differential-card { padding: var(--sp-20); }
   .dc-head { margin-bottom: var(--sp-12); }
 }
-@media (prefers-reduced-motion: reduce) { .dc-proof, .dc-proof span { transition: none; } }
+@media (prefers-reduced-motion: reduce) { .dc-proof, .dc-proof [aria-hidden="true"] { transition: none; } }
 @media (max-width: 1024px) {
   .differentials-grid { grid-template-columns: repeat(2, 1fr); }
 }
@@ -1065,7 +1064,48 @@ button { font: inherit; cursor: pointer; background: none; border: none; color: 
 .team-specialty { grid-row: 4; }
 .team-meta { grid-row: 5; }
 .team-bio { grid-row: 6; }
-.team-media { position: relative; overflow: hidden; border-radius: var(--r-surface); }
+.team-media { position: relative; overflow: hidden; border-radius: var(--r-nested); }
+
+/* ---- Spotlight dos cartoes (GlowCard / spotlight-card, porte vanilla) ----
+   Uma fonte de luz para a grade inteira: cada cartao recebe a posicao do
+   ponteiro RELATIVA a si (--mx/--my), entao a mesma luz atravessa as bordas
+   vizinhas — que e o gesto do original. Diferencas deliberadas:
+   - so o verde da marca (o original gira o matiz pelo arco-iris conforme X);
+   - coordenada local em vez de background-attachment: fixed, que quebra com
+     transform (o reveal anima os cartoes) e no iOS;
+   - o cartao ganha superficie e hairline, porque o efeito acende uma borda e
+     antes nao havia borda nenhuma. Padding no subgrid nao mexe nas faixas.
+   Pseudo-elementos sao absolutos: num grid, ::before/::after estaticos
+   virariam itens e ocupariam celula. */
+.team-card {
+  position: relative; isolation: isolate;
+  padding: var(--sp-12) var(--sp-12) var(--sp-20);
+  border: 1px solid var(--border-hairline); border-radius: var(--r-surface);
+  background: rgba(255, 255, 255, .015);
+}
+.team-card::before, .team-card::after {
+  content: ""; position: absolute; inset: -2px; border-radius: calc(var(--r-surface) + 1px);
+  pointer-events: none; opacity: 0; transition: opacity 240ms var(--ease-settle);
+}
+/* a borda acesa: gradiente radial recortado no anel de 1px */
+.team-card::before {
+  padding: 2px;   /* 1px lia como fio aceso so de perto: o gesto precisa ser visto */
+  background: radial-gradient(280px circle at var(--mx, -999px) var(--my, -999px),
+              rgba(95, 200, 155, .9), rgba(95, 200, 155, .25) 40%, transparent 70%);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
+}
+/* o preenchimento: a mesma luz, bem mais fraca, por dentro */
+.team-card::after {
+  z-index: -1;
+  background: radial-gradient(420px circle at var(--mx, -999px) var(--my, -999px),
+              rgba(95, 200, 155, .10), transparent 65%);
+}
+.team-grid.is-lit .team-card::before, .team-grid.is-lit .team-card::after { opacity: 1; }
+@media (prefers-reduced-motion: reduce) {
+  .team-card::before, .team-card::after { transition: none; }
+}
 .team-photo {
   width: 100%;
   height: auto;                 /* sem isso o height="" do HTML fixa a 2a dimensao
@@ -1231,7 +1271,7 @@ button { font: inherit; cursor: pointer; background: none; border: none; color: 
   background: var(--bg-card); border: 1px solid var(--border-hairline); border-radius: var(--r-surface);
   transition: border-color 160ms ease, background 160ms ease, transform 160ms ease;
 }
-.post-related-card:hover { border-color: var(--brand-green); background: var(--bg-card-hover); transform: translateY(-2px); }
+.post-related-card:hover { border-color: var(--brand-green); background: var(--bg-card-hover); }
 .post-related-tag {
   font-family: var(--font-body); font-size: var(--fs-12); font-weight: 600;
   letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-muted);
@@ -1463,7 +1503,7 @@ button { font: inherit; cursor: pointer; background: none; border: none; color: 
   transition: transform 180ms var(--ease-settle), border-color 180ms var(--ease-settle), box-shadow 180ms var(--ease-settle);
   display: flex; flex-direction: column;
 }
-.paper-card:hover { transform: translateY(-4px); border-color: rgba(95, 200, 155, 0.4); box-shadow: var(--shadow-lg); }
+.paper-card:hover { border-color: rgba(95, 200, 155, 0.4); }
 .paper-card[hidden] { display: none; }
 .paper-meta { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: var(--sp-20); }
 .paper-type {
@@ -2665,7 +2705,7 @@ body { overflow-x: clip; }
   background: var(--bg-card);
   transition: border-color 300ms ease, transform 300ms ease, box-shadow 300ms ease;
 }
-.bl-feature:hover { border-color: var(--border-strong); transform: translateY(-4px); box-shadow: var(--shadow-lg); }
+.bl-feature:hover { border-color: var(--border-strong); }
 .bl-feature-media { position: relative; min-height: 300px; overflow: hidden; }
 .bl-feature-media img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 50% 46%; display: block; }
 /* tratamento único das 3 fotos do blog: scrim navy que assenta a foto no card,
@@ -2688,7 +2728,7 @@ body { overflow-x: clip; }
   background: var(--bg-card); border: 1px solid var(--border-hairline); border-radius: var(--r-surface);
   transition: border-color 200ms ease, transform 200ms ease, box-shadow 200ms ease;
 }
-.bl-card:hover { border-color: var(--border-strong); transform: translateY(-4px); box-shadow: var(--shadow-lg); }
+.bl-card:hover { border-color: var(--border-strong); }
 /* foto no topo do card; o conteúdo textual recebe o padding, não o card */
 .bl-card-media { position: relative; aspect-ratio: 16 / 9; overflow: hidden; }
 .bl-card-media img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 50% 44%; display: block; transition: transform 260ms var(--ease-settle); }
@@ -3961,4 +4001,42 @@ h1.section-title { font-size: var(--fs-d2); }
   .pf-mk-hex, .pf-mk-a { stroke-dashoffset: 0; }
   .pf-mk-dot { opacity: 1; }
   .pf-sign.is-in .pf-mk-hex--l, .pf-sign.is-in .pf-mk-hex--r, .pf-sign.is-in .pf-mk-a, .pf-sign.is-in .pf-mk-dot { animation: none; }
+}
+
+
+/* ==================== Bento: o CTA nasce no hover (bento-grid, porte vanilla) ====================
+   O gesto do original: o cartao fica parado, o conteudo sobe, o icone encolhe
+   e a chamada nasce de baixo. Substitui o salto do cartao inteiro que estes
+   cards tinham — os dois juntos seriam movimento em dobro.
+   Escala menor que a do original (40px): la o CTA e absoluto e o conteudo
+   precisa abrir espaco; aqui o CTA ja tem lugar reservado no fluxo.
+   Estrutura: .bento-cta (o link, ou o span do link) carrega a opacidade e o
+   link esticado; .bento-cta-in (dentro) e quem sobe. Se o transform ficasse
+   no proprio <a>, ele viraria bloco de contencao do proprio ::after e o
+   "cartao inteiro clicavel" ficaria do tamanho do texto. */
+.bento { position: relative; }
+/* o cartao inteiro e o alvo: se a chamada so aparece no hover, exigir clique
+   exato nela seria pior que o salto que saiu */
+.bento a.bento-cta::after { content: ""; position: absolute; inset: 0; z-index: 1; border-radius: inherit; }
+.bento .bento-cta-in { display: inline-block; }
+
+/* so com ponteiro fino: em toque nao ha hover, entao a chamada fica sempre
+   visivel e nada se move */
+@media (hover: hover) and (pointer: fine) {
+  .bento > :not(.bento-cta):not([class*="-media"]) { transition: transform 300ms var(--ease-settle); }
+  .bento .bento-icon { transform-origin: left center; transition: transform 300ms var(--ease-settle); }
+  .bento .bento-cta { opacity: 0; transition: opacity 300ms var(--ease-settle); }
+  .bento .bento-cta-in { transform: translateY(10px); transition: transform 300ms var(--ease-settle); }
+
+  .bento:hover > :not(.bento-cta):not([class*="-media"]),
+  .bento:focus-within > :not(.bento-cta):not([class*="-media"]),
+  .bento:focus-visible > :not(.bento-cta):not([class*="-media"]) { transform: translateY(-6px); }
+  .bento:hover .bento-icon, .bento:focus-within .bento-icon { transform: scale(.75); }
+  .bento:hover .bento-cta, .bento:focus-within .bento-cta, .bento:focus-visible .bento-cta { opacity: 1; }
+  .bento:hover .bento-cta-in, .bento:focus-within .bento-cta-in, .bento:focus-visible .bento-cta-in { transform: none; }
+}
+@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: reduce) {
+  /* a chamada ainda aparece (e informacao), mas nada se desloca */
+  .bento > *, .bento .bento-icon, .bento .bento-cta-in { transition: none !important; transform: none !important; }
+  .bento .bento-cta { transition: none; }
 }

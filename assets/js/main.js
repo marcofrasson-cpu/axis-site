@@ -2277,3 +2277,29 @@ function campoDeFluxo(sec, canvas, opts) {
   window.addEventListener('resize', function () { ultimo = -1; pinta(); });
   pinta();
 })();
+
+// ========== Spotlight dos cartoes da equipe (GlowCard, porte vanilla) ==========
+// O ponteiro e a fonte de luz; cada cartao recebe a posicao dele relativa a si.
+// rAF so quando o ponteiro mexe; listener so na secao. Em toque nao existe
+// ponteiro para seguir, entao nada e ligado.
+(function () {
+  var grid = document.querySelector('.team-grid');
+  if (!grid || !window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
+  var area = grid.closest('section') || grid;
+  var cards = [].slice.call(grid.querySelectorAll('.team-card'));
+  var x = 0, y = 0, raf = 0;
+  function paint() {
+    raf = 0;
+    for (var i = 0; i < cards.length; i++) {
+      var r = cards[i].getBoundingClientRect();
+      cards[i].style.setProperty('--mx', (x - r.left).toFixed(1) + 'px');
+      cards[i].style.setProperty('--my', (y - r.top).toFixed(1) + 'px');
+    }
+  }
+  area.addEventListener('pointermove', function (e) {
+    x = e.clientX; y = e.clientY;
+    if (!raf) raf = requestAnimationFrame(paint);
+  }, { passive: true });
+  area.addEventListener('pointerenter', function () { grid.classList.add('is-lit'); });
+  area.addEventListener('pointerleave', function () { grid.classList.remove('is-lit'); });
+})();
