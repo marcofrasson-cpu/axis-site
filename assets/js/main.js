@@ -4,18 +4,35 @@
   var toggle = document.querySelector('.nav-toggle');
   var nav = document.querySelector('.nav');
   if (toggle && nav) {
-    toggle.addEventListener('click', function () {
-      nav.classList.toggle('open');
-      var open = nav.classList.contains('open');
+    var setMenu = function (open) {
+      nav.classList.toggle('open', open);
       toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
-    });
+      toggle.setAttribute('aria-label', open ? 'fechar menu' : 'abrir menu');
+    };
+    toggle.addEventListener('click', function () { setMenu(!nav.classList.contains('open')); });
     // Fecha ao clicar em link
     nav.querySelectorAll('.nav-links a').forEach(function (a) {
-      a.addEventListener('click', function () {
-        nav.classList.remove('open');
-        toggle.setAttribute('aria-expanded', 'false');
-      });
+      a.addEventListener('click', function () { setMenu(false); });
     });
+    // Esc fecha e devolve o foco ao botao (o menu abria e so fechava pelo botao)
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && nav.classList.contains('open')) { setMenu(false); toggle.focus(); }
+    });
+  }
+
+  // Credenciais do heroi: o item que abre linha nova perde o fio separador
+  var trust = document.querySelector('.nh-trust');
+  if (trust) {
+    var itens = [].slice.call(trust.children);
+    var marcaLinhas = function () {
+      itens.forEach(function (li, i) {
+        var ant = itens[i - 1];
+        li.classList.toggle('nh-linha', !!ant && li.offsetTop > ant.offsetTop + ant.offsetHeight / 2);
+      });
+    };
+    marcaLinhas();
+    window.addEventListener('resize', marcaLinhas);
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(marcaLinhas);
   }
 
   // Header: sombra ao scroll + some ao descer no mobile (volta ao subir)
@@ -149,11 +166,44 @@
   }
 
   // ========== Formulario de contato (monta mailto) ==========
+  // Nao ha servidor de envio: o botao prepara o e-mail no aplicativo do
+  // visitante, e quem envia e ele. Por isso o rotulo e "Preparar e-mail" e o
+  // retorno nunca diz que a mensagem foi enviada. Erro aparece no campo, em
+  // texto (o balao nativo some sozinho e nao fala com leitor de tela).
+  // Envio direto exige o que o site estatico nao tem: um endpoint no servidor
+  // (ex.: funcao serverless no Vercel) ligado a um provedor de e-mail
+  // transacional, com a chave em variavel de ambiente, validacao repetida no
+  // servidor e protecao anti-spam. Ate la, fica o mailto.
   var contatoForm = document.getElementById('contatoForm');
   if (contatoForm) {
+    var ERROS = {
+      nome: 'Informe o seu nome.', sobrenome: 'Informe o seu sobrenome.',
+      email: 'Informe um e-mail válido, como nome@exemplo.com.',
+      mensagem: 'Escreva a sua mensagem.', consent: 'Marque para concordar antes de preparar o e-mail.'
+    };
+    var marca = function (el) {
+      var id = 'erro-' + el.id, msg = document.getElementById(id), ruim = !el.validity.valid;
+      if (ruim && !msg) {
+        // dentro do .ct-field (a .ct-row e grid: um irmao viraria celula); o
+        // consentimento e um <label>, entao a mensagem vem logo depois dele
+        msg = document.createElement('span'); msg.className = 'ct-erro'; msg.id = id;
+        var f = el.closest('.ct-field');
+        if (f) f.appendChild(msg); else el.closest('.ct-consent').insertAdjacentElement('afterend', msg);
+      }
+      if (msg) { msg.textContent = ruim ? ERROS[el.id] || 'Confira este campo.' : ''; msg.hidden = !ruim; }
+      if (ruim) { el.setAttribute('aria-invalid', 'true'); el.setAttribute('aria-describedby', id); }
+      else { el.removeAttribute('aria-invalid'); el.removeAttribute('aria-describedby'); }
+      return !ruim;
+    };
+    var campos = [].slice.call(contatoForm.querySelectorAll('[required]'));
+    campos.forEach(function (el) {
+      // so corrige depois da primeira tentativa: nao acusa erro enquanto a pessoa digita pela primeira vez
+      el.addEventListener(el.type === 'checkbox' ? 'change' : 'input', function () { if (el.hasAttribute('aria-invalid')) marca(el); });
+    });
     contatoForm.addEventListener('submit', function (e) {
       e.preventDefault();
-      if (!contatoForm.checkValidity()) { contatoForm.reportValidity(); return; }
+      var invalidos = campos.filter(function (el) { return !marca(el); });
+      if (invalidos.length) { invalidos[0].focus(); return; }
       var g = function (id) { var el = document.getElementById(id); return el ? el.value.trim() : ''; };
       var assunto = g('assunto') || 'Contato';
       var subject = 'Contato site — ' + assunto + ' — ' + g('nome') + ' ' + g('sobrenome');
@@ -175,13 +225,13 @@
           ' (enviado pelo formulario do site)'
       ].join('\n');
 
-      // Feedback: o mailto abre o cliente de e-mail do visitante. Se ele nao tiver
-      // um configurado, o clique nao faz nada — sem esta nota o usuario fica sem saber.
+      // O mailto pede ao sistema que abra o cliente de e-mail; a pagina nao tem
+      // como saber se abriu. O retorno diz o que aconteceu de verdade e da a saida.
       var aviso = document.getElementById('contatoAviso');
       if (aviso) {
-        aviso.hidden = false;
-        aviso.textContent = 'Abrimos o seu aplicativo de e-mail com a mensagem pronta — revise e envie. ' +
-          'Se nada abriu, escreva direto para contato@axisfitomed.com.br.';
+        aviso.hidden = false; aviso.textContent = '';
+        var link = document.createElement('a'); link.href = 'mailto:contato@axisfitomed.com.br'; link.textContent = 'contato@axisfitomed.com.br';
+        aviso.append('Pedimos ao seu dispositivo que abra o e-mail com a mensagem pronta. Revise e envie por lá — os dados continuam aqui no formulário. Se nada abriu, escreva para ', link, '.');
       }
       window.location.href = 'mailto:contato@axisfitomed.com.br?subject=' +
         encodeURIComponent(subject) + '&body=' + encodeURIComponent(body);
@@ -789,7 +839,9 @@ function campoDeFluxo(sec, canvas, opts) {
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(layout);
   if (ctx && !reduced) {
     if ('IntersectionObserver' in window) {
-      new IntersectionObserver(function (es) { es.forEach(function (e) { if (e.isIntersecting) start(); else stop(); }); }, { threshold: 0.05 }).observe(orb);
+      // observa o canvas, nao a secao: com a pagina no rodape a borda de baixo
+      // da orbita (os selos) ainda aparece e o loop seguia pintando no escuro
+      new IntersectionObserver(function (es) { es.forEach(function (e) { if (e.isIntersecting) start(); else stop(); }); }, { threshold: 0.05 }).observe(flow || orb);
     } else start();
     document.addEventListener('visibilitychange', function () { if (document.visibilityState === 'visible') { if (!running) start(); } else stop(); });
   }
@@ -806,9 +858,24 @@ function campoDeFluxo(sec, canvas, opts) {
     return !h.classList.contains('stats-kicker') && !h.closest('.lg-doc');
   });
   if (!heads.length) return;
+  // Pontuacao que abre um no de texto colado a um elemento (o "." depois de
+  // </span>) nao pode virar caixa propria: entre duas caixas o navegador
+  // quebra, e o ponto caia sozinho na linha de baixo. Ela entra na ultima
+  // caixa da palavra anterior, com a cor do texto em volta (o ponto nao fica
+  // verde) — palavra e ponto sobem juntos e nao se separam. Depois de um
+  // link nao entra (mudaria o texto do link): fica inline, sem caixa.
+  var PONT = /^[.,;:!?…)\]»”'"]+/;
   function wrap(node, st) {
     if (node.nodeType === 3) {
       var parts = node.nodeValue.split(/(\s+)/), frag = document.createDocumentFragment();
+      var prev = node.previousSibling, m = parts[0] && parts[0].match(PONT);
+      if (m && prev && prev.nodeType === 1 && prev.tagName !== 'BR') {
+        var ws = prev.querySelectorAll('.rt-w'), alvo = prev.tagName !== 'A' && ws[ws.length - 1];
+        var pw = document.createElement('span'); pw.textContent = m[0];
+        if (alvo) { pw.style.color = getComputedStyle(node.parentNode).color; alvo.appendChild(pw); }
+        else { pw.className = 'rt-w rt-p'; pw.style.setProperty('--i', st.i++); frag.appendChild(pw); }
+        parts[0] = parts[0].slice(m[0].length);
+      }
       parts.forEach(function (p) {
         if (!p) return;
         if (/^\s+$/.test(p)) { frag.appendChild(document.createTextNode(p)); return; }
@@ -1372,6 +1439,17 @@ function campoDeFluxo(sec, canvas, opts) {
   } else { inView = true; start(); }
   window.addEventListener('resize', function () { layout(); start(); });
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(function () { layout(); start(); });
+  // Teclado: o foco num painel fora da tela leva a pagina ate o ponto em que
+  // esse painel fica no centro (sem isto o foco ficava invisivel, fora do pino).
+  track.addEventListener('focusin', function (e) {
+    var pin = track.parentNode; pin.scrollLeft = 0;
+    if (isStatic() || !dist) return;
+    var pan = e.target.closest('.hz-panel, .hz-card') || e.target;
+    var p = clamp((pan.offsetLeft + pan.offsetWidth / 2 - window.innerWidth / 2) / dist);
+    var top = sec.getBoundingClientRect().top + window.pageYOffset;
+    cur = p; window.scrollTo(0, Math.round(top + p * (sec.offsetHeight - window.innerHeight)));
+    start();
+  });
   start();
 })();
 
@@ -2302,4 +2380,19 @@ function campoDeFluxo(sec, canvas, opts) {
   }, { passive: true });
   area.addEventListener('pointerenter', function () { grid.classList.add('is-lit'); });
   area.addEventListener('pointerleave', function () { grid.classList.remove('is-lit'); });
+})();
+
+// ========== Animacoes CSS: pausa fora da tela ==========
+// A lei 1 (nada anima fora de tela) valia para os loops em JS; as animacoes
+// CSS infinitas (aneis do receptor em /sobre, fluxo do mapa do corpo em
+// /servicos, brilhos do heroi) seguiam rodando com a secao fora — e as de
+// traco SVG recalculam estilo a cada quadro. Secao fora (com folga de 10%)
+// recebe .anim-off e o CSS congela o que ha dentro; ao voltar, continua de
+// onde parou. A paralaxe por timeline de rolagem fica de fora (ver CSS).
+(function () {
+  if (!('IntersectionObserver' in window)) return;
+  var io = new IntersectionObserver(function (es) {
+    es.forEach(function (e) { e.target.classList.toggle('anim-off', !e.isIntersecting); });
+  }, { rootMargin: '10% 0px' });
+  [].forEach.call(document.querySelectorAll('section, footer'), function (el) { io.observe(el); });
 })();

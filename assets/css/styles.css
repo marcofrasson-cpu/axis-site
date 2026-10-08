@@ -10,6 +10,7 @@
   --brand-green-deep: #2d735a;
   --brand-green-deep-hover: #35865f;
   --brand-cream: #f4f2ec;
+  --signal-error: #f4a594;   /* coral claro: erro de campo; 8:1 sobre o cartao do form */
   --bg-card: #1a2a3f;
   --bg-card-hover: #1f3149;
   --text-primary: #f1f5f9;
@@ -1107,25 +1108,24 @@ button { font: inherit; cursor: pointer; background: none; border: none; color: 
   .team-card::before, .team-card::after { transition: none; }
 }
 .team-photo {
+  display: block;
   width: 100%;
   height: auto;                 /* sem isso o height="" do HTML fixa a 2a dimensao
                                    e o aspect-ratio e ignorado: foto esticada */
-  aspect-ratio: 4 / 5;          /* os 3 arquivos ja sao 4:5 — zero corte */
+  aspect-ratio: 4 / 5;          /* os 4 arquivos *-retrato sao 720x900 — zero corte */
   object-fit: cover;
   object-position: 50% 22%;
-  filter: saturate(.92) contrast(1.04);   /* aproxima as 3 temperaturas */
-  transition: filter 200ms var(--ease-settle);
+  filter: saturate(.92) contrast(1.04);   /* aproxima as temperaturas */
+  transition: transform 300ms var(--ease-settle);
 }
-/* A regra acima foi escrita para os tres retratos de estudio. O quarto veio de
-   outra sessao: corredor ocre, 52% de saturacao contra 25% dos outros, e mais
-   escuro. Sem correcao ele quebra a fileira. Valores derivados da medicao do
-   arquivo, nao escolhidos a olho. */
-.team-photo--quente {
-  filter: saturate(.42) contrast(1.04) brightness(1.14);
-  display: block;
-  transition: transform 600ms var(--ease-settle);
+/* Os *-retrato sao recortes dos arquivos originais com os olhos na mesma
+   linha (39% do topo, medido com deteccao de rosto) e o rosto em escala
+   proxima (0,37-0,43 da altura). O corredor ocre do quarto retrato foi
+   neutralizado so no fundo, no proprio arquivo: o filtro global que havia
+   aqui desbotava a pele dele (saturacao 0,15 contra 0,37-0,45 dos outros). */
+@media (hover: hover) and (pointer: fine) {
+  .team-card:hover .team-photo { transform: scale(1.03); }
 }
-.team-card:hover .team-photo { transform: scale(1.03); }
 
 .team-photo-placeholder {
   display: flex;
@@ -1531,8 +1531,12 @@ button { font: inherit; cursor: pointer; background: none; border: none; color: 
 }
 
 @media (max-width: 900px) {
-  .papers-grid { grid-template-columns: 1fr; }
   .ciencia-filters { position: static; }
+}
+/* uma coluna so no celular: a 768 a coluna unica dava resumos de ~100
+   caracteres por linha; em duas, ficam na medida do desktop */
+@media (max-width: 700px) {
+  .papers-grid { grid-template-columns: 1fr; }
 }
 
 /* ============================================================
@@ -2656,16 +2660,21 @@ body { overflow-x: clip; }
    rotulo de qualquer tamanho, e e o mesmo tratamento que o mobile ja dava. */
 .nh-trust {
   list-style: none; margin: var(--sp-32) 0 0; padding: 0;
-  display: flex; flex-wrap: wrap; align-items: center; gap: var(--sp-8) 9px;
+  display: flex; flex-wrap: wrap; align-items: center; gap: var(--sp-8) 19px;
 }
 .nh-trust li {
+  position: relative;
   display: inline-flex; align-items: center; gap: 6px;
   font-size: var(--fs-12); font-weight: 500; letter-spacing: .01em; color: var(--text-muted);
 }
+/* O fio mora no vao (absoluto, sem largura no fluxo): quando a linha quebra, o
+   item que abre a linha de baixo perde o fio (.nh-linha, posta pelo JS) — antes
+   ele ficava sozinho no comeco da linha, como pontuacao orfa. */
 .nh-trust li + li::before {
-  content: ""; flex: none; width: 1px; height: 11px;
-  margin-right: 9px; background: var(--border-hairline);
+  content: ""; position: absolute; left: -10px; top: 50%; width: 1px; height: 11px;
+  margin-top: -5.5px; background: var(--border-hairline);
 }
+.nh-trust li.nh-linha::before { display: none; }
 .nh-trust svg { width: 15px; height: 15px; flex: none; color: var(--brand-green); }
 @keyframes nhFade { from { opacity: 0; } to { opacity: 1; } }
 .nh-visual { animation: nhFade 1.1s ease .3s both; }
@@ -2982,7 +2991,7 @@ body { overflow-x: clip; }
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8' fill='none' stroke='%2394a3b8' stroke-width='1.6'%3E%3Cpath d='M1 1.5L6 6.5L11 1.5'/%3E%3C/svg%3E");
   background-repeat: no-repeat; background-position: right 4px center; padding-right: 28px; }
 .ct-field select option { background: var(--ground-raised); color: var(--text-primary); }
-.ct-aviso { margin: var(--sp-12) 0 0; font-family: var(--font-body); font-size: var(--fs-14); line-height: 1.6; color: var(--brand-green); }
+.ct-aviso { margin: var(--sp-12) 0 0; font-family: var(--font-body); font-size: var(--fs-14); line-height: 1.6; color: var(--brand-green); text-align: center; }
 /* Aviso de seguranca — nao mandar exame nem laudo por aqui — estava no degrau
    mais apagado da escala, sobre o cartao translucido: 3.51:1. Instrucao nao e
    contexto; sobe um degrau de cor. */
@@ -2992,7 +3001,16 @@ body { overflow-x: clip; }
 .ct-submit { width: 100%; padding: 14px 20px; font-size: var(--fs-16); font-weight: 600; }
 .ct-submit svg { width: 18px; height: 18px; transition: transform 200ms var(--ease-settle); }
 .ct-submit:hover svg { transform: translateX(4px); }
-.ct-note { font-size: var(--fs-12); color: var(--text-subtle); text-align: center; margin-top: var(--sp-12); }
+/* A nota vem ANTES do botao (e o descreve via aria-describedby): quem clica
+   precisa saber que o envio acontece no proprio aplicativo de e-mail. */
+.ct-note { font-size: var(--fs-12); line-height: 1.5; color: var(--text-muted); text-align: center; margin: 0 0 var(--sp-12); }
+.ct-aviso a { color: inherit; text-decoration: underline; text-underline-offset: 2px; }
+/* Erro de campo: texto sob o campo + fio na cor de sinal. Nunca so cor. */
+.ct-erro { display: block; margin-top: var(--sp-4); font-size: var(--fs-12); line-height: 1.4; color: var(--signal-error); }
+.ct-consent + .ct-erro { margin: calc(-1 * var(--sp-12)) 0 var(--sp-20); }
+.ct-field [aria-invalid="true"], .ct-field [aria-invalid="true"]:focus { border-bottom-color: var(--signal-error); }
+.ct-field [aria-invalid="true"] + label, .ct-field [aria-invalid="true"]:focus + label { color: var(--signal-error); }
+.ct-consent input[aria-invalid="true"] { outline: 1.5px solid var(--signal-error); outline-offset: 2px; }
 .ct-channels { display: flex; justify-content: center; gap: var(--sp-20); flex-wrap: wrap; margin-top: var(--sp-20); padding-top: var(--sp-20); border-top: 1px solid rgba(255,255,255,.12); font-size: var(--fs-12); color: var(--text-subtle); }
 .ct-channels a { color: var(--text-muted); text-decoration: none; transition: color 200ms; }
 .ct-channels a:hover { color: var(--text-primary); }
@@ -3206,7 +3224,7 @@ body { overflow-x: clip; }
   .qa-inner { padding-top: 14vh; }
   .qa-eyebrow { color: var(--text-primary); opacity: .82; }
   .qa-body, .qa-list li { color: var(--text-primary); }
-  .qa-copy, .qa-list, .qa-note { max-width: none; }
+  .qa-copy, .qa-list, .qa-note { max-width: 64ch; }   /* none dava 104 caracteres por linha no tablet */
   .qa-title, .qa-body { text-shadow: 0 1px 12px rgba(8,17,28,.6); }
 }
 
@@ -3332,6 +3350,7 @@ body { overflow-x: clip; }
   transition-delay: calc(var(--i, 0) * 40ms);
 }
 .rt.rt-in .rt-w { opacity: 1; transform: none; }
+.rt .rt-p { display: inline; }
 /* o h1 do heroi ja entra palavra a palavra: sai da subida em bloco */
 .nh-inner > .nh-title { animation: none; }
 
@@ -3809,7 +3828,10 @@ h1.section-title { font-size: var(--fs-d2); }
    a trilha de hastes deixava. O painel no centro acende; a regua embaixo diz
    onde se esta. */
 .hz { position: relative; }
-.hz-pin { position: sticky; top: 0; height: 100svh; overflow: hidden; display: flex; align-items: center; }
+/* clip, nao so hidden: hidden ainda rola por programa, e o Tab ate o botao do
+   ultimo painel deslocava o pino 1647px por baixo do translate — a faixa
+   saia do lugar e os cards sumiam. clip nao rola; o JS leva a pagina ate o foco. */
+.hz-pin { position: sticky; top: 0; height: 100svh; overflow: hidden; overflow: clip; display: flex; align-items: center; }
 .hz-track { display: flex; align-items: stretch; gap: clamp(16px, 1.6vw, 28px); padding: 0 clamp(20px, 4vw, 64px); height: clamp(360px, 54vh, 520px); width: max-content; will-change: transform; }
 .hz-panel { flex: none; display: flex; flex-direction: column; }
 .hz-panel--intro { width: min(30vw, 420px); justify-content: center; padding-right: clamp(12px, 1.6vw, 28px); }
@@ -3843,6 +3865,7 @@ h1.section-title { font-size: var(--fs-d2); }
 .hz[data-hz-static] .hz-panel--intro { width: auto; padding: 0 0 var(--sp-12); }
 .hz[data-hz-static] .hz-panel--media { width: auto; height: 46vw; }
 .hz[data-hz-static] .hz-card, .hz[data-hz-static] .hz-panel--cta { width: auto; transform: none; }
+.hz[data-hz-static] .hz-card p, .hz[data-hz-static] .hz-lead { max-width: 64ch; }   /* lista no tablet: linha de ~94 caracteres */
 .hz[data-hz-static] .hz-panel--cta { align-items: stretch; text-align: center; }
 .hz[data-hz-static] .hz-panel--cta .btn { justify-content: center; }
 .hz[data-hz-static] .hz-rail, .hz[data-hz-static] .hz-count { display: none; }
@@ -4040,3 +4063,8 @@ h1.section-title { font-size: var(--fs-d2); }
   .bento > *, .bento .bento-icon, .bento .bento-cta-in { transition: none !important; transform: none !important; }
   .bento .bento-cta { transition: none; }
 }
+
+/* Secao fora da tela: animacoes congeladas (o JS poe .anim-off). A paralaxe
+   e animacao ligada a timeline de rolagem: pausada, ela saltaria ao voltar. */
+.anim-off *, .anim-off *::before, .anim-off *::after { animation-play-state: paused !important; }
+.anim-off [data-parallax-layer] { animation-play-state: running !important; }
