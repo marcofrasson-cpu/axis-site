@@ -1126,6 +1126,19 @@ button { font: inherit; cursor: pointer; background: none; border: none; color: 
 @media (hover: hover) and (pointer: fine) {
   .team-card:hover .team-photo { transform: scale(1.03); }
 }
+/* Duotone (Team Section with Duotone Portraits, 21st.dev): em repouso a foto
+   guarda a propria luminancia com o matiz da marca — os quatro retratos de
+   luz diferente leem como serie. Hover/foco devolve a cor; so o veu anima. */
+.team-media::after {
+  content: ""; position: absolute; inset: 0; pointer-events: none;
+  background: hsl(162 16% 42%); mix-blend-mode: color;
+  transition: opacity 200ms var(--ease-settle);
+}
+@media (hover: hover) and (pointer: fine) {
+  .team-card:hover .team-media::after { opacity: 0; }
+}
+.team-card:focus-within .team-media::after { opacity: 0; }
+@media (prefers-reduced-motion: reduce) { .team-media::after { transition: none; } }
 
 .team-photo-placeholder {
   display: flex;
@@ -2025,6 +2038,13 @@ body { overflow-x: clip; }
   .fs-bubble { opacity: 0; }
   .fs-glow, .fs-meniscus { opacity: .72; }
 }
+
+/* Troca de pagina: o navegador cruza as duas (MPA view transitions); o pill
+   tem nome proprio, entao fica parado em vez de piscar junto. */
+@media (prefers-reduced-motion: no-preference) {
+  @view-transition { navigation: auto; }
+}
+.site-header { view-transition-name: site-header; }
 
 /* ==================== HEADER — pill flutuante glass ==================== */
 .site-header {
@@ -3617,6 +3637,17 @@ body { overflow-x: clip; }
 }
 .faq .faq-item[open] summary::after { transform: rotate(225deg); margin-top: 4px; background: none; }
 .faq .faq-body { padding: 0 0 var(--sp-20); font-size: var(--fs-16); line-height: 1.7; }
+/* Abre e fecha com altura (faq-accordion, 21st.dev). block-size anima layout,
+   mas e o gesto pedido e o bloco abaixo precisa acompanhar. */
+@supports selector(::details-content) {
+  .faq .faq-item { interpolate-size: allow-keywords; }
+  .faq .faq-item::details-content {
+    block-size: 0; overflow: clip; opacity: 0;
+    transition: block-size 240ms var(--ease-settle), opacity 240ms var(--ease-settle), content-visibility 240ms allow-discrete;
+  }
+  .faq .faq-item[open]::details-content { block-size: auto; opacity: 1; }
+}
+@media (prefers-reduced-motion: reduce) { .faq .faq-item::details-content { transition: none; } }
 .faq-more {
   margin-top: var(--sp-32); display: flex; align-items: center; justify-content: space-between; gap: var(--sp-12);
   padding: var(--sp-20); border: 1px dashed var(--border-strong); border-radius: var(--r-surface); background: rgba(255,255,255,.03);
@@ -3974,8 +4005,24 @@ h1.section-title { font-size: var(--fs-d2); }
 .stats--panel { padding: var(--space-section) 0; }
 .stats--panel .stats-kicker { text-align: center; color: var(--text-subtle); margin: 0 0 var(--sp-12); }
 .stats--panel .stats-grid {
-  margin: 0; display: grid; grid-template-columns: repeat(3, 1fr); gap: 0;
-  border: 1px solid var(--border-hairline); border-radius: var(--r-surface); background: var(--ground-raised); overflow: hidden;
+  position: relative; margin: 0; display: grid; grid-template-columns: repeat(3, 1fr); gap: 0;
+  border: 1px solid var(--border-hairline); background: var(--ground-raised);
+}
+/* Cantoneiras (Corner Frame, 21st.dev): marcas de corte fora do quadro, sem
+   raio — le como instrumento, nao como cartao. Um pseudo, oito gradientes. */
+.stats--panel .stats-grid::before {
+  --cf: var(--text-subtle); --cl: var(--sp-12);
+  content: ""; position: absolute; inset: calc(-1 * var(--sp-8)); pointer-events: none;
+  background:
+    linear-gradient(var(--cf) 0 0) top left / var(--cl) 1px,
+    linear-gradient(var(--cf) 0 0) top left / 1px var(--cl),
+    linear-gradient(var(--cf) 0 0) top right / var(--cl) 1px,
+    linear-gradient(var(--cf) 0 0) top right / 1px var(--cl),
+    linear-gradient(var(--cf) 0 0) bottom left / var(--cl) 1px,
+    linear-gradient(var(--cf) 0 0) bottom left / 1px var(--cl),
+    linear-gradient(var(--cf) 0 0) bottom right / var(--cl) 1px,
+    linear-gradient(var(--cf) 0 0) bottom right / 1px var(--cl);
+  background-repeat: no-repeat;
 }
 .stats.stats--panel .stat-card {
   display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center;
@@ -4062,6 +4109,13 @@ h1.section-title { font-size: var(--fs-d2); }
   /* a chamada ainda aparece (e informacao), mas nada se desloca */
   .bento > *, .bento .bento-icon, .bento .bento-cta-in { transition: none !important; transform: none !important; }
   .bento .bento-cta { transition: none; }
+}
+/* Pilares: a prova fica visivel em repouso. Escondida, reservava uma faixa
+   vazia no pe de cada card (texto acaba em 206-250 de 340px). O hover segue:
+   o conteudo sobe e a prova acende em verde. */
+@media (hover: hover) and (pointer: fine) {
+  .differentials .bento .bento-cta { opacity: 1; }
+  .differentials .bento .bento-cta-in { transform: none; }
 }
 
 /* Secao fora da tela: animacoes congeladas (o JS poe .anim-off). A paralaxe
