@@ -1126,19 +1126,6 @@ button { font: inherit; cursor: pointer; background: none; border: none; color: 
 @media (hover: hover) and (pointer: fine) {
   .team-card:hover .team-photo { transform: scale(1.03); }
 }
-/* Duotone (Team Section with Duotone Portraits, 21st.dev): em repouso a foto
-   guarda a propria luminancia com o matiz da marca — os quatro retratos de
-   luz diferente leem como serie. Hover/foco devolve a cor; so o veu anima. */
-.team-media::after {
-  content: ""; position: absolute; inset: 0; pointer-events: none;
-  background: hsl(162 16% 42%); mix-blend-mode: color;
-  transition: opacity 200ms var(--ease-settle);
-}
-@media (hover: hover) and (pointer: fine) {
-  .team-card:hover .team-media::after { opacity: 0; }
-}
-.team-card:focus-within .team-media::after { opacity: 0; }
-@media (prefers-reduced-motion: reduce) { .team-media::after { transition: none; } }
 
 .team-photo-placeholder {
   display: flex;
