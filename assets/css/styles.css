@@ -3888,18 +3888,12 @@ h1.section-title { font-size: var(--fs-d2); }
 .hz[data-hz-static] .hz-panel--cta .btn { justify-content: center; }
 .hz[data-hz-static] .hz-rail, .hz[data-hz-static] .hz-count { display: none; }
 
-/* ==================== Cabecalhos internos: malha hexagonal ====================
-   /equipe, /servicos e /blog. O hexagono da marca em fio de 1px, estatico,
-   apagando nas bordas por mascara (--hex-at e o centro dela). Substituiu o ceu
-   de particulas em canvas: estrela nao dizia nada da Axis, passava por cima do
-   texto e girava um rAF sem parar. Celula: lado 18px, ladrilho 31.18x54. */
-.page-hero--hex::before, .bm-head--hex::before, .bl-top--hex::before {
-  content: ""; display: block; position: absolute; inset: 0; pointer-events: none;
-  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='31.18' height='54'%3E%3Cpath d='M0 9L15.59 0L31.18 9L31.18 27L15.59 36L0 27ZM15.59 36L15.59 54' fill='none' stroke='rgba(95,200,155,.15)' stroke-width='1'/%3E%3C/svg%3E") center top / 31.18px 54px;
-  -webkit-mask-image: radial-gradient(65% 95% at var(--hex-at, 50% 40%), #000 15%, transparent 80%);
-  mask-image: radial-gradient(65% 95% at var(--hex-at, 50% 40%), #000 15%, transparent 80%);
-}
-.page-hero--hex { padding-bottom: calc(var(--space-hero-bottom) + var(--sp-20)); }
+/* ==================== Cabecalhos internos: lisos ====================
+   /equipe, /servicos e /blog: sem textura de fundo — so a faixa e o feixe sob
+   o titulo. Ja foram ceu de particulas e malha hexagonal; as duas liam como
+   figura (estrela, favo) e nao diziam nada da Axis. */
+.page-hero--plain::before { display: none; }   /* o pontilhado padrao do .page-hero tambem sai */
+.page-hero--plain { padding-bottom: calc(var(--space-hero-bottom) + var(--sp-20)); }
 /* feixe: linha fina que nasce e morre em transparente, com um brilho difuso por baixo */
 .sp-beam {
   position: relative; display: block; width: min(520px, 70%); height: 2px; margin: var(--sp-12) auto var(--sp-20);   /* hero centrado */
@@ -3915,23 +3909,19 @@ h1.section-title { font-size: var(--fs-d2); }
   background: linear-gradient(90deg, transparent, #fff, transparent); opacity: .7;
 }
 @media (max-width: 600px) { .sp-beam { width: 82%; } }
-/* /servicos: a malha sangra 48px acima do cabecalho e a mascara puxa para a
-   esquerda, onde esta o titulo; o feixe alinha a esquerda */
-.bm-head--hex { position: relative; --hex-at: 25% 50%; }
-.bm-head--hex > .bm-head-l, .bm-head--hex > .bm-head-r { position: relative; z-index: 1; }
-.bm-head--hex::before { top: -48px; bottom: -32px; }
+/* /servicos: o feixe alinha a esquerda, sob o titulo */
 .sp-beam--left { margin-left: 0; margin-right: auto; width: min(420px, 90%); margin-top: var(--sp-20); margin-bottom: 0; }
 
-/* Aberturas com fundo proprio (fumaca do contato, malha da equipe) colorem ate
+/* Aberturas com fundo proprio (fumaca do contato, faixa da equipe) colorem ate
    o topo: sobem por baixo do header sticky/transparente e devolvem o
    header-box em padding. O mobile tem main > section:first-child { padding-top:
    18px } — o seletor abaixo ganha e devolve o header-box tambem la. */
-.sk, .page-hero--hex { margin-top: calc(-1 * var(--header-box)); }
+.sk, .page-hero--plain { margin-top: calc(-1 * var(--header-box)); }
 .sk { padding-top: calc(var(--header-box) + var(--sp-32)); min-height: 100svh; }
-.page-hero--hex { padding-top: calc(var(--header-box) + var(--space-hero-top)); }
+.page-hero--plain { padding-top: calc(var(--header-box) + var(--space-hero-top)); }
 @media (max-width: 768px) {
   main > .sk:first-child, .sk { padding-top: calc(var(--header-box) + var(--sp-20)); }
-  main > .page-hero--hex:first-child, .page-hero--hex { padding-top: calc(var(--header-box) + 16px); }
+  main > .page-hero--plain:first-child, .page-hero--plain { padding-top: calc(var(--header-box) + 16px); }
 }
 
 /* ==================== Rodape: wordmark com hover (TextHoverEffect em vanilla) ====================
@@ -4023,11 +4013,11 @@ h1.section-title { font-size: var(--fs-d2); }
   .stats--panel .stat-number { font-size: 32px; }
   .stats--panel .stat-label { margin-top: var(--sp-4); font-size: var(--fs-12); line-height: 1.35; max-width: 12ch; }
 }
-/* Blog: abertura com a malha hexagonal (mesma receita de /equipe e /servicos) */
-.bl-top--hex { position: relative; isolation: isolate; overflow: hidden; margin-top: calc(-1 * var(--header-box)); padding-top: calc(var(--header-box) + var(--space-hero-top)); }
-.bl-top--hex > .container { position: relative; z-index: 1; }
-.bl-top--hex .sp-beam--left { margin-top: var(--sp-20); margin-bottom: 0; }
-@media (max-width: 768px) { main > .bl-top--hex:first-child, .bl-top--hex { padding-top: calc(var(--header-box) + 16px); } }
+/* Blog: abertura lisa (mesma receita de /equipe e /servicos) */
+.bl-top--plain { position: relative; isolation: isolate; overflow: hidden; margin-top: calc(-1 * var(--header-box)); padding-top: calc(var(--header-box) + var(--space-hero-top)); }
+.bl-top--plain > .container { position: relative; z-index: 1; }
+.bl-top--plain .sp-beam--left { margin-top: var(--sp-20); margin-bottom: 0; }
+@media (max-width: 768px) { main > .bl-top--plain:first-child, .bl-top--plain { padding-top: calc(var(--header-box) + 16px); } }
 
 
 /* ==================== Rodape: assinatura (marca + wordmark) ====================
