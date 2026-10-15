@@ -3888,14 +3888,18 @@ h1.section-title { font-size: var(--fs-d2); }
 .hz[data-hz-static] .hz-panel--cta .btn { justify-content: center; }
 .hz[data-hz-static] .hz-rail, .hz[data-hz-static] .hz-count { display: none; }
 
-/* ==================== Equipe: sparkles no hero ==================== */
-.page-hero--sparks::before { display: none; }   /* o pontilhado estatico sai: as particulas assumem */
-.page-hero--sparks { padding-bottom: calc(var(--space-hero-bottom) + var(--sp-20)); }
-.sp-field {
-  position: absolute; inset: 0; width: 100%; height: 100%; display: block; pointer-events: none;
-  -webkit-mask-image: radial-gradient(60% 90% at 50% 55%, #000 30%, transparent 100%);
-  mask-image: radial-gradient(60% 90% at 50% 55%, #000 30%, transparent 100%);
+/* ==================== Cabecalhos internos: malha hexagonal ====================
+   /equipe, /servicos e /blog. O hexagono da marca em fio de 1px, estatico,
+   apagando nas bordas por mascara (--hex-at e o centro dela). Substituiu o ceu
+   de particulas em canvas: estrela nao dizia nada da Axis, passava por cima do
+   texto e girava um rAF sem parar. Celula: lado 18px, ladrilho 31.18x54. */
+.page-hero--hex::before, .bm-head--hex::before, .bl-top--hex::before {
+  content: ""; display: block; position: absolute; inset: 0; pointer-events: none;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='31.18' height='54'%3E%3Cpath d='M0 9L15.59 0L31.18 9L31.18 27L15.59 36L0 27ZM15.59 36L15.59 54' fill='none' stroke='rgba(95,200,155,.15)' stroke-width='1'/%3E%3C/svg%3E") center top / 31.18px 54px;
+  -webkit-mask-image: radial-gradient(65% 95% at var(--hex-at, 50% 40%), #000 15%, transparent 80%);
+  mask-image: radial-gradient(65% 95% at var(--hex-at, 50% 40%), #000 15%, transparent 80%);
 }
+.page-hero--hex { padding-bottom: calc(var(--space-hero-bottom) + var(--sp-20)); }
 /* feixe: linha fina que nasce e morre em transparente, com um brilho difuso por baixo */
 .sp-beam {
   position: relative; display: block; width: min(520px, 70%); height: 2px; margin: var(--sp-12) auto var(--sp-20);   /* hero centrado */
@@ -3911,29 +3915,23 @@ h1.section-title { font-size: var(--fs-d2); }
   background: linear-gradient(90deg, transparent, #fff, transparent); opacity: .7;
 }
 @media (max-width: 600px) { .sp-beam { width: 82%; } }
-/* sparkles no cabecalho de /servicos: o canvas sangra 40px alem do cabecalho e
-   a mascara puxa para a esquerda, onde esta o titulo; o feixe alinha a esquerda */
-.bm-head--sparks { position: relative; }
-.bm-head--sparks > .bm-head-l, .bm-head--sparks > .bm-head-r { position: relative; z-index: 1; }
-/* A sangria horizontal de 40px por lado saia do cabecalho, que nao clipa, e
-   virava 20px de barra horizontal no celular (410 num viewport de 390). A
-   mascara ja apaga as particulas antes da borda, entao a sangria lateral nao
-   mostrava nada — some. A vertical fica: e ela que da curso as particulas. */
-.bm-head--sparks .sp-field { top: -48px; left: 0; width: 100%; height: calc(100% + 80px);   /* canvas absoluto com width:auto cai no intrinseco 300x150 */
-  -webkit-mask-image: radial-gradient(60% 100% at 25% 50%, #000 25%, transparent 100%);
-  mask-image: radial-gradient(60% 100% at 25% 50%, #000 25%, transparent 100%); }
+/* /servicos: a malha sangra 48px acima do cabecalho e a mascara puxa para a
+   esquerda, onde esta o titulo; o feixe alinha a esquerda */
+.bm-head--hex { position: relative; --hex-at: 25% 50%; }
+.bm-head--hex > .bm-head-l, .bm-head--hex > .bm-head-r { position: relative; z-index: 1; }
+.bm-head--hex::before { top: -48px; bottom: -32px; }
 .sp-beam--left { margin-left: 0; margin-right: auto; width: min(420px, 90%); margin-top: var(--sp-20); margin-bottom: 0; }
 
-/* Aberturas com fundo vivo (fumaca do contato, sparkles da equipe) colorem ate
+/* Aberturas com fundo proprio (fumaca do contato, malha da equipe) colorem ate
    o topo: sobem por baixo do header sticky/transparente e devolvem o
    header-box em padding. O mobile tem main > section:first-child { padding-top:
    18px } — o seletor abaixo ganha e devolve o header-box tambem la. */
-.sk, .page-hero--sparks { margin-top: calc(-1 * var(--header-box)); }
+.sk, .page-hero--hex { margin-top: calc(-1 * var(--header-box)); }
 .sk { padding-top: calc(var(--header-box) + var(--sp-32)); min-height: 100svh; }
-.page-hero--sparks { padding-top: calc(var(--header-box) + var(--space-hero-top)); }
+.page-hero--hex { padding-top: calc(var(--header-box) + var(--space-hero-top)); }
 @media (max-width: 768px) {
   main > .sk:first-child, .sk { padding-top: calc(var(--header-box) + var(--sp-20)); }
-  main > .page-hero--sparks:first-child, .page-hero--sparks { padding-top: calc(var(--header-box) + 16px); }
+  main > .page-hero--hex:first-child, .page-hero--hex { padding-top: calc(var(--header-box) + 16px); }
 }
 
 /* ==================== Rodape: wordmark com hover (TextHoverEffect em vanilla) ====================
@@ -4025,14 +4023,11 @@ h1.section-title { font-size: var(--fs-d2); }
   .stats--panel .stat-number { font-size: 32px; }
   .stats--panel .stat-label { margin-top: var(--sp-4); font-size: var(--fs-12); line-height: 1.35; max-width: 12ch; }
 }
-/* Blog: abertura com sparkles (mesma receita de /equipe e /servicos) */
-.bl-top--sparks { position: relative; isolation: isolate; overflow: hidden; margin-top: calc(-1 * var(--header-box)); padding-top: calc(var(--header-box) + var(--space-hero-top)); }
-.bl-top--sparks > .container { position: relative; z-index: 1; }
-.bl-top--sparks .sp-field { position: absolute; inset: 0; width: 100%; height: 100%;
-  -webkit-mask-image: radial-gradient(60% 100% at 30% 50%, #000 25%, transparent 100%);
-  mask-image: radial-gradient(60% 100% at 30% 50%, #000 25%, transparent 100%); }
-.bl-top--sparks .sp-beam--left { margin-top: var(--sp-20); margin-bottom: 0; }
-@media (max-width: 768px) { main > .bl-top--sparks:first-child, .bl-top--sparks { padding-top: calc(var(--header-box) + 16px); } }
+/* Blog: abertura com a malha hexagonal (mesma receita de /equipe e /servicos) */
+.bl-top--hex { position: relative; isolation: isolate; overflow: hidden; margin-top: calc(-1 * var(--header-box)); padding-top: calc(var(--header-box) + var(--space-hero-top)); }
+.bl-top--hex > .container { position: relative; z-index: 1; }
+.bl-top--hex .sp-beam--left { margin-top: var(--sp-20); margin-bottom: 0; }
+@media (max-width: 768px) { main > .bl-top--hex:first-child, .bl-top--hex { padding-top: calc(var(--header-box) + 16px); } }
 
 
 /* ==================== Rodape: assinatura (marca + wordmark) ====================
