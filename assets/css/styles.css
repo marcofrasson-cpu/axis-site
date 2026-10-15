@@ -518,10 +518,7 @@ button { font: inherit; cursor: pointer; background: none; border: none; color: 
   display: grid; grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
   gap: clamp(32px, 5vw, 56px); align-items: center; margin-top: clamp(32px, 4vw, 56px);
 }
-/* O mapa do corpo vira card, com um spotlight que segue o mouse e a figura em
-   perspectiva: inclina e vira para o cursor (--bm-rx/--bm-ry, pelo JS), com um
-   balanco lento quando o cursor sai. Os marcadores sao filhos da figura e
-   acompanham a inclinacao. */
+/* O palco e um card: orbita a esquerda, painel de condicoes a direita. */
 /* a instrucao do mapa tem duas versoes: figura (toque) e carrossel (deslize) */
 .so-car { display: none; }
 .bm-stage {
@@ -530,72 +527,63 @@ button { font: inherit; cursor: pointer; background: none; border: none; color: 
   border: 1px solid var(--border-hairline); border-radius: var(--r-surface);
   background: var(--ground-deepest);
 }
-.bm-stage > .bm-figure, .bm-stage > .bm-panel { position: relative; z-index: 1; }
-.bm-stage { perspective: 1100px; }
-.bm-figure {
-  transform: rotateX(var(--bm-rx, 0deg)) rotateY(var(--bm-ry, 0deg));
-  transform-origin: 50% 55%; will-change: transform;
-}
-.bm-spot {
-  position: absolute; left: 0; top: 0; z-index: 0; width: 320px; height: 320px; border-radius: var(--r-circle);
-  pointer-events: none; opacity: 0; transition: opacity 180ms ease;
-  background: radial-gradient(circle at center, rgba(168, 236, 202, .20), rgba(95, 200, 155, .07) 45%, transparent 70%);
-  filter: blur(22px); transform: translate(-50%, -50%); will-change: transform;
-}
-.bm-stage.is-lit .bm-spot { opacity: 1; }
-@media (hover: none), (prefers-reduced-motion: reduce) { .bm-spot { display: none; } }
+.bm-stage > .bm-orbit, .bm-stage > .bm-panel { position: relative; z-index: 1; }
 
-.bm-figure { position: relative; aspect-ratio: 200 / 480; height: clamp(380px, 48vh, 500px); margin-inline: auto; }   /* cabe na primeira tela do desktop (1440x900) com titulo e condicoes */
-
-/* ---- Mapa do corpo: contorno humano (traçado da figura) ---- */
-.bm-figure--line { aspect-ratio: 635 / 1350; }
-.bm-contour {
-  fill: none; stroke: #8fe0bb; stroke-linejoin: round;
-  filter: drop-shadow(0 0 5px rgba(95, 200, 155, .5));
+/* ---- Orbita (no lugar da figura humana) ----
+   Seis areas em volta do SEC. .ob-ring gira (--rot) ate a area escolhida
+   ficar a 0deg, encostada no painel; cada no desfaz a rotacao em si mesmo
+   (rotate(-a - rot)) e o rotulo fica em pe. Raio em cqw: o anel e o mesmo
+   em qualquer largura. Satelites (um por condicao) e o raio aceso vem do
+   JS. So transform e opacity animam; o fluxo do raio e um traco curto. */
+.bm-orbit { position: relative; width: min(100%, 520px); aspect-ratio: 1; margin-inline: auto; container-type: inline-size; --rot: 0deg; --ob-r: 26.8cqw; }
+.ob-ring { position: absolute; inset: 0; transform: rotate(var(--rot)); transition: transform 480ms var(--ease-settle); }
+.ob-lines, .ob-sats { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; }
+.ob-lines circle { fill: none; stroke: rgba(255, 255, 255, .08); }
+.ob-orbit2 { fill: none; stroke: rgba(255, 255, 255, .05); stroke-dasharray: 2 5; }
+.ob-ray { stroke: rgba(255, 255, 255, .08); }
+.ob-ray.is-on { stroke: rgba(95, 200, 155, .7); stroke-width: 1.5; stroke-dasharray: 3 5; animation: obFlow 1.2s linear infinite; }
+@keyframes obFlow { to { stroke-dashoffset: -16; } }
+.ob-node {
+  position: absolute; left: 50%; top: 50%; width: 48px; height: 48px; margin: -24px 0 0 -24px; padding: 0;
+  border: 1px solid rgba(255, 255, 255, .14); border-radius: var(--r-circle); background: rgba(255, 255, 255, .03);
+  cursor: pointer; -webkit-tap-highlight-color: transparent; --s: 1;
+  transform: rotate(var(--a)) translate(var(--ob-r)) rotate(calc(-1 * (var(--a) + var(--rot)))) scale(var(--s));
+  transition: transform 480ms var(--ease-settle), border-color 180ms var(--ease-settle), background 180ms var(--ease-settle);
 }
-/* A respiracao fica no <svg> inteiro. Nas paths (dentro do grupo escalado e
-   invertido) o transform animado com transform-box: view-box fazia o Chrome
-   nao desenhar o contorno fora da fase 0% — a figura aparecia e sumia
-   conforme o instante. */
-@keyframes bmContourBreathe { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.012); } }
-.bm-svg { width: 100%; height: 100%; display: block; overflow: visible; transform-origin: 50% 42%; animation: bmContourBreathe 6s ease-in-out infinite; }
-@media (prefers-reduced-motion: reduce) { .bm-svg { animation: none; } }
+.ob-node:hover { border-color: var(--border-strong); }
+.ob-node:focus-visible { outline: 2px solid var(--brand-green); outline-offset: 3px; }
+.ob-node.is-on { --s: 1.25; border-color: rgba(95, 200, 155, .9); background: rgba(95, 200, 155, .14); }
+.ob-spin { position: absolute; inset: 0; display: grid; place-items: center; }
+.ob-i { font-size: var(--fs-14); color: var(--text-subtle); font-variant-numeric: tabular-nums; }
+.ob-node.is-on .ob-i { color: var(--brand-green); font-weight: 600; }
+/* Rotulo como num mostrador: abaixo ou acima do no conforme a metade, e nos
+   quadrantes ele cresce para fora (is-left/is-right) — centrado, os dois de
+   cima se sobrepunham 29px a 411px de largura. */
+.ob-l {
+  position: absolute; left: 50%; top: 100%; transform: translate(var(--lx, -50%), var(--ly, 10px)); white-space: nowrap;
+  font-size: var(--fs-12); font-weight: 600; letter-spacing: .12em; text-transform: uppercase; color: var(--text-subtle);
+  transition: opacity 180ms var(--ease-settle);
+}
+.ob-node.is-top .ob-l { top: auto; bottom: 100%; --ly: -10px; }
+.ob-node.is-left .ob-l { left: auto; right: -8px; --lx: 0; }
+.ob-node.is-right .ob-l { left: -8px; --lx: 0; }
+.ob-node.is-on .ob-l { opacity: 0; }   /* o painel ao lado ja diz o nome */
+.ob-core {
+  position: absolute; left: 50%; top: 50%; width: 84px; height: 84px; margin: -42px 0 0 -42px; border-radius: var(--r-circle);
+  border: 1px solid rgba(95, 200, 155, .25); background: var(--ground-deepest); display: grid; place-items: center;
+}
+.ob-core svg { position: absolute; width: 44px; height: 44px; }
+.ob-core polygon { fill: none; stroke: rgba(95, 200, 155, .7); stroke-width: 1.5; }
+.ob-core span { font-size: var(--fs-12); font-weight: 600; letter-spacing: .14em; color: var(--text-subtle); }
+.ob-sat-path { fill: none; stroke: rgba(255, 255, 255, .12); }
+.ob-sat { transform-box: fill-box; transform-origin: center; animation: obSat 420ms var(--ease-settle) both; }
+@keyframes obSat { from { opacity: 0; transform: scale(0); } }
+@media (prefers-reduced-motion: reduce) {
+  .ob-ring, .ob-node, .ob-l { transition: none; }
+  .ob-ray.is-on, .ob-sat { animation: none; }
+}
+
 @media (prefers-reduced-motion: reduce) { .team-photo { transition: none; } }
-
-.bm-marker {
-  position: absolute; transform: translate(-50%, -50%);
-  width: 44px; height: 44px; padding: 0; border: 0; background: transparent;
-  cursor: pointer; display: grid; place-items: center; -webkit-tap-highlight-color: transparent; z-index: 2;
-}
-.bm-marker--head { width: 26px; height: 26px; }
-.bm-marker-dot {
-  position: relative; width: 10px; height: 10px; border-radius: var(--r-circle);
-  background: rgba(95, 200, 155, 0.5); box-shadow: 0 0 0 3px rgba(95, 200, 155, 0.07);
-  transition: transform .25s ease, box-shadow .25s ease, background .25s ease;
-}
-.bm-marker:hover .bm-marker-dot { background: rgba(95, 200, 155, 0.85); transform: scale(1.18); }
-.bm-marker.is-on .bm-marker-dot {
-  background: var(--brand-green); transform: scale(1.5);
-  box-shadow: 0 0 0 5px rgba(95, 200, 155, 0.18);
-}
-/* pulso só no marcador ATIVO — foco claro */
-.bm-marker.is-on::after {
-  content: ""; position: absolute; width: 10px; height: 10px; border-radius: var(--r-circle);
-  border: 1.5px solid var(--brand-green); animation: bmPulse 2.8s ease-out infinite;
-}
-.bm-marker:focus-visible .bm-marker-dot { box-shadow: 0 0 0 3px var(--brand-navy), 0 0 0 6px var(--brand-green); }
-@keyframes bmPulse { 0% { transform: scale(1); opacity: .5; } 100% { transform: scale(3); opacity: 0; } }
-.bm-body { opacity: .55; animation: bmBreathe 5.5s ease-in-out infinite; }
-.bm-flow { fill: none; stroke: #8fe0bb; stroke-width: 1.2; stroke-linecap: round; opacity: .42; stroke-dasharray: 7 93; animation: bmFlow 5s linear infinite; filter: drop-shadow(0 0 2px rgba(95, 200, 155, .45)); }
-.bm-flow.f2 { animation-delay: 1.2s; }
-.bm-flow.f4 { animation-delay: 2.4s; }
-.bm-zone { opacity: 0; transition: opacity .5s ease; }
-.bm-zone.is-on { opacity: 1; }
-.bm-conduit { stroke-dasharray: 16 84; stroke-dashoffset: 16; opacity: 0; stroke-linecap: round; filter: drop-shadow(0 0 4px rgba(95, 200, 155, .9)); }
-.bm-conduit.fire { animation: bmConduit .8s ease-out; }
-@keyframes bmBreathe { 0%, 100% { opacity: .5; } 50% { opacity: .64; } }
-@keyframes bmFlow { from { stroke-dashoffset: 100; } to { stroke-dashoffset: 0; } }
-@keyframes bmConduit { 0% { stroke-dashoffset: 16; opacity: 0; } 18% { opacity: 1; } 100% { stroke-dashoffset: -100; opacity: 0; } }
 
 /* grid de célula única: as categorias empilham na mesma área e align-items
    centra cada uma verticalmente, qualquer que seja a altura dela */
@@ -647,7 +635,7 @@ button { font: inherit; cursor: pointer; background: none; border: none; color: 
 /* abaixo de 900px nao ha corpo para tocar: a instrucao acompanha a peca */
   .so-fig { display: none; }
   .so-car { display: inline; }
-  .bm-figure { display: none; }
+  .bm-orbit { display: none; }
   .bm-stage { grid-template-columns: 1fr; padding: 0; border: 0; background: none; overflow: visible; }
   .bm-panel {
     min-height: 0; display: flex; gap: var(--sp-12);
@@ -675,10 +663,7 @@ button { font: inherit; cursor: pointer; background: none; border: none; color: 
 }
 @media (min-width: 901px) { .bm-carrossel-pe { display: none; } }
 @media (prefers-reduced-motion: reduce) {
-  .bm-marker.is-on::after { animation: none; display: none; }
   .bm-cat { transition: none; }
-  .bm-body { animation: none; }
-  .bm-flow, .bm-conduit { animation: none; opacity: 0; }
 }
 
 /* ---------- Indications preview (home) — editorial split + bento ---------- */
@@ -3646,27 +3631,6 @@ body { overflow-x: clip; }
 .faq-more-s { margin: 0; font-size: var(--fs-12); color: var(--text-muted); }
 @media (max-width: 560px) { .faq-more { flex-direction: column; align-items: flex-start; } }
 
-/* ==================== Mapa do corpo: figura refeita ====================
-   Pontilhado no card (como o hub dos Pilares), nucleo hexagonal no torax (o SEC) com vias curvas para cada regiao
-   — no lugar do esqueleto de linhas retas — e marcadores hexagonais. */
-/* (a camada de brilho do contorno saiu: no Chrome, um traco de 70 unidades
-   nesse path fazia o grupo inteiro nao renderizar no desktop) */
-.bm-rail path { stroke: rgba(95,200,155,.30); stroke-width: 1.4; }
-.bm-flow.f3 { animation-delay: 1.8s; }
-.bm-hub polygon { fill: rgba(95,200,155,.12); stroke: #5fc89b; stroke-width: 1.8; stroke-linejoin: round; }
-.bm-hub-dot { fill: #5fc89b; }
-.bm-hub { transform-box: fill-box; transform-origin: center; animation: bmHub 3.4s ease-in-out infinite; }
-@keyframes bmHub { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.08); } }
-/* Marcador: ponto centrado na coordenada, sem rotulo (a lista de regioes
-   nomeia). Selecao: ponto cheio maior com anel suave + pulso. */
-.bm-marker { width: 44px; height: 44px; padding: 0; transform: translate(-50%, -50%); display: grid; place-items: center; }
-.bm-marker--head { width: 26px; height: 26px; }
-.bm-marker-dot {
-  width: 10px; height: 10px; border-radius: var(--r-circle); clip-path: none;
-  background: rgba(95,200,155,.6); box-shadow: 0 0 0 1px rgba(95,200,155,.35);
-}
-.bm-marker:hover .bm-marker-dot { background: rgba(95,200,155,.9); transform: scale(1.15); }
-.bm-marker.is-on .bm-marker-dot { background: var(--brand-green); box-shadow: 0 0 0 4px rgba(95,200,155,.2); transform: scale(1.4); }
 /* O h1 do /servicos usa .section-title. Ja esteve em d1 pela regra "h1 de
    pagina abre em d1" — mas a regra so vale onde o titulo tem a pagina para si.
    Aqui ele divide a linha com a intro e os chips, numa coluna de 542px, e
@@ -3776,8 +3740,6 @@ h1.section-title { font-size: var(--fs-d2); }
 /* vao externo tem que passar a entrelinha (25.6px) para o olho separar os
    grupos: com sp-20 dava 0,78x e cabeca e palco liam como um bloco so. */
 .bm-stage { margin-top: var(--sp-56); }
-
-@media (prefers-reduced-motion: reduce) { .bm-hub { animation: none; } }
 
 /* ==================== Mobile: costura, vao e rodape ==================== */
 @media (max-width: 768px) {

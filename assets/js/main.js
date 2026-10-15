@@ -356,9 +356,46 @@
   // ========== Mapa do corpo (indicações interativas) ==========
   var bmStage = document.querySelector('.bm-stage');
   if (bmStage) {
-    var bmMarkers = [].slice.call(bmStage.querySelectorAll('.bm-marker'));
     var bmCats = [].slice.call(bmStage.querySelectorAll('.bm-cat'));
-    var bmHover = window.matchMedia && window.matchMedia('(hover: hover)').matches;
+    // Orbita: o anel gira ate o no da area ficar a 0deg (lado do painel) pelo
+    // caminho mais curto; os satelites — um por condicao, tamanho pelo nivel —
+    // sao lidos da propria lista da area, entao nao ha dado duplicado.
+    var orbit = bmStage.querySelector('[data-orbit]');
+    var obNodes = orbit ? [].slice.call(orbit.querySelectorAll('.ob-node')) : [];
+    var obSats = orbit && orbit.querySelector('[data-ob-sats]');
+    var obRot = 0;
+    var OB_R = { forte: 9, media: 7, prelim: 5 }, OB_FILL = { forte: '#5fc89b', media: '#b9c6d4', prelim: '#5d6f84' };
+    var obDraw = function (cat) {
+      var idx = -1;
+      obNodes.forEach(function (n, i) { if (n.getAttribute('data-cat') === cat) idx = i; });
+      if (idx < 0) return;
+      var d = ((-idx * 60 - obRot) % 360 + 540) % 360 - 180;
+      obRot += d;
+      orbit.style.setProperty('--rot', obRot + 'deg');
+      obNodes.forEach(function (n, i) {
+        var on = i === idx, slot = ((i * 60 + obRot) % 360 + 360) % 360;
+        n.classList.toggle('is-on', on); n.setAttribute('aria-pressed', on ? 'true' : 'false');
+        var cs = Math.cos(slot * Math.PI / 180);   // metade de cima: rotulo acima; quadrante: cresce para fora
+        n.classList.toggle('is-top', slot > 180);
+        n.classList.toggle('is-left', cs < -0.1 && slot !== 180);
+        n.classList.toggle('is-right', cs > 0.1);
+      });
+      [].forEach.call(orbit.querySelectorAll('.ob-ray'), function (r) { r.classList.toggle('is-on', r.getAttribute('data-cat') === cat); });
+      if (!obSats) return;
+      var conds = [].slice.call(bmStage.querySelectorAll('.bm-cat[data-cat="' + cat + '"] .bm-cond-item'));
+      var span = Math.min(110, conds.length * 24), html = '';
+      conds.forEach(function (c, i) {
+        var nome = c.querySelector('.bm-cond').textContent, ev = c.querySelector('.bm-ev'), nivel = 'prelim';
+        ['forte', 'media'].forEach(function (k) { if (ev && ev.classList.contains('bm-ev--' + k)) nivel = k; });
+        var a = (conds.length > 1 ? -span / 2 + span * i / (conds.length - 1) : 0) * Math.PI / 180;
+        var x = (280 + 205 * Math.cos(a)).toFixed(1), y = (280 + 205 * Math.sin(a)).toFixed(1);
+        var cx = (280 + 180 * Math.cos(a)).toFixed(1), cy = (280 + 180 * Math.sin(a)).toFixed(1);
+        html += '<path class="ob-sat-path" d="M430 280 Q ' + cx + ' ' + cy + ' ' + x + ' ' + y + '"/>' +
+          '<circle class="ob-sat" style="animation-delay:' + (200 + i * 50) + 'ms" cx="' + x + '" cy="' + y + '" r="' + OB_R[nivel] + '" fill="' + OB_FILL[nivel] + '">' +
+          '<title>' + nome + (ev ? ' — ' + ev.textContent : '') + '</title></circle>';
+      });
+      obSats.innerHTML = html;
+    };
     // Cross-fade: paineis empilhados (absolutos). Remove hidden e trava a altura
     // do painel pela maior categoria, p/ nao pular ao trocar.
     var bmPanel = bmStage.querySelector('.bm-panel');
@@ -380,27 +417,14 @@
         var on = t.getAttribute('data-cat') === cat;
         t.classList.toggle('is-on', on); t.setAttribute('aria-selected', on ? 'true' : 'false');
       });
-      bmMarkers.forEach(function (m) {
-        var on = m.getAttribute('data-cat') === cat;
-        m.classList.toggle('is-on', on);
-        m.setAttribute('aria-pressed', on ? 'true' : 'false');
-      });
       bmCats.forEach(function (c) {
         var on = c.getAttribute('data-cat') === cat;
         c.classList.toggle('is-active', on);
         c.setAttribute('aria-hidden', on ? 'false' : 'true');
       });
-      bmStage.querySelectorAll('.bm-zone').forEach(function (z) {
-        z.classList.toggle('is-on', z.getAttribute('data-cat') === cat);
-      });
-      var conduit = bmStage.querySelector('.bm-conduit[data-cat="' + cat + '"]');
-      if (conduit) { conduit.classList.remove('fire'); void conduit.getBoundingClientRect(); conduit.classList.add('fire'); }
+      if (orbit) obDraw(cat);
     };
-    bmMarkers.forEach(function (m) {
-      var cat = m.getAttribute('data-cat');
-      m.addEventListener('click', function () { bmActivate(cat); });
-      m.addEventListener('mouseenter', function () { if (bmHover) bmActivate(cat); });
-    });
+    obNodes.forEach(function (n) { n.addEventListener('click', function () { bmActivate(n.getAttribute('data-cat')); }); });
     bmTabs.forEach(function (t) { t.addEventListener('click', function () { bmActivate(t.getAttribute('data-cat')); }); });
     bmActivate('dor');
   }
@@ -577,48 +601,6 @@ function campoDeFluxo(sec, canvas, opts) {
     ponto: 'rgba(168, 236, 202, 0.62)',
     alvo: function (s, w, h) { return { x: w * 0.74, y: h * 0.5 }; }
   });
-})();
-
-// ========== Mapa do corpo: spotlight + figura em perspectiva ==========
-// O spotlight e um div que segue o mouse dentro do card. A figura inclina e
-// vira para o cursor (ate 7deg em X, 10deg em Y), com interpolacao curta, e
-// balanca devagar quando o cursor sai. So em dispositivo com hover; nada sob
-// prefers-reduced-motion; loop so com o card em tela.
-(function () {
-  var stage = document.querySelector('.bm-stage');
-  var figure = stage && stage.querySelector('.bm-figure');
-  var spot = stage && stage.querySelector('.bm-spot');
-  if (!stage || !figure) return;
-  var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  var canHover = window.matchMedia('(hover: hover)').matches;
-  if (reduced || !canHover) return;
-
-  var over = false, tx = 0, ty = 0, rx = 0, ry = 0, running = false, frame = 0;
-  stage.addEventListener('mousemove', function (ev) {
-    var r = stage.getBoundingClientRect();
-    if (spot) spot.style.transform = 'translate(' + (ev.clientX - r.left) + 'px,' + (ev.clientY - r.top) + 'px) translate(-50%, -50%)';
-    var f = figure.getBoundingClientRect();
-    var nx = Math.max(-1, Math.min(1, (ev.clientX - (f.left + f.width / 2)) / (f.width / 2)));
-    var ny = Math.max(-1, Math.min(1, (ev.clientY - (f.top + f.height / 2)) / (f.height / 2)));
-    ty = nx * 10; tx = -ny * 7;
-  });
-  stage.addEventListener('mouseenter', function () { over = true; stage.classList.add('is-lit'); });
-  stage.addEventListener('mouseleave', function () { over = false; stage.classList.remove('is-lit'); });
-
-  function tick(t) {
-    if (!running) return;
-    if (!over) { ty = Math.sin(t * 0.0005) * 3; tx = Math.cos(t * 0.00035) * 1.5; }   // balanco em repouso
-    rx += (tx - rx) * 0.08; ry += (ty - ry) * 0.08;
-    figure.style.setProperty('--bm-rx', rx.toFixed(2) + 'deg');
-    figure.style.setProperty('--bm-ry', ry.toFixed(2) + 'deg');
-    frame = requestAnimationFrame(tick);
-  }
-  function start() { if (running) return; running = true; frame = requestAnimationFrame(tick); }
-  function stop() { running = false; if (frame) cancelAnimationFrame(frame); frame = 0; }
-  if ('IntersectionObserver' in window) {
-    new IntersectionObserver(function (es) { es.forEach(function (e) { if (e.isIntersecting) start(); else stop(); }); }, { threshold: 0.05 }).observe(stage);
-  } else start();
-  document.addEventListener('visibilitychange', function () { if (document.visibilityState === 'visible') { if (!running) start(); } else stop(); });
 })();
 
 // ========== Campo vivo da faixa final (Velaris, porte em WebGL puro) ==========
