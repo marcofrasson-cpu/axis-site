@@ -534,50 +534,74 @@ button { font: inherit; cursor: pointer; background: none; border: none; color: 
 .bm-orbit { position: relative; width: min(100%, 520px); aspect-ratio: 1; margin-inline: auto; container-type: inline-size; --rot: 0deg; --ob-r: 26.8cqw; }
 .ob-ring { position: absolute; inset: 0; transform: rotate(var(--rot)); transition: transform 480ms var(--ease-settle); }
 .ob-lines, .ob-sats { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; }
-.ob-lines circle { fill: none; stroke: rgba(255, 255, 255, .08); }
+.ob-lines circle { fill: none; stroke: rgba(255, 255, 255, .1); }
 .ob-orbit2 { display: none; }
 .ob-ray { stroke: transparent; }   /* so o raio da area ativa aparece: seis raios + anel tracejado eram linha demais */
-.ob-ray.is-on { stroke: rgba(95, 200, 155, .7); stroke-width: 1.5; stroke-dasharray: 3 5; animation: obFlow 1.2s linear infinite; }
-@keyframes obFlow { to { stroke-dashoffset: -16; } }
+/* o raio se desenha uma vez, do SEC ate a area, e fica — o fluxo em loop piscava para sempre */
+.ob-ray.is-on { stroke: rgba(95, 200, 155, .6); stroke-width: 1.5; stroke-dasharray: 1; stroke-dashoffset: 1; animation: obDraw 320ms var(--ease-settle) 140ms forwards; }
+@keyframes obDraw { to { stroke-dashoffset: 0; } }
+/* No = ponto de mostrador. O botao segue com 48px de alvo; o que se ve e o
+   ponto. O numero saiu: nao dizia nada e era a coisa mais forte do anel,
+   acima do nome da area. Ativo: o ponto cresce e e o unico verde do anel. */
 .ob-node {
   position: absolute; left: 50%; top: 50%; width: 48px; height: 48px; margin: -24px 0 0 -24px; padding: 0;
-  border: 1px solid rgba(255, 255, 255, .14); border-radius: var(--r-circle); background: rgba(255, 255, 255, .03);
-  cursor: pointer; -webkit-tap-highlight-color: transparent; --s: 1;
-  transform: rotate(var(--a)) translate(var(--ob-r)) rotate(calc(-1 * (var(--a) + var(--rot)))) scale(var(--s));
-  transition: transform 480ms var(--ease-settle), border-color 180ms var(--ease-settle), background 180ms var(--ease-settle);
+  border: 0; border-radius: var(--r-circle); background: none;
+  cursor: pointer; -webkit-tap-highlight-color: transparent;
+  transform: rotate(var(--a)) translate(var(--ob-r)) rotate(calc(-1 * (var(--a) + var(--rot))));
+  transition: transform 480ms var(--ease-settle);
 }
-.ob-node:hover { border-color: var(--border-strong); }
-.ob-node:focus-visible { outline: 2px solid var(--brand-green); outline-offset: 3px; }
-.ob-node.is-on { --s: 1.25; border-color: rgba(95, 200, 155, .9); background: rgba(95, 200, 155, .14); }
-.ob-spin { position: absolute; inset: 0; display: grid; place-items: center; }
-.ob-i { font-size: var(--fs-14); color: var(--text-subtle); font-variant-numeric: tabular-nums; }
-.ob-node.is-on .ob-i { color: var(--brand-green); font-weight: 600; }
-/* Rotulo como num mostrador: abaixo ou acima do no conforme a metade, e nos
+.ob-node::before {
+  content: ""; position: absolute; left: 50%; top: 50%; width: 12px; height: 12px; margin: -6px 0 0 -6px;
+  border-radius: var(--r-circle); border: 1.5px solid rgba(255, 255, 255, .32); background: #182636;
+  transition: transform 200ms var(--ease-settle), background-color 200ms var(--ease-settle), border-color 200ms var(--ease-settle);
+}
+.ob-node:hover::before { border-color: var(--text-primary); }
+.ob-node:focus-visible { outline: 2px solid var(--brand-green); outline-offset: -8px; }
+.ob-node.is-on::before { transform: scale(1.5); background: var(--brand-green); border-color: var(--brand-green); }
+.ob-spin { position: absolute; inset: 0; }
+/* Rotulo como num mostrador: abaixo ou acima do ponto conforme a metade, e nos
    quadrantes ele cresce para fora (is-left/is-right) — centrado, os dois de
-   cima se sobrepunham 29px a 411px de largura. */
+   cima se sobrepunham. O nome da area e a informacao do anel: 14px, caixa
+   normal, cor reduzida que acende no hover. Em caixa-alta ele repetia o
+   eyebrow do painel e os dois disputavam o mesmo degrau. */
 .ob-l {
-  position: absolute; left: 50%; top: 100%; transform: translate(var(--lx, -50%), var(--ly, 10px)); white-space: nowrap;
-  font-size: var(--fs-12); font-weight: 600; letter-spacing: .12em; text-transform: uppercase; color: var(--text-subtle);
-  transition: opacity 180ms var(--ease-settle);
+  position: absolute; left: 50%; top: 100%; transform: translate(var(--lx, -50%), var(--ly, -6px)); white-space: nowrap;
+  font-size: var(--fs-14); font-weight: 500; line-height: 1.2; color: var(--text-muted);
+  transition: opacity 180ms var(--ease-settle), color 180ms var(--ease-settle);
 }
-.ob-node.is-top .ob-l { top: auto; bottom: 100%; --ly: -10px; }
-.ob-node.is-left .ob-l { left: auto; right: -8px; --lx: 0; }
-.ob-node.is-right .ob-l { left: -8px; --lx: 0; }
+.ob-node:hover .ob-l, .ob-node:focus-visible .ob-l { color: var(--text-primary); }
+.ob-node.is-top .ob-l { top: auto; bottom: 100%; --ly: 6px; }
+.ob-node.is-left .ob-l { left: auto; right: 4px; --lx: 0; }
+.ob-node.is-right .ob-l { left: 4px; --lx: 0; }
 .ob-node.is-on .ob-l { opacity: 0; }   /* o painel ao lado ja diz o nome */
 .ob-core {
   position: absolute; left: 50%; top: 50%; width: 84px; height: 84px; margin: -42px 0 0 -42px; border-radius: var(--r-circle);
-  border: 1px solid rgba(95, 200, 155, .25); background: #182636; display: grid;   /* o tom medido do palco: o miolo cobre o raio sem virar disco */ place-items: center;
+  border: 1px solid rgba(255, 255, 255, .1); background: #182636; display: grid; place-items: center;   /* o tom medido do palco: o miolo cobre o raio sem virar disco */
 }
 .ob-core svg { position: absolute; width: 44px; height: 44px; }
-.ob-core polygon { fill: none; stroke: rgba(95, 200, 155, .7); stroke-width: 1.5; }
-.ob-core span { font-size: var(--fs-12); font-weight: 600; letter-spacing: .14em; color: var(--text-subtle); }
-.ob-sat-path { fill: none; stroke: rgba(255, 255, 255, .12); }
-.ob-sat { transform-box: fill-box; transform-origin: center; animation: obSat 420ms var(--ease-settle) both; }
-@keyframes obSat { from { opacity: 0; transform: scale(0); } }
+.ob-core polygon { fill: none; stroke: rgba(95, 200, 155, .55); stroke-width: 1.5; }
+.ob-core span { font-size: var(--fs-12); font-weight: 600; letter-spacing: .14em; color: var(--text-muted); }
+/* Satelites: um por condicao. Falam a lingua do selo da lista — cheio
+   (consolidada), contorno (moderada), tracejado (preliminar) — em vez de uma
+   cor propria que contradizia o selo. O caminho se desenha do ponto ativo
+   ate o satelite, e o satelite assenta no fim dele, 40ms entre irmaos. */
+.ob-sat-path { fill: none; stroke: rgba(255, 255, 255, .14); stroke-dasharray: 1; stroke-dashoffset: 1; animation: obDraw 280ms var(--ease-settle) calc(260ms + var(--d, 0ms)) forwards; }
+.ob-sat { transform-box: fill-box; transform-origin: center; animation: obSat 220ms var(--ease-settle) calc(480ms + var(--d, 0ms)) both; }
+@keyframes obSat { from { opacity: 0; transform: scale(.4); } }
+.ob-sat--forte { fill: rgba(241, 245, 249, .9); }
+.ob-sat--media { fill: #182636; stroke: rgba(241, 245, 249, .75); stroke-width: 1.5; }
+.ob-sat--prelim { fill: #182636; stroke: rgba(154, 167, 184, .75); stroke-width: 1.5; stroke-dasharray: 2.5 2.5; }
+/* condicao em foco na lista (hover, teclado ou aberta) acende o satelite dela */
+.ob-it { transition: opacity 160ms var(--ease-settle); }
+.ob-halo { fill: none; stroke: var(--text-primary); stroke-width: 1; opacity: 0; transition: opacity 160ms var(--ease-settle); }
+.has-hi .ob-it:not(.is-hi) { opacity: .3; }
+.ob-it.is-hi .ob-halo { opacity: .6; }
+.ob-sats .is-out { opacity: 0; transition: opacity 160ms ease-in; }
 @media (prefers-reduced-motion: reduce) {
-  .ob-ring, .ob-node, .ob-l { transition: none; }
-  .ob-ray.is-on, .ob-sat { animation: none; }
+  .ob-ring, .ob-node, .ob-node::before, .ob-l, .ob-it, .ob-halo { transition: none; }
+  .ob-ray.is-on, .ob-sat-path, .ob-sat { animation: none; stroke-dashoffset: 0; }
 }
+
 
 @media (prefers-reduced-motion: reduce) { .team-photo { transition: none; } }
 

@@ -365,6 +365,17 @@
     var obSats = orbit && orbit.querySelector('[data-ob-sats]');
     var obRot = 0;
     var OB_R = { forte: 9, media: 7, prelim: 5 }, OB_FILL = { forte: '#5fc89b', media: '#b9c6d4', prelim: '#5d6f84' };
+    // Condicao em foco na lista (ponteiro, teclado ou aberta) acende o
+    // satelite dela; as outras recuam. O indice vale dentro da area ativa.
+    var obHover = -1;
+    var obMark = function () {
+      var g = obSats && obSats.lastElementChild;
+      if (!g) return;
+      var ativa = bmStage.querySelector('.bm-cat.is-active'), alvo = obHover;
+      if (alvo < 0 && ativa) [].forEach.call(ativa.querySelectorAll('.bm-cond-item'), function (d, i) { if (d.open) alvo = i; });
+      [].forEach.call(g.children, function (it, i) { it.classList.toggle('is-hi', i === alvo); });
+      obSats.classList.toggle('has-hi', alvo >= 0);
+    };
     var obDraw = function (cat) {
       var idx = -1;
       obNodes.forEach(function (n, i) { if (n.getAttribute('data-cat') === cat) idx = i; });
@@ -383,18 +394,24 @@
       [].forEach.call(orbit.querySelectorAll('.ob-ray'), function (r) { r.classList.toggle('is-on', r.getAttribute('data-cat') === cat); });
       if (!obSats) return;
       var conds = [].slice.call(bmStage.querySelectorAll('.bm-cat[data-cat="' + cat + '"] .bm-cond-item'));
-      var span = Math.min(110, conds.length * 24), html = '';
+      var span = Math.min(70, conds.length * 16), html = '';   // ate ±35deg: os nos vizinhos estao a ±60deg, e o satelite da ponta cruzava o nome deles
       conds.forEach(function (c, i) {
         var nome = c.querySelector('.bm-cond').textContent, ev = c.querySelector('.bm-ev'), nivel = 'prelim';
         ['forte', 'media'].forEach(function (k) { if (ev && ev.classList.contains('bm-ev--' + k)) nivel = k; });
         var a = (conds.length > 1 ? -span / 2 + span * i / (conds.length - 1) : 0) * Math.PI / 180;
         var x = (280 + 205 * Math.cos(a)).toFixed(1), y = (280 + 205 * Math.sin(a)).toFixed(1);
         var cx = (280 + 180 * Math.cos(a)).toFixed(1), cy = (280 + 180 * Math.sin(a)).toFixed(1);
-        html += '<path class="ob-sat-path" d="M430 280 Q ' + cx + ' ' + cy + ' ' + x + ' ' + y + '"/>' +
-          '<circle class="ob-sat" style="animation-delay:' + (200 + i * 50) + 'ms" cx="' + x + '" cy="' + y + '" r="' + OB_R[nivel] + '" fill="' + OB_FILL[nivel] + '">' +
-          '<title>' + nome + (ev ? ' — ' + ev.textContent : '') + '</title></circle>';
+        html += '<g class="ob-it" style="--d:' + (i * 40) + 'ms">' +
+          '<path class="ob-sat-path" pathLength="1" d="M430 280 Q ' + cx + ' ' + cy + ' ' + x + ' ' + y + '"/>' +
+          '<circle class="ob-halo" cx="' + x + '" cy="' + y + '" r="13"/>' +
+          '<circle class="ob-sat ob-sat--' + nivel + '" cx="' + x + '" cy="' + y + '" r="6">' +
+          '<title>' + nome + (ev ? ' — ' + ev.textContent : '') + '</title></circle></g>';
       });
-      obSats.innerHTML = html;
+      // o grupo anterior sai em fade enquanto o anel gira; o novo desenha por cima
+      [].forEach.call(obSats.children, function (old) { old.classList.add('is-out'); setTimeout(function () { old.remove(); }, 200); });
+      var grupo = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+      grupo.innerHTML = html; obSats.appendChild(grupo);
+      obMark();
     };
     // Cross-fade: paineis empilhados (absolutos). Remove hidden e trava a altura
     // do painel pela maior categoria, p/ nao pular ao trocar.
@@ -426,6 +443,15 @@
     };
     obNodes.forEach(function (n) { n.addEventListener('click', function () { bmActivate(n.getAttribute('data-cat')); }); });
     bmTabs.forEach(function (t) { t.addEventListener('click', function () { bmActivate(t.getAttribute('data-cat')); }); });
+    bmCats.forEach(function (c) {
+      [].forEach.call(c.querySelectorAll('.bm-cond-item'), function (d, i) {
+        var sm = d.querySelector('summary');
+        var em = function () { obHover = i; obMark(); }, fora = function () { obHover = -1; obMark(); };
+        sm.addEventListener('pointerenter', em); sm.addEventListener('pointerleave', fora);
+        sm.addEventListener('focus', em); sm.addEventListener('blur', fora);
+        d.addEventListener('toggle', obMark);
+      });
+    });
     bmActivate('dor');
   }
 })();
