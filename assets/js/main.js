@@ -1267,39 +1267,28 @@ function campoDeFluxo(sec, canvas, opts) {
 })();
 
 // ========== Contato: fumaca (Smokey, WebGL) ==========
-// Campo de gradiente: tres massas de cor amplas que derivam devagar sobre o
-// navy, somadas por peso gaussiano — sem a distorcao iterada em cosseno do
-// componente original, que marmorizava a tela (lia como fumaca). O ponteiro
-// so inclina o campo. Meia resolucao; anima so com a secao em tela; sob
-// reduced-motion desenha um quadro e para.
+// Shader do componente (login-form/Smokey, 21st.dev): distorcao iterada em
+// cosseno gera ondas que se deformam e brilham; o ponteiro desloca a fase
+// (ripple). O brilho sai do navy do site para o verde profundo da paleta, em
+// vez de preto -> cor. Tempo a 0.2 (o original roda a 0.5). Meia resolucao;
+// anima so com a secao em tela; sob reduced-motion desenha um quadro e para.
 (function () {
   var stage = document.querySelector('.sk'), canvas = stage && stage.querySelector('.sk-field');
   if (!stage || !canvas) return;
   var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   var gl = canvas.getContext('webgl', { antialias: false, alpha: false, powerPreference: 'low-power' });
   if (!gl) return;
+  var SPEED = 0.2;
   var VERT = 'attribute vec2 a; void main(){ gl_Position = vec4(a, 0.0, 1.0); }';
   var FRAG = [
     'precision mediump float; uniform vec2 iResolution; uniform float iTime; uniform vec2 iMouse; uniform vec3 u_color;',
     'float hash(vec2 p){ return fract(sin(dot(p, vec2(12.9898, 78.233))) * 43758.5453); }',
     'void main(){',
-    '  float ratio = iResolution.x / iResolution.y;',
-    '  vec2 p = (gl_FragCoord.xy / iResolution - 0.5) * vec2(ratio, 1.0);',
-    '  float t = iTime * 0.045;',                                   // deriva lenta
-    '  vec2 m = (iMouse / iResolution - 0.5) * 0.14;',              // o ponteiro so inclina o campo
-    // Massas de cor amplas que derivam: cada uma e um peso gaussiano sobre o
-    // navy. Sem iteracao em cosseno, sem bandas — gradiente, nao fumaca.
-    '  p += 0.06 * vec2(sin(p.y * 1.7 + t * 1.6), cos(p.x * 1.5 - t * 1.3));',
-    '  vec2 c1 = vec2(cos(t * 0.8) * 0.42, sin(t * 0.6) * 0.30) + m;',
-    '  vec2 c2 = vec2(cos(t * 0.5 + 2.1) * 0.52, sin(t * 0.7 + 1.2) * 0.36) + m * 0.6;',
-    '  vec2 c3 = vec2(cos(t * 0.37 + 4.2) * 0.46, sin(t * 0.44 + 3.1) * 0.40) - m * 0.4;',
-    '  float w1 = exp(-dot(p - c1, p - c1) * 3.3);',
-    '  float w2 = exp(-dot(p - c2, p - c2) * 4.4);',
-    '  float w3 = exp(-dot(p - c3, p - c3) * 5.4);',
-    '  vec3 col = vec3(0.031, 0.067, 0.110);',                      // navy do site
-    '  col = mix(col, u_color, clamp(w1 * 0.72, 0.0, 1.0));',
-    '  col = mix(col, vec3(0.075, 0.243, 0.196), clamp(w2 * 0.6, 0.0, 1.0));',
-    '  col = mix(col, vec3(0.043, 0.137, 0.118), clamp(w3 * 0.55, 0.0, 1.0));',
+    '  vec2 c = (2.0 * gl_FragCoord.xy - iResolution.xy) / min(iResolution.x, iResolution.y);',
+    '  float t = iTime * ' + SPEED.toFixed(2) + '; vec2 rc = 2.0 * (iMouse / iResolution) - 1.0; vec2 d = c;',
+    '  for (float i = 1.0; i < 8.0; i++) { d.x += 0.5 / i * cos(i * 2.0 * d.y + t + rc.x * 3.1415); d.y += 0.5 / i * cos(i * 2.0 * d.x + t + rc.y * 3.1415); }',
+    '  float wave = abs(sin(d.x + d.y + t)); float glow = smoothstep(0.9, 0.2, wave);',
+    '  vec3 col = mix(vec3(0.031, 0.067, 0.110), u_color, glow);',   // navy do site -> verde
     '  col += (hash(gl_FragCoord.xy) - 0.5) * 0.012;',              // grao: mata o banding
     '  gl_FragColor = vec4(col, 1.0); }'
   ].join('\n');
@@ -1310,11 +1299,11 @@ function campoDeFluxo(sec, canvas, opts) {
   var buf = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, buf); gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 1, -1, -1, 1, 1, 1]), gl.STATIC_DRAW);
   var loc = gl.getAttribLocation(prog, 'a'); gl.enableVertexAttribArray(loc); gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
   var U = { res: gl.getUniformLocation(prog, 'iResolution'), t: gl.getUniformLocation(prog, 'iTime'), m: gl.getUniformLocation(prog, 'iMouse'), c: gl.getUniformLocation(prog, 'u_color') };
-  gl.uniform3f(U.c, 0x1a / 255, 0x55 / 255, 0x42 / 255);   // verde profundo da paleta
-  var mx = 0.5, my = 0.5, tx = 0.5, ty = 0.5, hover = false, dpr = 0.5;
+  gl.uniform3f(U.c, 0x2d / 255, 0x73 / 255, 0x5a / 255);   // --brand-green-deep
+  var mx = 0.5, my = 0.5, tx = 0.5, ty = 0.5, dpr = 0.5;
   function resize() { var r = stage.getBoundingClientRect(); dpr = Math.min(window.devicePixelRatio || 1, 2) * 0.5; canvas.width = Math.max(1, Math.round(r.width * dpr)); canvas.height = Math.max(1, Math.round(r.height * dpr)); gl.viewport(0, 0, canvas.width, canvas.height); if (reduced) draw(0); }
-  // 0.015: o campo persegue o ponteiro devagar — reage, sem correr atras do cursor
-  function draw(t) { mx += (tx - mx) * 0.015; my += (ty - my) * 0.015; gl.uniform2f(U.res, canvas.width, canvas.height); gl.uniform1f(U.t, t * 0.001); gl.uniform2f(U.m, mx * canvas.width, my * canvas.height); gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4); }
+  // 0.03: a fase persegue o ponteiro devagar — reage, sem correr atras do cursor
+  function draw(t) { mx += (tx - mx) * 0.03; my += (ty - my) * 0.03; gl.uniform2f(U.res, canvas.width, canvas.height); gl.uniform1f(U.t, t * 0.001); gl.uniform2f(U.m, mx * canvas.width, my * canvas.height); gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4); }
   var running = false, raf = 0;
   function loop(t) { if (!running) return; draw(t); raf = requestAnimationFrame(loop); }
   function start() { if (running || reduced) return; running = true; raf = requestAnimationFrame(loop); }
@@ -2115,137 +2104,6 @@ function campoDeFluxo(sec, canvas, opts) {
 
   desenhaBarra();
   aplica();
-})();
-
-// ========== Globo do /contato: assenta na sede e para ==========
-// Inspirado no contact-with-globe (21st.dev), que usa d3-geo + topojson e baixa
-// o world-atlas de um CDN. Nada disso entra aqui: projecao ortografica sao dez
-// linhas de trigonometria, e o desenho e so a gaiola de meridianos e paralelos
-// — a mesma linguagem de linha do resto do site, e zero KB de dado de paises.
-// O giro tambem muda de sentido: o original gira para sempre. Este sai de um
-// angulo qualquer, acelera, desacelera e PARA com a sede de frente. Girar
-// sem parar seria enfeite; parado no lugar certo, ele diz onde a clinica fica.
-(function () {
-  var cv = document.querySelector('.ct-globo-c');
-  if (!cv) return;
-  var ctx = cv.getContext('2d');
-  if (!ctx) return;
-
-  var reduzido = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  var SEDE = { lat: -27.5954, lon: -48.5480 };   // Florianópolis · SC
-  var GRAU = Math.PI / 180;
-  var W = cv.width, H = cv.height, R = Math.min(W, H) * 0.42;
-  var CX = W / 2, CY = H / 2;
-
-  // Projecao ortografica: gira o ponto pela longitude e pela latitude da camera
-  // e projeta. z > 0 e o hemisferio virado para quem olha.
-  function proj(lat, lon, camLon, camLat) {
-    var a = (lon - camLon) * GRAU, b = lat * GRAU, c = camLat * GRAU;
-    var cosb = Math.cos(b);
-    var x = cosb * Math.sin(a);
-    var y = Math.cos(c) * Math.sin(b) - Math.sin(c) * cosb * Math.cos(a);
-    var z = Math.sin(c) * Math.sin(b) + Math.cos(c) * cosb * Math.cos(a);
-    return { x: CX + x * R, y: CY - y * R, z: z };
-  }
-
-  // Uma linha da gaiola, cortada onde passa para tras da esfera.
-  function traco(pontos, camLon, camLat, frente) {
-    var abriu = false;
-    ctx.beginPath();
-    for (var i = 0; i < pontos.length; i++) {
-      var p = proj(pontos[i][0], pontos[i][1], camLon, camLat);
-      var visivel = frente ? p.z >= 0 : p.z < 0;
-      if (!visivel) { abriu = false; continue; }
-      if (!abriu) { ctx.moveTo(p.x, p.y); abriu = true; } else ctx.lineTo(p.x, p.y);
-    }
-    ctx.stroke();
-  }
-
-  var meridianos = [], paralelos = [];
-  for (var lon = -180; lon < 180; lon += 30) {
-    var m = [];
-    for (var la = -90; la <= 90; la += 3) m.push([la, lon]);
-    meridianos.push(m);
-  }
-  for (var lat = -60; lat <= 60; lat += 30) {
-    var p2 = [];
-    for (var lo = -180; lo <= 180; lo += 3) p2.push([lat, lo]);
-    paralelos.push(p2);
-  }
-
-  function desenha(camLon, camLat, brilhoMarca) {
-    ctx.clearRect(0, 0, W, H);
-
-    // hemisferio de tras, bem apagado: e ele que faz a esfera parecer esfera
-    ctx.lineWidth = 1;
-    ctx.strokeStyle = 'rgba(148,163,184,.10)';
-    meridianos.concat(paralelos).forEach(function (l) { traco(l, camLon, camLat, false); });
-
-    // contorno
-    ctx.beginPath();
-    ctx.arc(CX, CY, R, 0, Math.PI * 2);
-    ctx.strokeStyle = 'rgba(148,163,184,.30)';
-    ctx.lineWidth = 1.1;
-    ctx.stroke();
-
-    // hemisferio da frente
-    ctx.strokeStyle = 'rgba(148,163,184,.26)';
-    ctx.lineWidth = 1;
-    meridianos.concat(paralelos).forEach(function (l) { traco(l, camLon, camLat, true); });
-
-    // equador em destaque
-    ctx.strokeStyle = 'rgba(148,163,184,.40)';
-    traco(paralelos[2] || [], camLon, camLat, true);
-
-    // marcador da sede
-    var c = proj(SEDE.lat, SEDE.lon, camLon, camLat);
-    if (c.z >= 0) {
-      var halo = 5 + brilhoMarca * 7;
-      var g = ctx.createRadialGradient(c.x, c.y, 0, c.x, c.y, halo * 2.4);
-      g.addColorStop(0, 'rgba(95,200,155,' + (0.42 * brilhoMarca).toFixed(3) + ')');
-      g.addColorStop(1, 'rgba(95,200,155,0)');
-      ctx.fillStyle = g;
-      ctx.beginPath(); ctx.arc(c.x, c.y, halo * 2.4, 0, Math.PI * 2); ctx.fill();
-      ctx.fillStyle = 'rgba(95,200,155,' + (0.35 + 0.65 * brilhoMarca).toFixed(3) + ')';
-      ctx.beginPath(); ctx.arc(c.x, c.y, 3.2, 0, Math.PI * 2); ctx.fill();
-    }
-  }
-
-  // Alvo: a sede de frente. A camera sai 150 graus antes e chega junto com a
-  // secao — a viagem e o que informa, o quadro final e a resposta.
-  var lonFim = SEDE.lon, latFim = SEDE.lat * 0.55;
-  var lonIni = lonFim + 150, latIni = 18;
-  var DUR = 2600, t0 = 0, raf = 0, rodou = false;
-
-  if (reduzido) { desenha(lonFim, latFim, 1); return; }
-
-  function quadro(t) {
-    if (!t0) t0 = t;
-    var k = Math.min((t - t0) / DUR, 1);
-    var e = 1 - Math.pow(1 - k, 3);                       // ease-out cubico
-    desenha(lonIni + (lonFim - lonIni) * e,
-            latIni + (latFim - latIni) * e,
-            Math.max(0, (k - 0.55) / 0.45));              // a marca acende no fim
-    if (k < 1) raf = requestAnimationFrame(quadro); else raf = 0;
-  }
-
-  function comeca() {
-    if (rodou) return;
-    rodou = true;
-    raf = requestAnimationFrame(quadro);
-  }
-
-  desenha(lonIni, latIni, 0);
-  if ('IntersectionObserver' in window) {
-    var io = new IntersectionObserver(function (es) {
-      es.forEach(function (e) { if (e.isIntersecting) { comeca(); io.disconnect(); } });
-    }, { threshold: 0.25 });
-    io.observe(cv);
-  } else comeca();
-
-  document.addEventListener('visibilitychange', function () {
-    if (document.visibilityState !== 'visible' && raf) { cancelAnimationFrame(raf); raf = 0; }
-  });
 })();
 
 // ========== Mapa do corpo no celular: carrossel ==========
