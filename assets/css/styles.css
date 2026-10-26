@@ -4038,3 +4038,50 @@ h1.section-title { font-size: var(--fs-d2); }
    e animacao ligada a timeline de rolagem: pausada, ela saltaria ao voltar. */
 .anim-off *, .anim-off *::before, .anim-off *::after { animation-play-state: paused !important; }
 .anim-off [data-parallax-layer] { animation-play-state: running !important; }
+
+/* ==================== Túnel em perspectiva (perspective-tunnel-hero, porte em vanilla) ==================== */
+/* Secao de 3,2 telas; o palco gruda (sticky) e os cartoes atravessam a camera
+   conforme a pagina rola. Perspectiva no palco, preserve-3d so no plano dos
+   cartoes; titulo central fora do contexto 3D (cartoes passam por cima). */
+.tn { position: relative; height: 320svh; background: var(--ground-deepest); }
+.tn-pin { position: sticky; top: 0; height: 100svh; overflow: hidden; overflow: clip; display: flex; align-items: center; justify-content: center; perspective: 1200px; }
+.tn-grid {
+  position: absolute; inset: 0; opacity: .5;
+  background-image: radial-gradient(rgba(95,200,155,.22) 1px, transparent 1px); background-size: 28px 28px;
+  -webkit-mask-image: radial-gradient(ellipse 70% 70% at 50% 50%, #000 60%, transparent 100%);
+  mask-image: radial-gradient(ellipse 70% 70% at 50% 50%, #000 60%, transparent 100%);
+}
+.tn-glow { position: absolute; inset: 0; background: radial-gradient(circle at center, rgba(95,200,155,.14) 0%, transparent 70%); }
+.tn-ring { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); border-radius: var(--r-circle); border: 1px solid rgba(95,200,155,.14); }
+.tn-ring--a { width: 48vmin; height: 48vmin; }
+.tn-ring--b { width: 76vmin; height: 76vmin; border-style: dashed; border-color: rgba(255,255,255,.08); }
+.tn-center { position: relative; text-align: center; max-width: 36rem; padding: 0 var(--sp-20); will-change: transform, opacity; }
+.tn-eyebrow { display: block; font-family: var(--font-body); font-size: var(--fs-12); font-weight: 600; letter-spacing: .4em; text-transform: uppercase; color: var(--brand-green); margin-bottom: var(--sp-12); }
+.tn-title { font-size: var(--fs-d1); font-weight: 700; letter-spacing: -.03em; line-height: .95; margin: 0; }
+.tn-title .accent { color: var(--brand-green); }
+.tn-sub { font-family: var(--font-body); font-size: var(--fs-lead); color: var(--text-muted); max-width: 36ch; margin: var(--sp-20) auto 0; }
+.tn-space { position: absolute; inset: 0; transform-style: preserve-3d; pointer-events: none; }
+.tn-card {
+  position: absolute; left: 50%; top: 50%; width: clamp(180px, 18vw, 270px); aspect-ratio: 4 / 5; margin: 0;
+  border-radius: var(--r-surface); overflow: hidden; background: var(--bg-card); box-shadow: var(--shadow-lg);
+  outline: 1px solid rgba(255,255,255,.14); outline-offset: -1px;
+  opacity: 0; will-change: transform, opacity; transform: translate3d(-50%, -50%, -1700px);
+}
+.tn-card img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.tn-card figcaption {
+  position: absolute; inset: 0; display: flex; align-items: flex-end; padding: var(--sp-20);
+  background: linear-gradient(to top, rgba(0,0,0,.8), rgba(0,0,0,.1) 50%, transparent);
+  font-family: var(--font-body); font-size: var(--fs-12); font-weight: 600; letter-spacing: .18em; text-transform: uppercase; color: rgba(255,255,255,.95);
+}
+.tn-prompt { position: absolute; bottom: var(--sp-32); left: 0; right: 0; margin: 0; text-align: center; font-family: var(--font-body); font-size: var(--fs-12); letter-spacing: .3em; text-transform: uppercase; color: var(--text-subtle); }
+.tn-prompt::after { content: ''; display: block; width: 1px; height: 24px; margin: var(--sp-8) auto 0; background: linear-gradient(var(--brand-green), transparent); }
+/* Celular: sem pino, sem 3D — titulo e os cartoes em grade de duas colunas. O JS nao pinta. */
+@media (max-width: 700px) {
+  .tn { height: auto; }
+  .tn-pin { position: static; height: auto; perspective: none; display: block; padding: var(--space-section-tight) 0; }
+  .tn-grid, .tn-glow, .tn-ring, .tn-prompt { display: none; }
+  .tn-center { transform: none !important; opacity: 1 !important; margin: 0 auto; }
+  .tn-space { position: static; display: grid; grid-template-columns: 1fr 1fr; gap: var(--sp-12); padding: var(--sp-32) var(--sp-20) 0; }
+  .tn-card { position: static; width: auto; opacity: 1 !important; transform: none !important; }
+  .tn-card:nth-child(n+7) { display: none; }   /* seis bastam parados; nove sao cinco telas */
+}

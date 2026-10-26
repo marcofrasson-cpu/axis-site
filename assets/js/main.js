@@ -2215,3 +2215,59 @@ function campoDeFluxo(sec, canvas, opts) {
   }, { rootMargin: '10% 0px' });
   [].forEach.call(document.querySelectorAll('section, footer'), function (el) { io.observe(el); });
 })();
+
+// ========== Túnel em perspectiva (perspective-tunnel-hero, porte em vanilla) ==========
+// Origem: perspective-tunnel-hero (21st.dev), framer-motion. O original rouba o
+// wheel num 100vh fixo; aqui o progresso e o scroll da pagina numa secao pinada
+// de 3,2 telas — o padrao da casa (trilha pinada). Cada cartao nasce longe
+// (z = -1700), atravessa a camera e some, numa janela escalonada do progresso;
+// posicao angular pelo angulo de ouro, como no original. O ponteiro pana a
+// camera (lerp), o titulo central cresce e apaga no fim. rAF so enquanto o
+// progresso ou o ponteiro ainda perseguem o alvo; nada fora de tela. No celular
+// (<=700px) o CSS empilha e o JS nao pinta; reduced-motion desenha o meio do
+// tunel e para.
+(function () {
+  var sec = document.querySelector('[data-tn]');
+  if (!sec) return;
+  var cards = [].slice.call(sec.querySelectorAll('[data-tn-card]')), center = sec.querySelector('[data-tn-center]'), prompt = sec.querySelector('[data-tn-prompt]');
+  if (!cards.length || !center) return;
+  var small = window.matchMedia('(max-width: 700px)'), reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var N = cards.length, SPAN = 0.55, FAR = -1700, NEAR = 500, PAN = 45;
+  var geo = cards.map(function (_, i) {
+    var a = i * 137.5 * Math.PI / 180;
+    return { cx: Math.cos(a), sy: Math.sin(a), rx: 0.28 + (i % 3) * 0.08, ry: 0.26 + (i % 2) * 0.09, rz: (i % 2 ? -1 : 1) * (3 + (i % 5) * 2), start: (i / N) * (1 - SPAN) };
+  });
+  function clamp(n) { return Math.min(1, Math.max(0, n)); }
+  function lerp(a, b, t) { return a + (b - a) * t; }
+  function ramp(p, a, b) { return clamp((p - a) / (b - a)); }
+  var cur = 0, px = 0, py = 0, tx = 0, ty = 0, raf = 0, inView = false;
+  function paint(p, vw, vh) {
+    geo.forEach(function (g, i) {
+      var lp = ramp(p, g.start, g.start + SPAN);
+      var x = g.cx * vw * g.rx - px * PAN, y = g.sy * vh * g.ry - py * PAN;
+      cards[i].style.transform = 'translate3d(calc(-50% + ' + x.toFixed(1) + 'px), calc(-50% + ' + y.toFixed(1) + 'px), ' + lerp(FAR, NEAR, lp).toFixed(0) + 'px) rotateZ(' + g.rz + 'deg)';
+      cards[i].style.opacity = (ramp(lp, 0, 0.18) * (1 - ramp(lp, 0.82, 0.98))).toFixed(3);   // acende em 18%, apaga ao passar da camera
+    });
+    var s = p < 0.5 ? lerp(0.7, 1, p / 0.5) : lerp(1, 1.35, (p - 0.5) / 0.5);
+    center.style.transform = 'scale(' + s.toFixed(3) + ')';
+    center.style.opacity = (lerp(0.25, 1, ramp(p, 0, 0.12)) * (1 - ramp(p, 0.85, 1))).toFixed(3);
+    if (prompt) prompt.style.opacity = (1 - ramp(p, 0, 0.12)).toFixed(3);
+  }
+  if (reduced) { paint(0.5, window.innerWidth, window.innerHeight); return; }   // um quadro: o meio do tunel
+  function frame() {
+    var r = sec.getBoundingClientRect(), vh = window.innerHeight, vw = window.innerWidth;
+    var target = clamp(-r.top / (r.height - vh));
+    cur += (target - cur) * 0.12; if (Math.abs(target - cur) < 0.0005) cur = target;   // perseguicao: mata o salto por evento
+    px += (tx - px) * 0.08; py += (ty - py) * 0.08;
+    paint(cur, vw, vh);
+    var settled = cur === target && Math.abs(tx - px) < 0.002 && Math.abs(ty - py) < 0.002;
+    raf = (inView && !settled) ? requestAnimationFrame(frame) : 0;
+  }
+  function wake() { if (!raf && inView && !small.matches && document.visibilityState === 'visible') raf = requestAnimationFrame(frame); }
+  window.addEventListener('scroll', wake, { passive: true });
+  window.addEventListener('resize', wake);
+  window.addEventListener('pointermove', function (e) { tx = (e.clientX / window.innerWidth - 0.5) * 2; ty = (e.clientY / window.innerHeight - 0.5) * 2; wake(); }, { passive: true });
+  document.addEventListener('visibilitychange', function () { if (document.visibilityState === 'visible') wake(); else if (raf) { cancelAnimationFrame(raf); raf = 0; } });
+  if ('IntersectionObserver' in window) new IntersectionObserver(function (es) { inView = es[0].isIntersecting; if (inView) wake(); else if (raf) { cancelAnimationFrame(raf); raf = 0; } }).observe(sec);
+  else { inView = true; wake(); }
+})();
