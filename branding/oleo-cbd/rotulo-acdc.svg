@@ -1,5 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 95 45" width="95mm" height="45mm">
-<title>Axis FitoMed · Óleo 30 mL · Alva (CBD-dominante, 20 : 1)</title>
+<title>Axis FitoMed · Óleo de CBD 30 mL · strain ACDC (20 : 1)</title>
 <style>@import url('https://fonts.googleapis.com/css2?family=Spectral:wght@300;400&family=Hanken+Grotesk:wght@400;500&family=IBM+Plex+Mono:wght@400&display=swap'); :root{--f-display:'Spectral',Georgia,serif;--f-body:'Hanken Grotesk',-apple-system,system-ui,sans-serif;--f-mono:'IBM Plex Mono',ui-monospace,Menlo,monospace;} text{font-variant-numeric:tabular-nums}</style>
 <rect width="95" height="45" rx="1.5" fill="#0d1b2a"/>
 <g transform="translate(31.5,3.1) scale(0.03636363636363637) translate(-20.2,-46)" fill="none" stroke-linejoin="miter" stroke-width="5.5">
@@ -12,9 +12,11 @@
 <text x="38" y="5.7" font-family="var(--f-body)" font-size="2.05" font-weight="500" fill="#f4f2ec" text-anchor="start">Axis FitoMed</text>
 <text x="63.5" y="5.7" font-family="var(--f-mono)" font-size="1.8" font-weight="400" fill="#a2b0c2" text-anchor="end">30 mL</text>
 <line x1="31.5" y1="15.5" x2="63.5" y2="15.5" stroke="rgba(244,242,236,0.32)" stroke-width="0.14"/>
-<circle cx="47.5" cy="13.1" r="1.7" fill="#5fc89b"/>
-<text x="31.2" y="27" font-family="var(--f-display)" font-size="7.6" font-weight="300" fill="#5fc89b" text-anchor="start" letter-spacing="-0.08">Alva</text>
-<text x="31.5" y="30.6" font-family="var(--f-body)" font-size="1.75" font-weight="400" fill="#a2b0c2" text-anchor="start">Cultivar CBD-dominante · full-spectrum</text>
+<circle cx="34.47" cy="15.5" r="1.6" fill="#5fc89b"/>
+<text x="31.5" y="18.4" font-family="var(--f-body)" font-size="1.3" font-weight="400" fill="#a2b0c2" text-anchor="start">CBD</text>
+<text x="63.5" y="18.4" font-family="var(--f-body)" font-size="1.3" font-weight="400" fill="#a2b0c2" text-anchor="end">THC</text>
+<text x="31.3" y="27" font-family="var(--f-display)" font-size="6" font-weight="300" fill="#f4f2ec" text-anchor="start" letter-spacing="-0.06">Óleo de CBD</text>
+<text x="31.5" y="30.7" font-family="var(--f-body)" font-size="2.1"><tspan fill="#a2b0c2">Strain </tspan><tspan fill="#5fc89b" font-weight="500">ACDC</tspan><tspan fill="#a2b0c2"> · full-spectrum</tspan></text>
 <text x="31.5" y="35" font-family="var(--f-body)" font-size="1.45" font-weight="400" fill="#a2b0c2" text-anchor="start">CBD</text>
 <text x="31.5" y="38" font-family="var(--f-mono)" font-size="2" font-weight="400" fill="#f4f2ec" text-anchor="start">50 mg/mL</text>
 <text x="43.7" y="35" font-family="var(--f-body)" font-size="1.45" font-weight="400" fill="#a2b0c2" text-anchor="start">THC</text>
@@ -24,8 +26,8 @@
 <text x="31.5" y="41.9" font-family="var(--f-body)" font-size="1.35" font-weight="400" fill="#a2b0c2" text-anchor="start">Óleo de cannabis em MCT · uso sublingual</text>
 <text x="4" y="5.6" font-family="var(--f-body)" font-size="1.7" font-weight="500" fill="#f4f2ec" text-anchor="start">Composição</text>
 <text x="4" y="8.1" font-family="var(--f-body)" font-size="1.45" font-weight="400" fill="#a2b0c2" text-anchor="start">Extrato full-spectrum de</text>
-<text x="4" y="10.049999999999999" font-family="var(--f-body)" font-size="1.45" font-weight="400" fill="#a2b0c2" text-anchor="start">Cannabis sativa L., cultivar</text>
-<text x="4" y="12" font-family="var(--f-body)" font-size="1.45" font-weight="400" fill="#a2b0c2" text-anchor="start">Alva, em óleo de coco (MCT).</text>
+<text x="4" y="10.049999999999999" font-family="var(--f-body)" font-size="1.45" font-weight="400" fill="#a2b0c2" text-anchor="start">Cannabis sativa L., strain</text>
+<text x="4" y="12" font-family="var(--f-body)" font-size="1.45" font-weight="400" fill="#a2b0c2" text-anchor="start">ACDC, em óleo de coco (MCT).</text>
 <text x="4" y="13.95" font-family="var(--f-body)" font-size="1.45" font-weight="400" fill="#a2b0c2" text-anchor="start">CBD 50 mg/mL · THC 2,5 mg/mL.</text>
 <text x="4" y="15.899999999999999" font-family="var(--f-body)" font-size="1.45" font-weight="400" fill="#a2b0c2" text-anchor="start">Sem corante, aroma ou</text>
 <text x="4" y="17.85" font-family="var(--f-body)" font-size="1.45" font-weight="400" fill="#a2b0c2" text-anchor="start">conservante.</text>

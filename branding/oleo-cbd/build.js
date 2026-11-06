@@ -15,25 +15,22 @@ const HAIR = 'rgba(244,242,236,0.32)';
 
 const STRAINS = [
   {
-    id: 'alva', n: '01', name: 'Alva', kind: 'CBD-dominante', kindLower: 'CBD-dominante', ratio: '20 : 1',
-    cbd: '50', thc: '2,5', accent: '#5fc89b', marker: { dy: -2.4, kind: 'disc' },
-    terps: 'β-cariofileno · α-pineno', moment: 'Dia', lot: '2605-A',
-    note: 'Baixo teor de THC.',
-    desc: 'Cultivar de alto CBD para uso diurno. Sol nascendo: o ponto repousa logo acima do horizonte.'
+    id: 'acdc', n: '01', name: 'ACDC', ratio: '20 : 1', cbd: 50, thc: 2.5,
+    accent: '#5fc89b', terps: 'β-cariofileno · α-pineno', lot: '2605-A',
+    thcWarn: false,
+    desc: 'Strain de CBD quase puro, 20 : 1. O ponto fica na ponta do eixo, do lado do CBD.'
   },
   {
-    id: 'meridia', n: '02', name: 'Meridia', kind: 'Balanceado', kindLower: 'balanceado', ratio: '1 : 1',
-    cbd: '25', thc: '25', accent: '#e8a13c', marker: { dy: -6.6, kind: 'disc' },
-    terps: 'limoneno · linalol', moment: 'Dia e noite', lot: '2605-B',
-    note: 'Contém THC. Pode causar sonolência; não dirija.',
-    desc: 'Proporção 1 : 1, uso em qualquer período. Sol a pino: o ponto no alto, no âmbar do próprio óleo.'
+    id: 'harlequin', n: '02', name: 'Harlequin', ratio: '5 : 2', cbd: 50, thc: 20,
+    accent: '#e8a13c', terps: 'mirceno · α-pineno', lot: '2605-B',
+    thcWarn: true,
+    desc: 'CBD-dominante com THC presente, 5 : 2. O ponto avança um terço do eixo.'
   },
   {
-    id: 'noctis', n: '03', name: 'Noctis', kind: 'THC-dominante', kindLower: 'THC-dominante', ratio: '1 : 4',
-    cbd: '10', thc: '40', accent: '#c6d2df', marker: { dy: 3.2, kind: 'ring' },
-    terps: 'mirceno · linalol', moment: 'Noite', lot: '2605-C',
-    note: 'Contém THC. Pode causar sonolência; não dirija.',
-    desc: 'Cultivar rica em THC para a noite. Lua: um anel abaixo do horizonte, em prata fria.'
+    id: 'cannatonic', n: '03', name: 'Cannatonic', ratio: '1 : 1', cbd: 25, thc: 25,
+    accent: '#c6d2df', terps: 'limoneno · linalol', lot: '2605-C',
+    thcWarn: true,
+    desc: 'Balanceada, 1 : 1. O ponto no centro exato do eixo.'
   }
 ];
 
@@ -49,6 +46,7 @@ function mark(x, y, h) {
   </g>`;
 }
 
+const mg = (v) => String(v).replace('.', ',');
 function esc(s) { return s.replace(/&/g, '&amp;').replace(/</g, '&lt;'); }
 
 function text(x, y, str, { size = 1.5, fill = MUTED, font = 'body', weight = 400, anchor = 'start', ls = 0 } = {}) {
@@ -86,17 +84,19 @@ function labelBody(s) {
   parts.push(text(F + 6.5, 5.7, 'Axis FitoMed', { size: 2.05, fill: CREAM, weight: 500 }));
   parts.push(text(F + FW, 5.7, '30 mL', { size: 1.8, fill: MUTED, font: 'mono', anchor: 'end' }));
 
+  // Eixo CBD–THC: hairline; o ponto marca a fração de THC (1 : 1 = centro)
+  const frac = s.thc / (s.cbd + s.thc);
   parts.push(`<line x1="${F}" y1="${HZ}" x2="${F + FW}" y2="${HZ}" stroke="${HAIR}" stroke-width="0.14"/>`);
-  const mx = F + FW / 2, my = HZ + s.marker.dy;
-  if (s.marker.kind === 'disc') parts.push(`<circle cx="${mx}" cy="${my}" r="1.7" fill="${s.accent}"/>`);
-  else parts.push(`<circle cx="${mx}" cy="${my}" r="1.55" fill="none" stroke="${s.accent}" stroke-width="0.3"/>`);
+  parts.push(`<circle cx="${(F + 1.6 + (FW - 3.2) * frac).toFixed(2)}" cy="${HZ}" r="1.6" fill="${s.accent}"/>`);
+  parts.push(text(F, HZ + 2.9, 'CBD', { size: 1.3, fill: MUTED }));
+  parts.push(text(F + FW, HZ + 2.9, 'THC', { size: 1.3, fill: MUTED, anchor: 'end' }));
 
-  parts.push(text(F - 0.3, 27.0, s.name, { size: 7.6, fill: s.accent, font: 'display', weight: 300, ls: -0.08 }));
-  parts.push(text(F, 30.6, `Cultivar ${s.kindLower} · full-spectrum`, { size: 1.75, fill: MUTED }));
+  parts.push(text(F - 0.2, 27.0, 'Óleo de CBD', { size: 6.0, fill: CREAM, font: 'display', weight: 300, ls: -0.06 }));
+  parts.push(`<text x="${F}" y="30.7" font-family="var(--f-body)" font-size="2.1"><tspan fill="${MUTED}">Strain </tspan><tspan fill="${s.accent}" font-weight="500">${esc(s.name)}</tspan><tspan fill="${MUTED}"> · full-spectrum</tspan></text>`);
 
   const cols = [F, F + 12.2, F + 24.4];
   const labels = ['CBD', 'THC', 'Proporção'];
-  const vals = [`${s.cbd} mg/mL`, `${s.thc} mg/mL`, s.ratio];
+  const vals = [`${mg(s.cbd)} mg/mL`, `${mg(s.thc)} mg/mL`, s.ratio];
   cols.forEach((cx, i) => {
     parts.push(text(cx, 35.0, labels[i], { size: 1.45, fill: MUTED }));
     parts.push(text(cx, 38.0, vals[i], { size: 2.0, fill: CREAM, font: 'mono' }));
@@ -110,9 +110,9 @@ function labelBody(s) {
   parts.push(H('Composição'));
   parts.push(P([
     'Extrato full-spectrum de',
-    'Cannabis sativa L., cultivar',
+    `Cannabis sativa L., strain`,
     `${s.name}, em óleo de coco (MCT).`,
-    `CBD ${s.cbd} mg/mL · THC ${s.thc} mg/mL.`,
+    `CBD ${mg(s.cbd)} mg/mL · THC ${mg(s.thc)} mg/mL.`,
     'Sem corante, aroma ou',
     'conservante.'
   ]));
@@ -139,9 +139,9 @@ function labelBody(s) {
     parts.push(text(R, 21.6 + i * 2.3, k, { size: 1.5, fill: MUTED, font: 'mono' }));
     parts.push(text(R + 6.5, 21.6 + i * 2.3, v, { size: 1.5, fill: CREAM, font: 'mono' }));
   });
-  const noteLines = s.note === 'Baixo teor de THC.'
-    ? ['Baixo teor de THC (20 : 1).']
-    : ['Contém THC. Pode causar', 'sonolência; não dirija.'];
+  const noteLines = s.thcWarn
+    ? ['Contém THC. Pode causar', 'sonolência; não dirija.']
+    : [`Baixo teor de THC (${s.ratio}).`];
   parts.push(para(R, 29.6, [
     ...noteLines,
     'Mantenha fora do alcance',
@@ -159,7 +159,7 @@ const GFONTS = 'https://fonts.googleapis.com/css2?family=Spectral:wght@300;400&f
 // Rótulo isolado (arquivo .svg)
 function labelFile(s) {
   return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 95 45" width="95mm" height="45mm">
-<title>Axis FitoMed · Óleo 30 mL · ${s.name} (${s.kind}, ${s.ratio})</title>
+<title>Axis FitoMed · Óleo de CBD 30 mL · strain ${s.name} (${s.ratio})</title>
 <style>@import url('${GFONTS}'); :root{${FONT_CSS}} text{font-variant-numeric:tabular-nums}</style>
 ${labelBody(s)}
 </svg>`;
@@ -206,7 +206,7 @@ function bottle(s, idSuffix = '') {
     clips += `<clipPath id="c-${id}-${i}"><rect x="${(u - W * 0.62).toFixed(3)}" y="0" width="${(W * 1.24).toFixed(3)}" height="${LH}"/></clipPath>`;
   }
   const g = `g-${s.id}${idSuffix}`;
-  return `<svg class="bottle" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 70 128" role="img" aria-label="Frasco conta-gotas 30 mL com rótulo ${s.name}">
+  return `<svg class="bottle" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 70 128" role="img" aria-label="Frasco de Óleo de CBD 30 mL, strain ${s.name}">
 <defs>
   <g id="${id}">${labelBody(s)}</g>
   ${clips}
@@ -252,11 +252,12 @@ function bottle(s, idSuffix = '') {
 
 // ---------- Página ----------
 function specRows(s) {
+  const frac = s.thc / (s.cbd + s.thc);
   const rows = [
-    ['Cultivar', `${s.name} (simulada)`], ['Perfil', s.kind], ['CBD', `${s.cbd} mg/mL`], ['THC', `${s.thc} mg/mL`],
-    ['Proporção CBD : THC', s.ratio], ['Terpenos dominantes', s.terps], ['Momento de uso', s.moment],
+    ['Produto', 'Óleo de CBD full-spectrum, 30 mL'], ['Strain', `${s.name} (lote simulado)`], ['CBD', `${mg(s.cbd)} mg/mL`], ['THC', `${mg(s.thc)} mg/mL`],
+    ['Proporção CBD : THC', s.ratio], ['Terpenos dominantes', s.terps],
     ['Acento', `<span class="sw" style="background:${s.accent}"></span>${s.accent}`],
-    ['Marcador', s.marker.kind === 'disc' ? `Disco cheio, ${Math.abs(s.marker.dy).toFixed(1).replace('.', ',')} mm acima do horizonte` : `Anel, ${s.marker.dy.toFixed(1).replace('.', ',')} mm abaixo do horizonte`]
+    ['Ponto no eixo', `${Math.round(frac * 100)} % do caminho entre CBD e THC`]
   ];
   return rows.map(([k, v]) => `<div class="k">${k}</div><div class="v">${v}</div>`).join('');
 }
@@ -268,7 +269,7 @@ function page() {
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Rótulos Óleo Axis</title>
-<meta name="description" content="Protótipo de embalagem do óleo de cannabis 30 mL da Axis FitoMed: três cultivares, um rótulo.">
+<meta name="description" content="Protótipo de embalagem do Óleo de CBD 30 mL da Axis FitoMed: três strains, um rótulo.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="${GFONTS}">
@@ -324,16 +325,16 @@ svg text{font-variant-numeric:tabular-nums}
 <div class="wrap">
 <header class="top">
   <div class="eyebrow">Axis FitoMed · Embalagem · Protótipo v1 · 05/11/2026</div>
-  <h1>Óleo de cannabis, 30 mL. Três cultivares, um rótulo.</h1>
-  <p class="lead">Frasco conta-gotas em vidro âmbar, tampa preta fosca, rótulo navy 95 × 45 mm. O que muda entre as cultivares é só o acento de cor e a posição do ponto sobre a linha do horizonte: o eixo da Axis.</p>
+  <h1>Óleo de CBD, 30 mL. Três strains, um rótulo.</h1>
+  <p class="lead">Frasco conta-gotas em vidro âmbar, tampa preta fosca, rótulo navy 95 × 45 mm. O produto é um só, Óleo de CBD. O que muda entre as strains é o acento de cor e a posição do ponto no eixo CBD–THC: a linha da Axis.</p>
 </header>
 
 <div class="hero">
-${STRAINS.map(s => `  <figure>${bottle(s, '-h')}<figcaption><b>${s.name}</b><span>${s.kind}</span><span class="m">${s.ratio}</span><span>CBD · THC</span><span class="m">${s.cbd} · ${s.thc} mg/mL</span></figcaption></figure>`).join('\n')}
+${STRAINS.map(s => `  <figure>${bottle(s, '-h')}<figcaption><b>${s.name}</b><span>CBD : THC</span><span class="m">${s.ratio}</span><span>Teor</span><span class="m">${mg(s.cbd)} · ${mg(s.thc)} mg/mL</span></figcaption></figure>`).join('\n')}
 </div>
 
 ${STRAINS.map(s => `<section id="${s.id}">
-  <div class="sec-head"><span class="num">${s.n}</span><h2>${s.name}</h2><span class="kind">${s.kind} · ${s.ratio}</span></div>
+  <div class="sec-head"><span class="num">${s.n}</span><h2>${s.name}</h2><span class="kind">strain · ${s.ratio}</span></div>
   <p class="desc">${s.desc}</p>
   <div class="plate">${dieline(s)}</div>
   <div class="two">
@@ -352,15 +353,15 @@ ${STRAINS.map(s => `<section id="${s.id}">
       <dt>Texto</dt><dd>Creme ${CREAM} para o essencial, cinza-azulado ${MUTED} para o apoio. Caixa normal, sem caps lock.</dd>
     </dl>
     <dl>
-      <dt>Tipografia</dt><dd>Spectral Light só no nome da cultivar. Hanken Grotesk no texto. IBM Plex Mono para dado: teor, proporção, lote, volume.</dd>
-      <dt>Acento</dt><dd>Uma cor por cultivar, em dois lugares: nome e marcador. Verde da marca, âmbar do óleo, prata fria.</dd>
-      <dt>Marcador</dt><dd>Linha hairline é o horizonte. Disco acima: sol (dia). Anel abaixo: lua (noite). Altura cresce com a posição do dia.</dd>
+      <dt>Tipografia</dt><dd>Spectral Light só em “Óleo de CBD”. Hanken Grotesk no texto. IBM Plex Mono para dado: teor, proporção, lote, volume.</dd>
+      <dt>Acento</dt><dd>Uma cor por strain, em dois lugares: nome da strain e ponto. Verde da marca, âmbar do óleo, prata fria.</dd>
+      <dt>Eixo</dt><dd>Linha hairline de CBD a THC. O ponto marca a proporção: 20 : 1 na ponta, 1 : 1 no centro. Lê-se de longe, sem ler número.</dd>
       <dt>Verso</dt><dd>QR leva ao CoA do lote. Lote, fabricação e validade em mono. Avisos de THC só onde há THC relevante.</dd>
     </dl>
   </div>
 </section>
 
-<footer>Nomes de cultivar, teores, terpenos e lotes são simulados para o protótipo. Textos legais e de advertência a validar antes da impressão.</footer>
+<footer>Teores, terpenos e lotes são simulados para o protótipo; as strains são as três clássicas de CBD. Textos legais e de advertência a validar antes da impressão.</footer>
 </div>
 </body>
 </html>`;
