@@ -82,8 +82,9 @@ function axis(x, w, y, frac, accent, left, right) {
 ${text(x, y + 2.9, left, { size: 1.3, fill: MUTED })}
 ${text(x + w, y + 2.9, right, { size: 1.3, fill: MUTED, anchor: 'end' })}`;
 }
-function dataRow(cols, y, labels, vals) {
-  return cols.map((cx, i) => text(cx, y, labels[i], { size: 1.45, fill: MUTED }) + text(cx, y + 3.0, vals[i], { size: 2.0, fill: CREAM, font: 'mono' })).join('\n');
+const frame = (w, h, i = 1.5) => `<rect x="${i}" y="${i}" width="${w - 2 * i}" height="${h - 2 * i}" rx="0.8" fill="none" stroke="${HAIR}" stroke-width="0.12"/>`;
+function dataRow(cols, y, labels, vals, size = 2.0) {
+  return cols.map((cx, i) => text(cx, y, labels[i], { size: 1.45, fill: MUTED }) + text(cx, y + 3.0, vals[i], { size, fill: CREAM, font: 'mono' })).join('\n');
 }
 function laudo(x, y, lot, qrSize = 10.5) {
   return text(x, y, 'Laudo deste lote', { size: 1.7, fill: CREAM, weight: 500 }) +
@@ -96,20 +97,21 @@ function kv(x, y, rows, keyW = 6.5, lh = 2.3) {
 
 // ---------- Óleo de CBD: rótulo 95 × 45 ----------
 function oilBody(o) {
-  const L = 4, F = 31.5, FW = 32, R = 68, HZ = 15.5;
+  const L = 4.6, F = 31.5, FW = 32, R = 68, HZ = 15.0;
   const p = [];
   p.push(`<rect width="95" height="45" rx="1.5" fill="${NAVY}"/>`);
+  p.push(frame(95, 45));
   // frente
   p.push(mark(F, 3.1, 3.2));
   p.push(text(F + 6.5, 5.7, 'Axis FitoMed', { size: 2.05, fill: CREAM, weight: 500 }));
   p.push(text(F + FW, 5.7, '30 mL', { size: 1.8, fill: MUTED, font: 'mono', anchor: 'end' }));
   p.push(axis(F, FW, HZ, o.thc / (o.cbd + o.thc), o.accent, 'CBD', 'THC'));
-  p.push(text(F - 0.2, 27.0, o.name, { size: 6.0, fill: CREAM, font: 'display', weight: 300, ls: -0.06 }));
-  p.push(text(F, 30.7, 'Full-spectrum · extrato em óleo de coco (MCT)', { size: 1.75, fill: MUTED }));
-  p.push(dataRow([F, F + 12.2, F + 24.4], 35.0, ['CBD', 'THC', 'Proporção'], [`${mg(o.cbd)} mg/mL`, `${mg(o.thc)} mg/mL`, o.ratio]));
-  p.push(text(F, 41.9, 'Uso sublingual, conforme prescrição médica', { size: 1.35, fill: MUTED }));
+  p.push(text(F - 0.2, 27.4, o.name, { size: 6.4, fill: CREAM, font: 'display', weight: 300, ls: -0.1 }));
+  p.push(text(F, 31.0, 'Full-spectrum · em óleo de coco (MCT)', { size: 1.75, fill: MUTED }));
+  p.push(dataRow([F, F + 12.2, F + 24.4], 35.2, ['CBD', 'THC', 'Proporção'], [`${mg(o.cbd)} mg/mL`, `${mg(o.thc)} mg/mL`, o.ratio]));
+  p.push(text(F, 41.6, 'Uso sublingual, conforme prescrição médica', { size: 1.35, fill: MUTED }));
   // verso esquerdo
-  let y = 5.6;
+  let y = 6.0;
   const H = (t) => { const r = text(L, y, t, { size: 1.7, fill: CREAM, weight: 500 }); y += 2.5; return r; };
   const P = (lines) => { const r = para(L, y, lines); y += lines.length * 1.95 + 1.5; return r; };
   p.push(H('Composição'));
@@ -119,32 +121,33 @@ function oilBody(o) {
   p.push(H('Conservação'));
   p.push(P(['Local fresco e seco, ao abrigo', 'da luz. Após aberto, usar em', '90 dias.']));
   // verso direito
-  p.push(laudo(R, 5.6, o.lot));
-  p.push(kv(R, 21.6, [['Lote', o.lot], ['Fab.', o.fab], ['Val.', o.val]]));
-  p.push(para(R, 29.6, [`Baixo teor de THC (${o.ratio}).`, 'Mantenha fora do alcance', 'de crianças. Gestantes e', 'lactantes: só com orientação.'], { size: 1.4, lh: 1.85 }));
-  p.push(para(R, 40.3, ['Uso exclusivo de associados.', 'Axis FitoMed · Florianópolis, SC'], { size: 1.4, lh: 1.85, fill: CREAM }));
+  p.push(laudo(R, 6.0, o.lot));
+  p.push(kv(R, 22.0, [['Lote', o.lot], ['Fab.', o.fab], ['Val.', o.val]]));
+  p.push(para(R, 30.0, [`Baixo teor de THC (${o.ratio}).`, 'Mantenha fora do alcance', 'de crianças. Gestantes e', 'lactantes: só com orientação.'], { size: 1.4, lh: 1.85 }));
+  p.push(para(R, 39.9, ['Uso exclusivo de associados.', 'Axis FitoMed · Florianópolis, SC'], { size: 1.4, lh: 1.85, fill: CREAM }));
   return p.join('\n');
 }
 
 // ---------- Flor: rótulo de corpo 150 × 50 ----------
 function flowerBody(f) {
-  const L = 4, F = 53, FW = 44, R = 102, HZ = 16;
+  const L = 4.8, F = 53, FW = 44, R = 102, HZ = 16;
   const p = [];
   p.push(`<rect width="150" height="50" rx="1.5" fill="${NAVY}"/>`);
+  p.push(frame(150, 50));
   // frente
   p.push(mark(F, 3.3, 3.4));
   p.push(text(F + 6.9, 6.1, 'Axis FitoMed', { size: 2.2, fill: CREAM, weight: 500 }));
   p.push(text(F + FW, 6.1, '3,5 g', { size: 1.9, fill: MUTED, font: 'mono', anchor: 'end' }));
   p.push(axis(F, FW, HZ, f.lean, f.accent, 'Sativa', 'Indica'));
-  p.push(text(F - 0.3, 29.6, f.name, { size: f.name.length > 10 ? 6.6 : 8.0, fill: f.accent, font: 'display', weight: 300, ls: -0.08 }));
-  p.push(text(F, 33.6, `Flor curada · ${f.type}`, { size: 2.0, fill: MUTED }));
-  p.push(dataRow([F, F + 14.8, F + 29.6], 38.4, ['THC', 'CBD', 'Terpenos'], [pct(f.thc), pct(f.cbd), pct(f.terpTotal)]));
-  p.push(text(F, 46.2, 'Uso por vaporização, conforme prescrição médica', { size: 1.4, fill: MUTED }));
+  p.push(text(F - 0.3, 30.4, f.name, { size: Math.min(9.0, 44 / (f.name.length * 0.52)), fill: f.accent, font: 'display', weight: 300, ls: -0.12 }));
+  p.push(text(F, 34.4, `Flor curada · ${f.type.toLowerCase()}`, { size: 2.0, fill: MUTED }));
+  p.push(dataRow([F, F + 18], 39.2, ['THC', 'CBD'], [pct(f.thc), pct(f.cbd)], 2.6));
+  p.push(text(F, 46.0, 'Uso por vaporização, conforme prescrição médica', { size: 1.4, fill: MUTED }));
   // verso esquerdo: terpenos, cultivo, conservação
   let y = 6.1;
   const H = (t) => { const r = text(L, y, t, { size: 1.8, fill: CREAM, weight: 500 }); y += 2.7; return r; };
   const P = (lines) => { const r = para(L, y, lines, { size: 1.5, lh: 2.0 }); y += lines.length * 2.0 + 1.6; return r; };
-  p.push(H('Perfil de terpenos'));
+  p.push(H(`Terpenos · ${pct(f.terpTotal)}`));
   const tk = f.terps.map(([k, v]) => [k, pct(v)]);
   p.push(kv(L, y, tk, 20, 2.2)); y += tk.length * 2.2 + 1.6;
   p.push(H('Cultivo'));
@@ -155,7 +158,7 @@ function flowerBody(f) {
   p.push(laudo(R, 6.1, f.lot, 11));
   p.push(kv(R, 23.2, [['Lote', f.lot], ['Colheita', f.harvest], ['Embalado', f.packed], ['Val.', f.val]], 10, 2.3));
   p.push(para(R, 34.4, ['Contém THC. Pode causar sonolência; não dirija.', 'Mantenha fora do alcance de crianças. Gestantes', 'e lactantes: só com orientação médica.'], { size: 1.4, lh: 1.9 }));
-  p.push(para(R, 42.6, ['Uso exclusivo de associados.', 'Axis FitoMed · Florianópolis, SC'], { size: 1.4, lh: 1.9, fill: CREAM }));
+  p.push(para(R, 42.4, ['Uso exclusivo de associados.', 'Axis FitoMed · Florianópolis, SC'], { size: 1.4, lh: 1.9, fill: CREAM }));
   return p.join('\n');
 }
 
@@ -164,11 +167,10 @@ function lidBody(f) {
   const c = 21;
   return `<circle cx="${c}" cy="${c}" r="21" fill="${NAVY}"/>
 <circle cx="${c}" cy="${c}" r="19.2" fill="none" stroke="${HAIR}" stroke-width="0.14"/>
-${mark(c - 6.0, 8.2, 6.6)}
-${text(c, 21.6, 'Axis FitoMed', { size: 2.4, fill: CREAM, weight: 500, anchor: 'middle' })}
-${text(c, 27.4, f.name, { size: f.name.length > 10 ? 3.0 : 3.6, fill: f.accent, font: 'display', weight: 300, anchor: 'middle' })}
-${text(c, 31.4, `THC ${pct(f.thc)} · CBD ${pct(f.cbd)}`, { size: 1.6, fill: MUTED, font: 'mono', anchor: 'middle' })}
-${text(c, 35.2, '3,5 g', { size: 1.6, fill: MUTED, font: 'mono', anchor: 'middle' })}`;
+${mark(c - 7.1, 7.6, 7.8)}
+${text(c, 22.6, 'Axis FitoMed', { size: 2.4, fill: CREAM, weight: 500, anchor: 'middle' })}
+${text(c, 29.0, f.name, { size: f.name.length > 10 ? 3.4 : 4.2, fill: f.accent, font: 'display', weight: 300, anchor: 'middle' })}
+${text(c, 33.2, `THC ${pct(f.thc)} · CBD ${pct(f.cbd)} · 3,5 g`, { size: 1.5, fill: MUTED, font: 'mono', anchor: 'middle' })}`;
 }
 
 const FONT_CSS = `--f-display:'Spectral',Georgia,serif;--f-body:'Hanken Grotesk',-apple-system,system-ui,sans-serif;--f-mono:'IBM Plex Mono',ui-monospace,Menlo,monospace;`;
@@ -231,21 +233,32 @@ function bottle(o, sfx) {
   const id = `lbl-${o.id}${sfx}`, g = `g-${o.id}${sfx}`;
   const { strips, clips } = wrap(id, 16, 35, 60, 45, 47.5);
   const body = 'M19 52 Q19 44 27 41 L29 40 L29 34 L41 34 L41 40 L43 41 Q51 44 51 52 L51 115 Q51 119 47 119 L23 119 Q19 119 19 115 Z';
-  return `<svg class="bottle" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 70 128" role="img" aria-label="Frasco conta-gotas 30 mL de Óleo de CBD">
+  return `<svg class="bottle" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 70 150" role="img" aria-label="Frasco conta-gotas 30 mL de Óleo de CBD">
 <defs><g id="${id}">${oilBody(o)}</g>${clips}
   <linearGradient id="${g}-glass" x1="0" x2="1" y1="0" y2="0"><stop offset="0" stop-color="#1a0c03"/><stop offset="0.18" stop-color="#4a2409"/><stop offset="0.34" stop-color="#8a4a14"/><stop offset="0.48" stop-color="#6a370e"/><stop offset="0.78" stop-color="#3a1b06"/><stop offset="1" stop-color="#120802"/></linearGradient>
   ${shade(g)}
   <linearGradient id="${g}-cap" x1="0" x2="1" y1="0" y2="0"><stop offset="0" stop-color="#05080b"/><stop offset="0.3" stop-color="#1b2229"/><stop offset="0.45" stop-color="#2a333b"/><stop offset="1" stop-color="#05080b"/></linearGradient>
   <radialGradient id="${g}-floor" cx="0.5" cy="0.5" r="0.5"><stop offset="0" stop-color="#000" stop-opacity="0.55"/><stop offset="1" stop-color="#000" stop-opacity="0"/></radialGradient>
   <clipPath id="${g}-body"><path d="${body}"/></clipPath>
+  <linearGradient id="${g}-metal" x1="0" x2="1" y1="0" y2="0"><stop offset="0" stop-color="#2a2f35"/><stop offset="0.3" stop-color="#8b949c"/><stop offset="0.45" stop-color="#d7dce0"/><stop offset="0.7" stop-color="#5a626a"/><stop offset="1" stop-color="#1b1f24"/></linearGradient>
+  <linearGradient id="${g}-base" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity="0.55"/></linearGradient>
+  <linearGradient id="${g}-refl" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#fff" stop-opacity="0.22"/><stop offset="0.5" stop-color="#fff" stop-opacity="0"/></linearGradient>
+  <mask id="${g}-rmask"><rect x="0" y="119" width="70" height="40" fill="url(#${g}-refl)"/></mask>
+  <g id="${g}-obj">
+    <path d="M28 17 Q28 5 35 5 Q42 5 42 17 Z" fill="url(#${g}-cap)"/>
+    <path d="M30 8 Q31.5 6.2 34 6" fill="none" stroke="#fff" stroke-opacity="0.18" stroke-width="0.5" stroke-linecap="round"/>
+    <rect x="25" y="16" width="20" height="17.5" rx="1.6" fill="url(#${g}-cap)"/>
+    <g stroke="#000" stroke-opacity="0.45" stroke-width="0.35">${Array.from({ length: 9 }, (_, i) => `<line x1="${27 + i * 2}" y1="17.5" x2="${27 + i * 2}" y2="32"/>`).join('')}</g>
+    <rect x="26.6" y="33" width="16.8" height="2.6" fill="url(#${g}-metal)"/>
+    <g clip-path="url(#${g}-body)"><rect x="19" y="34" width="32" height="85" fill="url(#${g}-glass)"/><rect x="19" y="108" width="32" height="11" fill="url(#${g}-base)"/><rect x="24.4" y="34" width="1.4" height="85" fill="#fff" fill-opacity="0.16"/><rect x="47.2" y="34" width="0.8" height="85" fill="#fff" fill-opacity="0.07"/></g>
+    <g clip-path="url(#${g}-body)">${strips}<rect x="19" y="60" width="32" height="45" fill="url(#${g}-shade)"/><rect x="24.4" y="60" width="1.4" height="45" fill="#fff" fill-opacity="0.07"/></g>
+    <g clip-path="url(#${g}-body)"><rect x="50.2" y="36" width="0.8" height="83" fill="#fff" fill-opacity="0.22"/><rect x="19" y="36" width="0.6" height="83" fill="#fff" fill-opacity="0.10"/></g>
+    <path d="${body}" fill="none" stroke="#fff" stroke-opacity="0.10" stroke-width="0.25"/>
+  </g>
 </defs>
 <ellipse cx="35" cy="120.5" rx="24" ry="3.2" fill="url(#${g}-floor)"/>
-<path d="M28 17 Q28 5 35 5 Q42 5 42 17 Z" fill="url(#${g}-cap)"/>
-<rect x="25" y="16" width="20" height="18.5" rx="1.6" fill="url(#${g}-cap)"/>
-<g stroke="#000" stroke-opacity="0.45" stroke-width="0.35">${Array.from({ length: 9 }, (_, i) => `<line x1="${27 + i * 2}" y1="17.5" x2="${27 + i * 2}" y2="33"/>`).join('')}</g>
-<g clip-path="url(#${g}-body)"><rect x="19" y="34" width="32" height="85" fill="url(#${g}-glass)"/><rect x="24.4" y="34" width="1.4" height="85" fill="#fff" fill-opacity="0.16"/><rect x="47.2" y="34" width="0.8" height="85" fill="#fff" fill-opacity="0.07"/></g>
-<g clip-path="url(#${g}-body)">${strips}<rect x="19" y="60" width="32" height="45" fill="url(#${g}-shade)"/><rect x="24.4" y="60" width="1.4" height="45" fill="#fff" fill-opacity="0.07"/></g>
-<path d="${body}" fill="none" stroke="#fff" stroke-opacity="0.10" stroke-width="0.25"/>
+<g mask="url(#${g}-rmask)" transform="translate(0,238) scale(1,-1)"><use href="#${g}-obj"/></g>
+<use href="#${g}-obj"/>
 </svg>`;
 }
 
@@ -254,21 +267,31 @@ function jar(f, sfx) {
   const id = `lbl-${f.id}${sfx}`, g = `g-${f.id}${sfx}`;
   const { strips, clips } = wrap(id, 25, 45, 44, 50, 75, 96);
   const body = 'M20 29 Q20 25 24 25 L66 25 Q70 25 70 29 L70 98 Q70 103 65 103 L25 103 Q20 103 20 98 Z';
-  return `<svg class="jar" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 90 112" role="img" aria-label="Pote de flor 3,5 g, strain ${esc(f.name)}">
+  return `<svg class="jar" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 90 134" role="img" aria-label="Pote de flor 3,5 g, strain ${esc(f.name)}">
 <defs><g id="${id}">${flowerBody(f)}</g>${clips}
   <linearGradient id="${g}-glass" x1="0" x2="1" y1="0" y2="0"><stop offset="0" stop-color="#05080b"/><stop offset="0.2" stop-color="#161c22"/><stop offset="0.34" stop-color="#2b333b"/><stop offset="0.5" stop-color="#1c2329"/><stop offset="0.8" stop-color="#0f1419"/><stop offset="1" stop-color="#030507"/></linearGradient>
   ${shade(g)}
   <linearGradient id="${g}-cap" x1="0" x2="1" y1="0" y2="0"><stop offset="0" stop-color="#05080b"/><stop offset="0.3" stop-color="#1b2229"/><stop offset="0.45" stop-color="#2a333b"/><stop offset="1" stop-color="#05080b"/></linearGradient>
   <radialGradient id="${g}-floor" cx="0.5" cy="0.5" r="0.5"><stop offset="0" stop-color="#000" stop-opacity="0.55"/><stop offset="1" stop-color="#000" stop-opacity="0"/></radialGradient>
   <clipPath id="${g}-body"><path d="${body}"/></clipPath>
+  <linearGradient id="${g}-base" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity="0.6"/></linearGradient>
+  <linearGradient id="${g}-lip" x1="0" x2="1" y1="0" y2="0"><stop offset="0" stop-color="#0a0e12"/><stop offset="0.3" stop-color="#3a444d"/><stop offset="0.5" stop-color="#5a656e"/><stop offset="1" stop-color="#0a0e12"/></linearGradient>
+  <linearGradient id="${g}-refl" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#fff" stop-opacity="0.2"/><stop offset="0.55" stop-color="#fff" stop-opacity="0"/></linearGradient>
+  <mask id="${g}-rmask"><rect x="0" y="103" width="90" height="40" fill="url(#${g}-refl)"/></mask>
+  <g id="${g}-obj">
+    <rect x="18" y="10" width="54" height="15.5" rx="2" fill="url(#${g}-cap)"/>
+    <g stroke="#000" stroke-opacity="0.45" stroke-width="0.4">${Array.from({ length: 25 }, (_, i) => `<line x1="${20 + i * 2.08}" y1="11.5" x2="${20 + i * 2.08}" y2="23"/>`).join('')}</g>
+    <rect x="18" y="10" width="54" height="15.5" rx="2" fill="none" stroke="#fff" stroke-opacity="0.10" stroke-width="0.25"/>
+    <rect x="18.5" y="24.2" width="53" height="1.6" fill="url(#${g}-lip)"/>
+    <g clip-path="url(#${g}-body)"><rect x="20" y="25" width="50" height="78" fill="url(#${g}-glass)"/><rect x="20" y="92" width="50" height="11" fill="url(#${g}-base)"/><rect x="28" y="25" width="1.8" height="78" fill="#fff" fill-opacity="0.12"/><rect x="63" y="25" width="1" height="78" fill="#fff" fill-opacity="0.06"/></g>
+    <g clip-path="url(#${g}-body)">${strips}<rect x="20" y="44" width="50" height="50" fill="url(#${g}-shade)"/><rect x="28" y="44" width="1.8" height="50" fill="#fff" fill-opacity="0.07"/></g>
+    <g clip-path="url(#${g}-body)"><rect x="69.2" y="27" width="0.8" height="76" fill="#fff" fill-opacity="0.22"/><rect x="20" y="27" width="0.6" height="76" fill="#fff" fill-opacity="0.10"/></g>
+    <path d="${body}" fill="none" stroke="#fff" stroke-opacity="0.10" stroke-width="0.25"/>
+  </g>
 </defs>
 <ellipse cx="45" cy="104.5" rx="32" ry="3.4" fill="url(#${g}-floor)"/>
-<rect x="18" y="10" width="54" height="15.5" rx="2" fill="url(#${g}-cap)"/>
-<g stroke="#000" stroke-opacity="0.45" stroke-width="0.4">${Array.from({ length: 25 }, (_, i) => `<line x1="${20 + i * 2.08}" y1="11.5" x2="${20 + i * 2.08}" y2="24"/>`).join('')}</g>
-<rect x="18" y="10" width="54" height="15.5" rx="2" fill="none" stroke="#fff" stroke-opacity="0.08" stroke-width="0.25"/>
-<g clip-path="url(#${g}-body)"><rect x="20" y="25" width="50" height="78" fill="url(#${g}-glass)"/><rect x="28" y="25" width="1.8" height="78" fill="#fff" fill-opacity="0.12"/><rect x="63" y="25" width="1" height="78" fill="#fff" fill-opacity="0.06"/></g>
-<g clip-path="url(#${g}-body)">${strips}<rect x="20" y="44" width="50" height="50" fill="url(#${g}-shade)"/><rect x="28" y="44" width="1.8" height="50" fill="#fff" fill-opacity="0.07"/></g>
-<path d="${body}" fill="none" stroke="#fff" stroke-opacity="0.10" stroke-width="0.25"/>
+<g mask="url(#${g}-rmask)" transform="translate(0,206) scale(1,-1)"><use href="#${g}-obj"/></g>
+<use href="#${g}-obj"/>
 </svg>`;
 }
 
@@ -329,6 +352,12 @@ h2{font-family:var(--f-display);font-weight:300;font-size:clamp(26px,3vw,40px);l
 h3{font-family:var(--f-display);font-weight:300;font-size:clamp(22px,2.4vw,30px);line-height:1.1}
 .sec-head .kind{color:var(--muted);font-size:15px}
 .desc{color:var(--muted);max-width:62ch;margin:-8px 0 24px}
+.family{--k:min(3.1px,calc((100vw - 48px) / 352));display:flex;justify-content:center;align-items:flex-end;gap:calc(var(--k) * 4);padding:40px 0 16px}
+.family figure{display:flex;flex-direction:column;align-items:center;gap:6px}
+.family .fam-bottle svg{width:calc(var(--k) * 70);height:calc(var(--k) * 150)}
+.family .fam-jar svg{width:calc(var(--k) * 90);height:calc(var(--k) * 134)}
+.family figcaption{font-size:14px;text-align:center;line-height:1.3}
+.family figcaption span{display:block;color:var(--muted);font-size:12px;font-variant-numeric:tabular-nums}
 .hero{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;padding:8px 0 32px;align-items:end}
 .hero figure{display:flex;flex-direction:column;align-items:center;gap:14px}
 .hero svg{width:100%;max-width:300px;height:auto;display:block}
@@ -361,16 +390,21 @@ footer{padding:32px 0 64px;color:var(--muted);font-size:13px;border-top:1px soli
 svg text{font-variant-numeric:tabular-nums}
 a:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
 @media (max-width:900px){.two,.twoflower{grid-template-columns:1fr}.side{order:-1}.sys{grid-template-columns:1fr}}
-@media (max-width:640px){.hero{grid-template-columns:1fr;gap:40px}.hero svg{max-width:240px}header.top{padding:40px 0 28px}}
+@media (max-width:640px){.hero{grid-template-columns:1fr;gap:40px}.hero svg{max-width:240px}header.top{padding:40px 0 28px}.family figcaption{font-size:11px}.family figcaption span{display:none}}
 </style>
 </head>
 <body>
 <div class="wrap">
 <header class="top">
-  <div class="eyebrow">Axis FitoMed · Embalagens · Protótipo v2 · 06/11/2026</div>
+  <div class="eyebrow">Axis FitoMed · Embalagens · Protótipo v3 · 08/11/2026</div>
   <h1>Óleo de CBD e flor em pote. Uma marca, dois produtos.</h1>
   <p class="lead">Mesma grade, mesma tipografia, mesmo navy. O óleo é um produto só: um rótulo. A flor vem em pote de vidro preto, e aí a strain é a protagonista: três rótulos de corpo e três de tampa.</p>
 </header>
+
+<div class="family" aria-label="Família de produtos em escala real">
+  <figure class="fam-bottle">${bottle(o, '-f')}<figcaption>Óleo de CBD<span>30 mL · 20 : 1</span></figcaption></figure>
+${FLOWERS.map(f => `  <figure class="fam-jar">${jar(f, '-f')}<figcaption>${f.name}<span>${f.type} · THC ${pct(f.thc)}</span></figcaption></figure>`).join('\n')}
+</div>
 
 <section id="oleo">
   <div class="sec-head"><span class="num">01</span><h2>Óleo de CBD</h2><span class="kind">frasco conta-gotas 30 mL</span></div>
@@ -384,10 +418,7 @@ a:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
 
 <section id="flor">
   <div class="sec-head"><span class="num">02</span><h2>Flor em pote</h2><span class="kind">vidro preto UV · 3,5 g · três strains</span></div>
-  <p class="desc">Pote preto com tampa fosca. A tampa leva a marca; o corpo leva a strain em destaque, com THC, CBD e terpenos lidos de frente. O eixo aqui vai de sativa a indica.</p>
-  <div class="hero">
-${FLOWERS.map(f => `    <figure>${jar(f, '-h')}<figcaption><b>${f.name}</b><span>${f.type}</span><span class="m"></span><span>THC · CBD</span><span class="m">${pct(f.thc)} · ${pct(f.cbd)}</span></figcaption></figure>`).join('\n')}
-  </div>
+  <p class="desc">Pote preto com tampa fosca. A tampa leva a marca; o corpo leva a strain em destaque, com THC e CBD lidos de frente. Terpenos, cultivo e laudo ficam no verso. O eixo aqui vai de sativa a indica.</p>
 
 ${FLOWERS.map(f => `  <div class="strain" id="${f.id}">
     <div class="sec-head"><span class="num">02.${f.n.slice(1)}</span><h3>${f.name}</h3><span class="kind">${f.type} · THC ${pct(f.thc)} · CBD ${pct(f.cbd)}</span></div>
@@ -404,14 +435,14 @@ ${FLOWERS.map(f => `  <div class="strain" id="${f.id}">
   <div class="sec-head"><span class="num">03</span><h2>Sistema</h2></div>
   <div class="sys">
     <dl>
-      <dt>Fundo</dt><dd>Navy da marca, ${NAVY}, nos dois produtos. Papel fosco texturizado ou vinil fosco; sem verniz brilhante.</dd>
+      <dt>Fundo</dt><dd>Navy da marca, ${NAVY}, nos dois produtos, com moldura hairline a 1,5 mm da borda. Papel fosco texturizado ou vinil fosco; sem verniz brilhante.</dd>
       <dt>Texto</dt><dd>Creme ${CREAM} para o essencial, cinza-azulado ${MUTED} para o apoio. Caixa normal, sem caps lock.</dd>
       <dt>Tipografia</dt><dd>Spectral Light só no título: “Óleo de CBD” no frasco, nome da strain no pote. Hanken Grotesk no texto. IBM Plex Mono para dado.</dd>
       <dt>Eixo</dt><dd>Hairline com um ponto. No óleo, de CBD a THC. Na flor, de sativa a indica. Lê-se de longe, sem ler número.</dd>
     </dl>
     <dl>
       <dt>Óleo</dt><dd>Rótulo 95 × 45 mm, frente de 32 mm (115° do cilindro). Acento verde fixo, um produto só.</dd>
-      <dt>Flor</dt><dd>Corpo 150 × 50 mm, frente de 44 mm; emenda de 7 mm no verso. Tampa Ø 42 mm com marca, strain e potência. Uma cor de acento por strain.</dd>
+      <dt>Flor</dt><dd>Corpo 150 × 50 mm, frente de 44 mm só com nome, eixo e THC/CBD; emenda de 7 mm no verso. Tampa Ø 42 mm com marca, strain e potência. Uma cor de acento por strain.</dd>
       <dt>Verso</dt><dd>QR leva ao CoA do lote. Lote e datas em mono. Flor traz perfil de terpenos, cultivo e cura; óleo traz composição e modo de uso.</dd>
       <dt>Pote</dt><dd>Vidro preto UV Ø 50 mm, tampa preta fosca com fecho de segurança. Referências abaixo.</dd>
     </dl>
