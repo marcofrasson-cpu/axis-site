@@ -96,6 +96,53 @@
     el.dataset.over = over ? '1' : '';
   }
 
+  // ---- arte do card: rótulo em full bleed sobre contornos topográficos na cor do produto ----
+  const ART_W = 600, ART_H = 400;
+  const MARK = '<g transform="translate(%X,%Y) scale(%S) translate(-20.2,-46)" fill="none" stroke-linejoin="miter" stroke-width="5.5"><polygon points="60,46 99.8,68 99.8,112 60,134 20.2,112 20.2,68" stroke="#3a4a52"/><polygon points="99.8,68 139.6,46 179.4,68 179.4,112 139.6,134 99.8,112" stroke="#5fc89b"/><path d="M 126.6 116 L 139.6 58 L 152.6 116 M 131.1 95 L 148.1 95" stroke="#5fc89b"/><circle cx="99.8" cy="68" r="6.5" fill="#5fc89b" stroke="none"/><circle cx="99.8" cy="112" r="6.5" fill="#5fc89b" stroke="none"/></g>';
+  const ACCENT = { oleo: '#5fc89b', harlequin: '#5fc89b', acdc: '#5fc89b', 'blue-dream': '#e8a13c', 'wedding-cake': '#e8a13c', 'northern-lights': '#c6d2df' };
+  function rng(seed) { let t = 0; for (const c of seed) t = (t * 31 + c.charCodeAt(0)) >>> 0; return () => { t += 0x6D2B79F5; let r = Math.imul(t ^ (t >>> 15), 1 | t); r ^= r + Math.imul(r ^ (r >>> 7), 61 | r); return ((r ^ (r >>> 14)) >>> 0) / 4294967296; }; }
+  function contours(p) {
+    const R = rng(p.id), accent = ACCENT[p.id] || '#5fc89b';
+    const lean = p.eixo[2];
+    const cx = ART_W * (0.22 + 0.56 * lean), cy = 150 + R() * 40;
+    const waves = Array.from({ length: 4 }, (_, i) => ({ m: 2 + i + Math.floor(R() * 2), a: (0.14 - i * 0.025) * (0.8 + R() * 0.4), ph: R() * Math.PI * 2 }));
+    const drift = Array.from({ length: 3 }, () => ({ m: 1 + Math.floor(R() * 3), a: 0.05 + R() * 0.04, ph: R() * Math.PI * 2 }));
+    const N = 16, steps = 120;
+    let out = '';
+    for (let k = 0; k < N; k++) {
+      const base = 26 + k * 30;
+      let d = '';
+      for (let i = 0; i <= steps; i++) {
+        const th = (i / steps) * Math.PI * 2;
+        let n = 0; for (const w of waves) n += w.a * Math.sin(w.m * th + w.ph);
+        let m = 0; for (const w of drift) m += w.a * Math.sin(w.m * th + w.ph + k * 0.35);
+        const r = base * (1 + n + m * (k / N));
+        const x = cx + r * Math.cos(th) * 1.25, y = cy + r * Math.sin(th);
+        d += (i ? 'L' : 'M') + x.toFixed(1) + ' ' + y.toFixed(1);
+      }
+      const op = (0.36 - k * 0.018).toFixed(3);
+      out += `<path d="${d}Z" fill="none" stroke="${accent}" stroke-opacity="${op}" stroke-width="1.25" stroke-linejoin="round"/>`;
+    }
+    return out;
+  }
+  const svgEsc = (t) => String(t).replace(/&/g, '&amp;').replace(/</g, '&lt;');
+  function artSVG(p) {
+    const accent = ACCENT[p.id] || '#5fc89b';
+    const size = p.tamanhos[0].label;
+    const nameSize = Math.min(96, Math.floor(520 / (p.nome.length * 0.5)));
+    const line = p.dados.slice(0, 2).map(([k, v]) => `<tspan fill="#a2b0c2">${k} </tspan><tspan fill="#f4f2ec">${svgEsc(v)}</tspan>`).join('<tspan fill="#a2b0c2">  ·  </tspan>');
+    return `<svg class="p-art" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${ART_W} ${ART_H}" role="img" aria-label="${svgEsc(p.nome)}">
+      <rect width="${ART_W}" height="${ART_H}" fill="#0d1b2a"/>
+      <g clip-path="inset(0)">${contours(p)}</g>
+      <rect x="14" y="14" width="${ART_W - 28}" height="${ART_H - 28}" rx="4" fill="none" stroke="#f4f2ec" stroke-opacity="0.22" stroke-width="1"/>
+      ${MARK.replace('%X', 34).replace('%Y', 31).replace('%S', (30 / 88).toFixed(4))}
+      <text x="96" y="54" font-family="var(--font-body)" font-size="20" font-weight="500" fill="#f4f2ec">Axis FitoMed</text>
+      <text x="${ART_W - 34}" y="54" font-family="var(--font-mono)" font-size="18" fill="#a2b0c2" text-anchor="end">${svgEsc(size)}</text>
+      <text x="32" y="${ART_H - 104}" font-family="var(--font-display)" font-weight="300" font-size="${nameSize}" letter-spacing="-0.025em" fill="${accent}">${svgEsc(p.nome)}</text>
+      <text x="34" y="${ART_H - 50}" font-family="var(--font-mono)" font-size="25" style="font-variant-numeric:tabular-nums">${line}</text>
+    </svg>`;
+  }
+
   // ---- catálogo ----
   const state = { filtro: 'todos', busca: '', ordem: 'relevancia', tam: {} };
   function stockBadge(p) {
@@ -109,11 +156,10 @@
     const stock = p.estoque === 0 ? `<div class="p-stock out">Esgotado${p.previsao ? ` · previsão ${p.previsao}` : ''}</div>` : `<div class="p-stock ${p.estoque <= 5 ? 'low' : ''}">${p.estoque} em estoque · lote ${p.lote}</div>`;
     const cta = p.estoque === 0 ? `<button class="btn btn-ghost btn-sm" data-avisar>Avise-me</button>` : `<button class="btn btn-ghost btn-sm" data-add>Adicionar</button>`;
     return `<article class="p-card ${p.estoque === 0 ? 'out' : ''}" data-id="${p.id}">
-      <div class="p-media" data-open role="button" tabindex="0" aria-label="Ver detalhes de ${p.nome}">${M[p.id] || ''}${stockBadge(p)}</div>
+      <div class="p-media" data-open role="button" tabindex="0" aria-label="Ver detalhes de ${p.nome}">${artSVG(p)}${stockBadge(p)}</div>
       <div class="p-body">
         <div class="p-eyebrow">${p.sub}</div>
         <h3 class="p-name"><button data-open>${p.nome}</button></h3>
-        <div class="p-data">${p.dados.slice(0, 2).map(([k, v]) => `<span>${k} <b class="num">${v}</b></span>`).join('')}</div>
         ${sizes}
         ${stock}
         <div class="p-foot"><div class="p-price num">${brl(t.preco)}<small>/ ${t.label}</small></div>${cta}</div>
