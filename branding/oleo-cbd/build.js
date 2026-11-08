@@ -462,7 +462,22 @@ ${REFS.map(([t, u, n]) => `    <li><a href="${u}" target="_blank" rel="noopener"
 </html>`;
 }
 
+// ---------- Mockups para o portal (SVG inline em JS, pra herdar as fontes da página) ----------
+const PORTAL_EXTRA = [
+  { id: 'acdc', name: 'ACDC', type: 'Sativa-dominante', lean: 0.3, thc: 0.6, cbd: 14, terpTotal: 1.6, accent: GREEN, lot: '2610-D', terps: [['Mirceno', 0.5], ['α-Pineno', 0.4], ['β-Cariofileno', 0.3]], harvest: '09/2026', packed: '10/2026', val: '04/2027' },
+  { id: 'wedding-cake', name: 'Wedding Cake', type: 'Híbrida, indica-dominante', lean: 0.7, thc: 22, cbd: 0.2, terpTotal: 2.3, accent: AMBER, lot: '2610-W', terps: [['Limoneno', 0.8], ['β-Cariofileno', 0.6], ['Linalol', 0.3]], harvest: '09/2026', packed: '10/2026', val: '04/2027' }
+];
+function writePortalMockups() {
+  const dir = path.join(__dirname, '..', '..', 'portal', 'js');
+  if (!fs.existsSync(path.dirname(dir))) return;
+  fs.mkdirSync(dir, { recursive: true });
+  const m = { oleo: bottle(OIL, '-p') };
+  for (const f of [...FLOWERS, ...PORTAL_EXTRA]) m[f.id] = jar(f, '-p');
+  fs.writeFileSync(path.join(dir, 'mockups.js'), '// Gerado por branding/oleo-cbd/build.js. Não editar à mão.\nwindow.AXIS_MOCKUPS = ' + JSON.stringify(m) + ';\n');
+}
+
 // ---------- Escrita ----------
+writePortalMockups();
 fs.writeFileSync(path.join(OUT, 'rotulo-oleo-cbd.svg'), svgFile(95, 45, 'Axis FitoMed · Óleo de CBD 30 mL · rótulo 95 × 45 mm', oilBody(OIL)));
 for (const f of FLOWERS) {
   fs.writeFileSync(path.join(OUT, `flor-${f.id}-corpo.svg`), svgFile(150, 50, `Axis FitoMed · Flor ${f.name} · rótulo de corpo 150 × 50 mm`, flowerBody(f)));

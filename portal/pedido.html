@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Pedido · Portal do associado · Axis FitoMed</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Spectral:wght@400;600&family=Hanken+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400&display=swap">
+<link rel="stylesheet" href="css/portal.css">
+</head>
+<body data-page="pedido">
+
+<header class="site-header">
+  <div class="container">
+    <nav class="nav" aria-label="portal">
+      <a class="brand" href="pedido.html"><svg viewBox="0 0 256 256" fill="none" aria-hidden="true"><g transform="translate(128,128) scale(1.42) translate(-99.8,-90)" stroke-linejoin="miter"><polygon points="60,46 99.8,68 99.8,112 60,134 20.2,112 20.2,68" stroke="#3a4a52" stroke-width="5"/><polygon points="99.8,68 139.6,46 179.4,68 179.4,112 139.6,134 99.8,112" stroke="#5fc89b" stroke-width="5"/><path d="M 126.6 116 L 139.6 58 L 152.6 116 M 131.1 95 L 148.1 95" stroke="#5fc89b" stroke-width="5"/><circle cx="99.8" cy="68" r="6" fill="#5fc89b"/><circle cx="99.8" cy="112" r="6" fill="#5fc89b"/></g></svg><span><span class="brand-text">Axis FitoMed</span><span class="brand-sub">Portal do associado</span></span></a>
+      <label class="p-search"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><span class="sr">Buscar no catálogo</span><input id="busca" type="search" placeholder="Buscar no catálogo liberado para você" autocomplete="off"></label>
+      <a class="p-member" href="perfil.html"><i></i><span class="name" data-member-name></span><span class="mono" data-member-id></span></a>
+      <button class="p-exit" data-sair>Sair</button>
+    </nav>
+    <nav class="p-tabs" aria-label="seções">
+      <a href="pedido.html" aria-current="page">Pedido</a>
+      <a href="historico.html" >Histórico</a>
+      <a href="perfil.html#suporte" >Suporte</a>
+      <a class="p-tab-right" href="perfil.html" >Meu perfil</a>
+    </nav>
+  </div>
+</header>
+<main class="container p-main" id="conteudo">
+  <div class="p-head">
+    <div><h1 class="p-page-title">Produtos liberados para você</h1><p class="p-lead">Tudo o que aparece aqui está dentro da sua receita. O limite mensal desconta no pedido, na hora.</p></div>
+  </div>
+  <section class="p-rx" id="rx" aria-label="Receita e limites"></section>
+  <div class="p-layout">
+    <section aria-label="Catálogo">
+      <div class="p-filters">
+        <button class="p-chip" data-filtro="todos" aria-pressed="true">Todos <span class="mono" id="n-todos"></span></button>
+        <button class="p-chip" data-filtro="flor" aria-pressed="false">Flor <span class="mono" id="n-flor"></span></button>
+        <button class="p-chip" data-filtro="oleo" aria-pressed="false">Óleo <span class="mono" id="n-oleo"></span></button>
+        <label class="p-sort">Ordenar <select id="ordem"><option value="relevancia">relevância</option><option value="preco">menor preço</option><option value="thc">maior THC</option><option value="cbd">maior CBD</option></select></label>
+      </div>
+      <div class="p-grid" id="grid"></div>
+    </section>
+    <aside class="p-cart" id="cart" aria-label="Seu pedido"></aside>
+  </div>
+</main>
+<dialog class="p-detail" id="detail" aria-label="Detalhes do produto"></dialog>
+
+<footer class="container p-foot-site"><span>© 2026 Axis FitoMed · Protótipo do portal, dados simulados.</span><span>Dispensação exclusiva a associados, mediante receita válida.</span></footer>
+<script src="js/data.js"></script>
+<script src="js/mockups.js"></script>
+<script src="js/portal.js"></script>
+</body>
+</html>
