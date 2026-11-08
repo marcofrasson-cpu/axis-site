@@ -1,15 +1,22 @@
-// Portal do associado — protótipo estático. Estado em localStorage/sessionStorage.
+// Portal do associado — V2. Estático; estado em localStorage/sessionStorage. Pedido e pagamento são simulação.
 (function () {
   const D = window.AXIS_DATA, M = window.AXIS_MOCKUPS || {};
   const $ = (s, r = document) => r.querySelector(s);
   const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
-  const brl = (v) => v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+  const brl = (c) => (c / 100).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
   const g = (v) => v.toLocaleString('pt-BR', { minimumFractionDigits: 1, maximumFractionDigits: 1 }) + ' g';
+  const esc = (t) => String(t).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;');
   const store = {
     get(k, d) { try { return JSON.parse(localStorage.getItem(k)) ?? d; } catch { return d; } },
     set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch { } }
   };
   const page = document.body.dataset.page;
+  const ICON = {
+    bag: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8h12l1 13H5L6 8z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/></svg>',
+    lock: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>',
+    warn: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 9v4M12 17h.01"/><path d="M10.3 3.9 2.6 17.5A2 2 0 0 0 4.3 20.5h15.4a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg>',
+    x: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>'
+  };
 
   // ---- sessão ----
   const logged = () => { try { return sessionStorage.getItem('axisSessao') === '1'; } catch { return false; } };
@@ -26,229 +33,283 @@
   $$('[data-sair]').forEach(b => b.addEventListener('click', () => { try { sessionStorage.removeItem('axisSessao'); } catch { } location.href = 'index.html'; }));
   $$('[data-member-name]').forEach(e => e.textContent = D.associado.nome);
   $$('[data-member-id]').forEach(e => e.textContent = D.associado.id);
+  $$('[data-member-initials]').forEach(e => e.textContent = D.associado.nome.split(' ').filter(Boolean).map(w => w[0]).slice(0, 2).join(''));
 
   // ---- toast ----
   let toastT;
-  function toast(msg) {
-    let t = $('.p-toast'); if (!t) { t = document.createElement('div'); t.className = 'p-toast'; t.setAttribute('role', 'status'); document.body.appendChild(t); }
-    t.textContent = msg; t.classList.add('show'); clearTimeout(toastT); toastT = setTimeout(() => t.classList.remove('show'), 2200);
+  function toast(msg, action) {
+    let t = $('.toast'); if (!t) { t = document.createElement('div'); t.className = 'toast'; t.setAttribute('role', 'status'); document.body.appendChild(t); }
+    t.innerHTML = `<span>${esc(msg)}</span>${action ? `<button type="button">${esc(action.label)}</button>` : ''}`;
+    if (action) $('button', t).addEventListener('click', () => { t.classList.remove('show'); action.fn(); });
+    t.classList.add('show'); clearTimeout(toastT); toastT = setTimeout(() => t.classList.remove('show'), action ? 3200 : 2200);
   }
+
+  // ---- receita: validade ----
+  const parseBR = (s) => { const [d, m, y] = s.split('/').map(Number); return new Date(y, m - 1, d); };
+  const rxValida = parseBR(D.receita.validade) >= new Date(new Date().toDateString());
 
   // ---- carrinho ----
   const cart = { items: store.get('axisCart', []) };
   const prod = (id) => D.produtos.find(p => p.id === id);
   const size = (p, label) => p.tamanhos.find(t => t.label === label) || p.tamanhos[0];
-  function cartTotals() {
-    let sub = 0, florG = 0, frascos = 0;
-    for (const it of cart.items) { const p = prod(it.id), t = size(p, it.tamanho); sub += t.preco * it.qtd; florG += (t.g || 0) * it.qtd; frascos += (t.frascos || 0) * it.qtd; }
-    return { sub, florG, frascos, frete: sub > 0 ? 28 : 0 };
+  const unitsOf = (id) => cart.items.filter(i => i.id === id).reduce((a, i) => a + size(prod(i.id), i.tamanho).units * i.qtd, 0);
+  function totals() {
+    let sub = 0, florG = 0, frascos = 0, n = 0;
+    for (const it of cart.items) { const p = prod(it.id), t = size(p, it.tamanho); sub += t.preco * it.qtd; florG += (t.g || 0) * it.qtd; frascos += (t.frascos || 0) * it.qtd; n += it.qtd; }
+    florG = Math.round(florG * 10) / 10;
+    return { sub, florG, frascos, n };
   }
-  function saveCart() { store.set('axisCart', cart.items); renderCart(); renderRx(); }
-  function addToCart(id, tamanho) {
-    const p = prod(id); if (!p || p.estoque === 0) return;
-    const key = cart.items.find(i => i.id === id && i.tamanho === tamanho);
-    const have = cart.items.filter(i => i.id === id).reduce((a, i) => a + i.qtd, 0);
-    if (have + 1 > p.estoque) { toast(`Só há ${p.estoque} em estoque de ${p.nome}.`); return; }
-    if (key) key.qtd += 1; else cart.items.push({ id, tamanho, qtd: 1 });
-    saveCart(); toast(`${p.nome} · ${tamanho} adicionado`);
+  function rx() {
+    const t = totals(), L = D.receita.limites, U = D.receita.usado;
+    return {
+      t,
+      flor: { limit: L.flor_g, used: U.flor_g, cart: t.florG, free: Math.round((L.flor_g - U.flor_g) * 10) / 10, after: Math.round((L.flor_g - U.flor_g - t.florG) * 10) / 10 },
+      oleo: { limit: L.oleo_frascos, used: U.oleo_frascos, cart: t.frascos, free: L.oleo_frascos - U.oleo_frascos, after: L.oleo_frascos - U.oleo_frascos - t.frascos }
+    };
+  }
+  // Pode adicionar? Devolve null se sim, ou a razão.
+  function canAdd(p, t, qtd = 1) {
+    if (!rxValida) return 'Receita vencida. Envie uma nova receita para pedir.';
+    if (p.estoque === 0) return `${p.nome} está esgotado.`;
+    const have = unitsOf(p.id), need = t.units * qtd;
+    if (have + need > p.estoque) return `Estoque de ${p.nome}: só ${p.estoque - have} × ${p.tamanhos[0].label} disponível${p.estoque - have === 1 ? '' : 'is'}.`;
+    const r = rx();
+    if (t.g && r.flor.after - t.g * qtd < -0.001) return `Passa do limite mensal de flor da sua receita (${g(r.flor.limit)}). Saldo disponível: ${g(Math.max(0, r.flor.after))}.`;
+    if (t.frascos && r.oleo.after - t.frascos * qtd < 0) return `Passa do limite mensal de óleo da sua receita (${r.oleo.limit} frascos). Saldo disponível: ${Math.max(0, r.oleo.after)}.`;
+    return null;
+  }
+  function save() { store.set('axisCart', cart.items); renderCart(); renderRx(); renderCatalog(); }
+  function add(id, tamanho, btn) {
+    const p = prod(id), t = size(p, tamanho);
+    const why = canAdd(p, t); if (why) { toast(why); return false; }
+    const key = cart.items.find(i => i.id === id && i.tamanho === t.label);
+    if (key) key.qtd += 1; else cart.items.push({ id, tamanho: t.label, qtd: 1 });
+    save();
+    if (btn) { const old = btn.textContent; btn.classList.add('done'); btn.textContent = 'Adicionado'; setTimeout(() => { btn.classList.remove('done'); btn.textContent = old; }, 1200); }
+    const compact = window.matchMedia('(max-width: 1099px)').matches;
+    toast(`${p.nome} · ${t.label} no pedido`, compact ? { label: 'Ver pedido', fn: openDrawer } : null);
+    return true;
   }
   function changeQty(idx, d) {
     const it = cart.items[idx]; if (!it) return;
-    const p = prod(it.id);
-    const have = cart.items.filter(i => i.id === it.id).reduce((a, i) => a + i.qtd, 0);
-    if (d > 0 && have + 1 > p.estoque) { toast(`Só há ${p.estoque} em estoque de ${p.nome}.`); return; }
-    it.qtd += d; if (it.qtd <= 0) cart.items.splice(idx, 1); saveCart();
+    const p = prod(it.id), t = size(p, it.tamanho);
+    if (d > 0) { const why = canAdd(p, t); if (why) { toast(why); return; } }
+    it.qtd += d; if (it.qtd <= 0) cart.items.splice(idx, 1); save();
   }
+  function removeItem(idx) { cart.items.splice(idx, 1); save(); }
 
-  // ---- receita ----
-  function rxRemaining() {
-    const t = cartTotals();
-    return {
-      florLimit: D.receita.limites.flor_g, florUsed: D.receita.usado.flor_g, florCart: t.florG,
-      oleoLimit: D.receita.limites.oleo_frascos, oleoUsed: D.receita.usado.oleo_frascos, oleoCart: t.frascos
-    };
+  // ---- receita (bloco) ----
+  function meter(r, fmt, unit) {
+    const over = r.after < -0.0001;
+    const pct = (v) => Math.max(0, Math.min(100, v / r.limit * 100));
+    const usedW = pct(r.used), cartW = pct(r.used + r.cart);
+    return `
+      <div class="rx-big"><b class="num">${fmt(Math.max(0, r.after))}</b><span>${over ? 'saldo previsto negativo' : r.cart ? 'saldo previsto após o pedido' : 'disponíveis este mês'}</span></div>
+      <div class="bar" role="img" aria-label="${fmt(r.used)} usados, ${fmt(r.cart)} no pedido, limite ${fmt(r.limit)}">
+        <span class="${over ? 'over' : 'incart'}" style="width:${cartW}%"></span><span class="used" style="width:${usedW}%"></span>
+      </div>
+      <div class="legend">
+        <span><i></i>Usado <b class="num">${fmt(r.used)}</b></span>
+        ${r.cart ? `<span><i class="${over ? 'over' : 'incart'}"></i>No pedido <b class="num">${fmt(r.cart)}</b></span>` : ''}
+        <span><i class="free"></i>Limite <b class="num">${fmt(r.limit)}</b>${unit ? ' ' + unit : ''}</span>
+      </div>
+      ${over ? `<div class="rx-forecast over">Excede o limite em <b class="num">${fmt(-r.after)}</b>. Reduza o pedido.</div>` : ''}`;
   }
   function renderRx() {
     const el = $('#rx'); if (!el) return;
-    const r = rxRemaining();
-    const flRaw = (r.florUsed + r.florCart) / r.florLimit * 100, olRaw = (r.oleoUsed + r.oleoCart) / r.oleoLimit * 100;
-    const fl = Math.min(100, flRaw), ol = Math.min(100, olRaw);
-    const over = flRaw > 100 || olRaw > 100;
+    const r = rx();
     el.innerHTML = `
       <div>
-        <div class="p-rx-k">Receita ativa</div>
-        <div class="p-rx-v">${D.receita.medico} <small>· ${D.receita.crm}</small></div>
-        <div class="p-rx-k" style="margin-top:6px">Emitida em ${D.receita.emitida} · válida até <b class="num" style="color:var(--text-primary);font-weight:500">${D.receita.validade}</b></div>
-        <div class="p-rx-ok"><i></i>Dispensação liberada conforme receita</div>
+        <div class="rx-k">Receita ativa</div>
+        <div class="rx-doc">${esc(D.receita.medico)} <small>· ${esc(D.receita.crm)}</small></div>
+        <div class="rx-dates">Emitida em <b class="num">${D.receita.emitida}</b> · válida até <b class="num">${D.receita.validade}</b></div>
+        <div class="rx-status ${rxValida ? '' : 'bad'}"><i></i>${rxValida ? 'Dispensação liberada conforme receita' : 'Receita vencida: envie uma nova'}</div>
       </div>
-      <div>
-        <div class="p-rx-k">Flor neste mês</div>
-        <div class="p-rx-v num">${g(r.florUsed)}${r.florCart ? ` <small>+ ${g(r.florCart)} no pedido</small>` : ''}</div>
-        <div class="p-meter"><b class="${flRaw > 100 ? 'warn' : ''}" style="width:${fl}%"></b></div>
-        <div class="p-meter-l"><span>limite ${g(r.florLimit)}</span><span class="num">${g(Math.max(0, r.florLimit - r.florUsed - r.florCart))} disponíveis</span></div>
-      </div>
-      <div>
-        <div class="p-rx-k">Óleo neste mês</div>
-        <div class="p-rx-v num">${r.oleoUsed} frasco${r.oleoUsed === 1 ? '' : 's'}${r.oleoCart ? ` <small>+ ${r.oleoCart} no pedido</small>` : ''}</div>
-        <div class="p-meter"><b class="${olRaw > 100 ? 'warn' : ''}" style="width:${ol}%"></b></div>
-        <div class="p-meter-l"><span>limite ${r.oleoLimit} frascos</span><span class="num">${Math.max(0, r.oleoLimit - r.oleoUsed - r.oleoCart)} disponível${(r.oleoLimit - r.oleoUsed - r.oleoCart) === 1 ? '' : 'is'}</span></div>
-      </div>`;
-    el.dataset.over = over ? '1' : '';
+      <div><div class="rx-k">Flor · limite mensal</div>${meter(r.flor, g, '')}</div>
+      <div><div class="rx-k">Óleo · limite mensal</div>${meter(r.oleo, (v) => `${v} ${Math.abs(v) === 1 ? 'frasco' : 'frascos'}`, '')}</div>`;
   }
 
-  // ---- arte do card: rótulo em full bleed sobre contornos topográficos na cor do produto ----
-  const ART_W = 600, ART_H = 400;
+  // ---- arte do card ----
+  const ART_W = 600, ART_H = 300;
   const MARK = '<g transform="translate(%X,%Y) scale(%S) translate(-20.2,-46)" fill="none" stroke-linejoin="miter" stroke-width="5.5"><polygon points="60,46 99.8,68 99.8,112 60,134 20.2,112 20.2,68" stroke="#3a4a52"/><polygon points="99.8,68 139.6,46 179.4,68 179.4,112 139.6,134 99.8,112" stroke="#5fc89b"/><path d="M 126.6 116 L 139.6 58 L 152.6 116 M 131.1 95 L 148.1 95" stroke="#5fc89b"/><circle cx="99.8" cy="68" r="6.5" fill="#5fc89b" stroke="none"/><circle cx="99.8" cy="112" r="6.5" fill="#5fc89b" stroke="none"/></g>';
   const ACCENT = { oleo: '#5fc89b', harlequin: '#5fc89b', acdc: '#5fc89b', 'blue-dream': '#e8a13c', 'wedding-cake': '#e8a13c', 'northern-lights': '#c6d2df' };
   function rng(seed) { let t = 0; for (const c of seed) t = (t * 31 + c.charCodeAt(0)) >>> 0; return () => { t += 0x6D2B79F5; let r = Math.imul(t ^ (t >>> 15), 1 | t); r ^= r + Math.imul(r ^ (r >>> 7), 61 | r); return ((r ^ (r >>> 14)) >>> 0) / 4294967296; }; }
+  const artCache = {};
   function contours(p) {
     const R = rng(p.id), accent = ACCENT[p.id] || '#5fc89b';
-    const lean = p.eixo[2];
-    const cx = ART_W * (0.22 + 0.56 * lean), cy = 150 + R() * 40;
+    const cx = ART_W * (0.25 + 0.5 * p.eixo[2]), cy = 110 + R() * 30;
     const waves = Array.from({ length: 4 }, (_, i) => ({ m: 2 + i + Math.floor(R() * 2), a: (0.14 - i * 0.025) * (0.8 + R() * 0.4), ph: R() * Math.PI * 2 }));
     const drift = Array.from({ length: 3 }, () => ({ m: 1 + Math.floor(R() * 3), a: 0.05 + R() * 0.04, ph: R() * Math.PI * 2 }));
-    const N = 16, steps = 120;
-    let out = '';
+    const N = 14, steps = 120; let out = '';
     for (let k = 0; k < N; k++) {
-      const base = 26 + k * 30;
-      let d = '';
+      const base = 22 + k * 28; let d = '';
       for (let i = 0; i <= steps; i++) {
         const th = (i / steps) * Math.PI * 2;
         let n = 0; for (const w of waves) n += w.a * Math.sin(w.m * th + w.ph);
         let m = 0; for (const w of drift) m += w.a * Math.sin(w.m * th + w.ph + k * 0.35);
         const r = base * (1 + n + m * (k / N));
-        const x = cx + r * Math.cos(th) * 1.25, y = cy + r * Math.sin(th);
-        d += (i ? 'L' : 'M') + x.toFixed(1) + ' ' + y.toFixed(1);
+        d += (i ? 'L' : 'M') + (cx + r * Math.cos(th) * 1.3).toFixed(1) + ' ' + (cy + r * Math.sin(th)).toFixed(1);
       }
-      const op = (0.36 - k * 0.018).toFixed(3);
-      out += `<path d="${d}Z" fill="none" stroke="${accent}" stroke-opacity="${op}" stroke-width="1.25" stroke-linejoin="round"/>`;
+      out += `<path d="${d}Z" fill="none" stroke="${accent}" stroke-opacity="${(0.36 - k * 0.02).toFixed(3)}" stroke-width="1.25" stroke-linejoin="round"/>`;
     }
     return out;
   }
-  const svgEsc = (t) => String(t).replace(/&/g, '&amp;').replace(/</g, '&lt;');
   function artSVG(p) {
+    if (artCache[p.id]) return artCache[p.id];
     const accent = ACCENT[p.id] || '#5fc89b';
-    const size = p.tamanhos[0].label;
-    const nameSize = Math.min(96, Math.floor(520 / (p.nome.length * 0.5)));
-    const line = p.dados.slice(0, 2).map(([k, v]) => `<tspan fill="#a2b0c2">${k} </tspan><tspan fill="#f4f2ec">${svgEsc(v)}</tspan>`).join('<tspan fill="#a2b0c2">  ·  </tspan>');
-    return `<svg class="p-art" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${ART_W} ${ART_H}" role="img" aria-label="${svgEsc(p.nome)}">
-      <rect width="${ART_W}" height="${ART_H}" fill="#0d1b2a"/>
-      <g clip-path="inset(0)">${contours(p)}</g>
-      <rect x="14" y="14" width="${ART_W - 28}" height="${ART_H - 28}" rx="4" fill="none" stroke="#f4f2ec" stroke-opacity="0.22" stroke-width="1"/>
-      ${MARK.replace('%X', 34).replace('%Y', 31).replace('%S', (30 / 88).toFixed(4))}
-      <text x="96" y="54" font-family="var(--font-body)" font-size="20" font-weight="500" fill="#f4f2ec">Axis FitoMed</text>
-      <text x="${ART_W - 34}" y="54" font-family="var(--font-mono)" font-size="18" fill="#a2b0c2" text-anchor="end">${svgEsc(size)}</text>
-      <text x="32" y="${ART_H - 104}" font-family="var(--font-display)" font-weight="300" font-size="${nameSize}" letter-spacing="-0.025em" fill="${accent}">${svgEsc(p.nome)}</text>
-      <text x="34" y="${ART_H - 50}" font-family="var(--font-mono)" font-size="25" style="font-variant-numeric:tabular-nums">${line}</text>
+    const nameSize = Math.min(84, Math.floor(520 / (p.nome.length * 0.5)));
+    const line = p.dados.slice(0, 2).map(([k, v]) => `<tspan fill="#b3bfcf">${k} </tspan><tspan fill="#f4f2ec">${esc(v)}</tspan>`).join('<tspan fill="#b3bfcf">  ·  </tspan>');
+    return artCache[p.id] = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${ART_W} ${ART_H}" aria-hidden="true" focusable="false">
+      <rect width="${ART_W}" height="${ART_H}" fill="#0d1b2a"/>${contours(p)}
+      <rect x="12" y="12" width="${ART_W - 24}" height="${ART_H - 24}" rx="4" fill="none" stroke="#f4f2ec" stroke-opacity="0.2" stroke-width="1"/>
+      ${MARK.replace('%X', 30).replace('%Y', 26).replace('%S', (28 / 88).toFixed(4))}
+      <text x="88" y="48" font-family="var(--body)" font-size="19" font-weight="500" fill="#f4f2ec">Axis FitoMed</text>
+      <text x="${ART_W - 30}" y="48" font-family="var(--mono)" font-size="17" fill="#b3bfcf" text-anchor="end">${esc(p.tamanhos[0].label)}</text>
+      <text x="28" y="${ART_H - 82}" font-family="var(--display)" font-weight="300" font-size="${nameSize}" letter-spacing="-0.025em" fill="${accent}">${esc(p.nome)}</text>
+      <text x="30" y="${ART_H - 36}" font-family="var(--mono)" font-size="23" style="font-variant-numeric:tabular-nums">${line}</text>
     </svg>`;
   }
 
   // ---- catálogo ----
-  const state = { filtro: 'todos', busca: '', ordem: 'relevancia', tam: {} };
-  function stockBadge(p) {
-    if (p.estoque === 0) return `<span class="p-badge out">Esgotado</span>`;
-    if (p.estoque <= 5) return `<span class="p-badge low">Últimas ${p.estoque}</span>`;
-    return '';
+  const ui = { filtro: 'todos', busca: '', ordem: 'relevancia', tam: {} };
+  function stockInfo(p) {
+    const left = p.estoque - unitsOf(p.id);
+    if (p.estoque === 0) return { cls: 'out', text: `Esgotado${p.previsao ? ` · previsão ${p.previsao}` : ''}`, badge: `<span class="badge out">Esgotado</span>` };
+    if (left <= 0) return { cls: 'low', text: 'Tudo o que há está no seu pedido', badge: '' };
+    if (p.estoque <= 5) return { cls: 'low', text: `Últimas ${p.estoque} unidades · lote ${p.lote}`, badge: `<span class="badge low">Últimas ${p.estoque}</span>` };
+    return { cls: '', text: `${p.estoque} em estoque · lote ${p.lote}`, badge: '' };
   }
   function cardHTML(p) {
-    const t = size(p, state.tam[p.id]);
-    const sizes = p.tamanhos.length > 1 ? `<div class="p-sizes" role="group" aria-label="Tamanho">${p.tamanhos.map(x => `<button class="p-size" aria-pressed="${x.label === t.label}" data-size="${x.label}">${x.label}</button>`).join('')}</div>` : '';
-    const stock = p.estoque === 0 ? `<div class="p-stock out">Esgotado${p.previsao ? ` · previsão ${p.previsao}` : ''}</div>` : `<div class="p-stock ${p.estoque <= 5 ? 'low' : ''}">${p.estoque} em estoque · lote ${p.lote}</div>`;
-    const cta = p.estoque === 0 ? `<button class="btn btn-ghost btn-sm" data-avisar>Avise-me</button>` : `<button class="btn btn-ghost btn-sm" data-add>Adicionar</button>`;
-    return `<article class="p-card ${p.estoque === 0 ? 'out' : ''}" data-id="${p.id}">
-      <div class="p-media" data-open role="button" tabindex="0" aria-label="Ver detalhes de ${p.nome}">${artSVG(p)}${stockBadge(p)}</div>
-      <div class="p-body">
-        <div class="p-eyebrow">${p.sub}</div>
-        <h3 class="p-name"><button data-open>${p.nome}</button></h3>
-        ${sizes}
-        ${stock}
-        <div class="p-foot"><div class="p-price num">${brl(t.preco)}<small>/ ${t.label}</small></div>${cta}</div>
+    const t = size(p, ui.tam[p.id]), st = stockInfo(p);
+    const variants = p.tamanhos.length > 1 ? `<div class="variants" role="group" aria-label="Apresentação de ${esc(p.nome)}">${p.tamanhos.map(x => {
+      const dis = p.estoque > 0 && unitsOf(p.id) + x.units > p.estoque;
+      return `<button type="button" class="variant" aria-pressed="${x.label === t.label}" data-size="${esc(x.label)}" ${dis ? 'disabled title="Sem estoque para esta apresentação"' : ''}>${esc(x.label)}<span class="m num">${brl(x.preco)}</span></button>`;
+    }).join('')}</div>` : `<div class="variants"><span class="variant" aria-pressed="true" tabindex="-1">${esc(t.label)}</span></div>`;
+    const cta = p.estoque === 0
+      ? `<button type="button" class="btn btn-ghost btn-sm" data-avisar>Avise-me</button>`
+      : `<button type="button" class="btn btn-add btn-sm" data-add aria-label="Adicionar ${esc(p.nome)} ${esc(t.label)} ao pedido">Adicionar</button>`;
+    return `<article class="card ${p.estoque === 0 ? 'out' : ''}" data-id="${p.id}">
+      <button type="button" class="media" data-open aria-label="Ver detalhes de ${esc(p.nome)}">${artSVG(p)}${st.badge}</button>
+      <div class="body">
+        <div class="cat">${esc(p.sub)}</div>
+        ${variants}
+        <div class="stock ${st.cls}"><i aria-hidden="true"></i>${st.text}</div>
+        <div class="buy"><div class="price"><b class="num">${brl(t.preco)}</b><small>por ${esc(t.label)}</small></div>${cta}</div>
       </div>
     </article>`;
   }
+  const num = (s) => parseFloat(String(s).replace(',', '.'));
   function filtered() {
-    let list = D.produtos.filter(p => state.filtro === 'todos' || p.tipo === state.filtro);
-    if (state.busca) { const q = state.busca.toLowerCase(); list = list.filter(p => (p.nome + ' ' + p.sub + ' ' + p.dados.map(d => d.join(' ')).join(' ')).toLowerCase().includes(q)); }
-    if (state.ordem === 'preco') list = [...list].sort((a, b) => a.tamanhos[0].preco - b.tamanhos[0].preco);
-    if (state.ordem === 'thc') list = [...list].sort((a, b) => parseFloat(b.dados[0][1].replace(',', '.')) - parseFloat(a.dados[0][1].replace(',', '.')));
-    if (state.ordem === 'cbd') list = [...list].sort((a, b) => parseFloat((b.dados[1] || b.dados[0])[1].replace(',', '.')) - parseFloat((a.dados[1] || a.dados[0])[1].replace(',', '.')));
+    let list = D.produtos.filter(p => ui.filtro === 'todos' || p.tipo === ui.filtro);
+    if (ui.busca) { const q = ui.busca.toLowerCase(); list = list.filter(p => (p.nome + ' ' + p.sub + ' ' + p.dados.map(d => d.join(' ')).join(' ') + ' ' + (p.terpenos || []).map(t => t[0]).join(' ')).toLowerCase().includes(q)); }
+    const by = { nome: (a, b) => a.nome.localeCompare(b.nome, 'pt-BR'), preco: (a, b) => a.tamanhos[0].preco - b.tamanhos[0].preco, thc: (a, b) => num(b.dados[0][1]) - num(a.dados[0][1]), cbd: (a, b) => num((b.dados[1] || b.dados[0])[1]) - num((a.dados[1] || a.dados[0])[1]) };
+    if (by[ui.ordem]) list = [...list].sort(by[ui.ordem]);
     return list;
   }
   function renderCatalog() {
     const grid = $('#grid'); if (!grid) return;
     const list = filtered();
-    grid.innerHTML = list.length ? list.map(cardHTML).join('') : `<p class="p-empty" style="grid-column:1/-1">Nenhum produto com esse filtro.</p>`;
-    $$('.p-chip[data-filtro]').forEach(c => c.setAttribute('aria-pressed', c.dataset.filtro === state.filtro));
+    grid.innerHTML = list.length ? list.map(cardHTML).join('') : `<div class="p-empty-search"><strong style="color:var(--text)">Nada encontrado${ui.busca ? ` para “${esc(ui.busca)}”` : ''}.</strong><span>Tente outro nome, canabinoide ou terpeno, ou limpe os filtros.</span><button type="button" class="btn btn-ghost btn-sm" data-clear>Limpar filtros</button></div>`;
+    $$('.chip[data-filtro]').forEach(c => c.setAttribute('aria-pressed', c.dataset.filtro === ui.filtro));
     $('#n-todos').textContent = D.produtos.length;
     $('#n-flor').textContent = D.produtos.filter(p => p.tipo === 'flor').length;
     $('#n-oleo').textContent = D.produtos.filter(p => p.tipo === 'oleo').length;
+    $('#count').textContent = `${list.length} ${list.length === 1 ? 'produto' : 'produtos'}`;
+    const s = $('.p-search'); if (s) s.classList.toggle('has', !!ui.busca);
   }
-  function renderCart() {
-    const el = $('#cart'); if (!el) return;
-    const t = cartTotals(), r = rxRemaining();
-    const overFlor = r.florUsed + r.florCart > r.florLimit, overOleo = r.oleoUsed + r.oleoCart > r.oleoLimit;
-    const n = cart.items.reduce((a, i) => a + i.qtd, 0);
-    const items = cart.items.map((it, i) => { const p = prod(it.id), s = size(p, it.tamanho); return `<div class="p-item">
-        <div><div class="n">${p.nome}</div><div class="s">${s.label} · ${brl(s.preco)} cada</div></div>
-        <div class="t num">${brl(s.preco * it.qtd)}</div>
-        <div class="s">lote ${p.lote}</div>
-        <div class="p-qty"><button data-q="${i}:-1" aria-label="menos">−</button><span class="num">${it.qtd}</span><button data-q="${i}:1" aria-label="mais">+</button></div>
+
+  // ---- carrinho (render em sidebar e drawer) ----
+  function cartHTML() {
+    const r = rx(), t = r.t;
+    const overFlor = r.flor.after < -0.0001, overOleo = r.oleo.after < 0;
+    const items = cart.items.map((it, i) => { const p = prod(it.id), s = size(p, it.tamanho), more = canAdd(p, s); return `<div class="item">
+        <div class="name">${esc(p.nome)}</div>
+        <div class="total num">${brl(s.preco * it.qtd)}</div>
+        <div class="meta"><span class="num">${esc(s.label)} · ${brl(s.preco)} cada</span><button type="button" class="rm" data-rm="${i}">remover</button></div>
+        <div class="qty" aria-label="Quantidade de ${esc(p.nome)} ${esc(s.label)}"><button type="button" data-q="${i}:-1" aria-label="Diminuir">−</button><span class="num" aria-live="polite">${it.qtd}</span><button type="button" data-q="${i}:1" aria-label="Aumentar" ${more ? `disabled title="${esc(more)}"` : ''}>+</button></div>
       </div>`; }).join('');
-    el.innerHTML = `
-      <h2>Seu pedido${n ? `<span>${n} ${n === 1 ? 'item' : 'itens'}</span>` : ''}</h2>
-      ${n ? `<div class="p-items">${items}</div>` : `<p class="p-empty">Escolha os produtos ao lado para montar o pedido.</p>`}
-      ${overFlor ? `<div class="p-alert">Flor acima do limite mensal da receita (${g(r.florLimit)}). Reduza a quantidade para gerar o pedido.</div>` : ''}
-      ${overOleo ? `<div class="p-alert">Óleo acima do limite mensal da receita (${r.oleoLimit} frascos). Reduza a quantidade para gerar o pedido.</div>` : ''}
-      <div class="p-totals">
+    let why = '';
+    if (!rxValida) why = 'Receita vencida: envie uma nova para gerar pedido.';
+    else if (!t.n) why = 'Adicione ao menos um produto.';
+    else if (overFlor || overOleo) why = 'Ajuste as quantidades para caber no limite da receita.';
+    return `
+      <h2>Seu pedido <span>${t.n ? `${t.n} ${t.n === 1 ? 'item' : 'itens'}` : 'vazio'}</span></h2>
+      ${t.n ? `<div class="items">${items}</div>` : `<div class="cart-empty">${ICON.bag}<span>Nenhum produto ainda. Escolha no catálogo; o limite da receita é conferido na hora.</span></div>`}
+      ${overFlor ? `<div class="alert">${ICON.warn}<span>Flor acima do limite mensal (${g(r.flor.limit)}) em <b class="num">${g(-r.flor.after)}</b>.</span></div>` : ''}
+      ${overOleo ? `<div class="alert">${ICON.warn}<span>Óleo acima do limite mensal (${r.oleo.limit} frascos) em <b class="num">${-r.oleo.after}</b>.</span></div>` : ''}
+      <div class="totals">
         <span>Subtotal</span><span class="num">${brl(t.sub)}</span>
-        <span>Frete (Jadlog, SC)</span><span class="num">${brl(t.frete)}</span>
-        <span class="big">Total</span><span class="big num">${brl(t.sub + t.frete)}</span>
+        <span>Frete</span><span class="tbd">${t.n ? 'a calcular no endereço' : '—'}</span>
+        <span class="big">Total</span><span class="big num" data-total>${brl(t.sub)}</span>
+        <span class="cta-why" style="grid-column:1/-1;text-align:left">${t.n ? 'Frete e prazo aparecem antes da confirmação.' : ''}</span>
       </div>
-      <button class="btn btn-primary btn-block" id="gerar" ${(!n || overFlor || overOleo) ? 'disabled' : ''}>Gerar pedido</button>
-      <div class="p-note"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg><span>Estoque reservado por 24 h ao gerar o pedido. Pagamento por Pix; o pedido entra na separação após a confirmação.</span></div>
-      <div class="p-rules">
-        <div><b>Entrega</b> · separação em 1 a 2 dias úteis após o pagamento; envio por Jadlog com código de rastreio no Histórico.</div>
-        <div><b>Receita</b> · cada pedido é conferido com a receita ativa. Quantidades acima do limite mensal não são liberadas.</div>
-      </div>`;
-    const btn = $('#gerar'); if (btn) btn.addEventListener('click', checkout);
-    $$('[data-q]', el).forEach(b => b.addEventListener('click', () => { const [i, d] = b.dataset.q.split(':').map(Number); changeQty(i, d); }));
+      <button type="button" class="btn btn-primary btn-block" data-gerar ${why ? 'disabled aria-describedby="why"' : ''}>Gerar pedido</button>
+      ${why ? `<div class="cta-why" id="why">${esc(why)}</div>` : `<div class="cart-note">${ICON.lock}<span>Estoque reservado por 24 h ao gerar o pedido. Pagamento por Pix; separação após a confirmação.</span></div>`}
+      ${t.n ? `<div class="mini-rx"><span>Saldo previsto após o pedido</span><span>Flor <b class="num">${g(Math.max(0, r.flor.after))}</b> · Óleo <b class="num">${Math.max(0, r.oleo.after)} ${Math.abs(r.oleo.after) === 1 ? 'frasco' : 'frascos'}</b></span></div>` : ''}`;
+  }
+  let lastTotal = null;
+  function renderCart() {
+    const targets = $$('[data-cart]'); if (!targets.length) return;
+    const html = cartHTML();
+    for (const el of targets) {
+      el.innerHTML = html;
+      $$('[data-q]', el).forEach(b => b.addEventListener('click', () => { const [i, d] = b.dataset.q.split(':').map(Number); changeQty(i, d); }));
+      $$('[data-rm]', el).forEach(b => b.addEventListener('click', () => removeItem(+b.dataset.rm)));
+      const go = $('[data-gerar]', el); if (go) go.addEventListener('click', checkout);
+    }
+    const t = totals();
+    if (lastTotal !== null && lastTotal !== t.sub) $$('[data-total]').forEach(e => { e.classList.add('flash'); setTimeout(() => e.classList.remove('flash'), 300); });
+    lastTotal = t.sub;
+    // barra inferior + contador do header
+    const bar = $('#cartbar'); if (bar) { bar.classList.toggle('has', t.n > 0); document.body.classList.toggle('has-cartbar', t.n > 0 && window.matchMedia('(max-width: 1099px)').matches); $('[data-bar-n]', bar).textContent = `${t.n} ${t.n === 1 ? 'item' : 'itens'}`; $('[data-bar-total]', bar).textContent = brl(t.sub); }
+    $$('[data-cart-n]').forEach(e => e.textContent = t.n || '');
   }
   function checkout() {
-    const t = cartTotals();
+    const t = totals(); if (!t.n) return;
     const pedidos = store.get('axisPedidos', []);
-    const num = 'AX-' + String(250 + pedidos.length).padStart(4, '0');
-    const hoje = new Date().toLocaleDateString('pt-BR');
-    pedidos.unshift({ num, data: hoje, status: 0, rastreio: null, itens: cart.items.map(it => { const p = prod(it.id), s = size(p, it.tamanho); return [`${p.nome} · ${s.label}`, it.qtd, s.preco * it.qtd]; }), total: t.sub + t.frete });
+    const num_ = 'AX-' + String(250 + pedidos.length).padStart(4, '0');
+    pedidos.unshift({ num: num_, data: new Date().toLocaleDateString('pt-BR'), status: 0, simulado: true, rastreio: null, itens: cart.items.map(it => { const p = prod(it.id), s = size(p, it.tamanho); return [`${p.nome} · ${s.label}`, it.qtd, s.preco * it.qtd]; }), frete: null, total: t.sub });
     store.set('axisPedidos', pedidos);
     cart.items = []; store.set('axisCart', []);
-    location.href = `historico.html?novo=${num}`;
+    location.href = `historico.html?novo=${num_}`;
+  }
+
+  // ---- drawer ----
+  const drawer = $('#drawer');
+  function openDrawer() { if (drawer && !drawer.open) drawer.showModal(); }
+  if (drawer) {
+    $$('[data-open-drawer]').forEach(b => b.addEventListener('click', openDrawer));
+    $$('[data-close-drawer]', drawer).forEach(b => b.addEventListener('click', () => drawer.close()));
+    drawer.addEventListener('click', (e) => { if (e.target === drawer) drawer.close(); });
+    window.matchMedia('(min-width: 1100px)').addEventListener('change', (e) => { if (e.matches && drawer.open) drawer.close(); renderCart(); });
   }
 
   // ---- detalhe ----
   function openDetail(id) {
-    const p = prod(id); if (!p) return;
-    const dlg = $('#detail'); if (!dlg) return;
-    const t = size(p, state.tam[p.id]);
+    const p = prod(id), dlg = $('#detail'); if (!p || !dlg) return;
+    const t = size(p, ui.tam[p.id]);
     const kv = [...p.dados, ['Lote', p.lote], p.colheita ? ['Colheita', p.colheita] : ['Fabricação', p.fab], ['Validade', p.val]];
     if (p.terpenos) kv.push(['Terpenos dominantes', p.terpenos.map(x => `${x[0]} ${x[1]}`).join(' · ')]);
+    const why = p.estoque === 0 ? null : canAdd(p, t);
     dlg.innerHTML = `
-      <button class="p-close" data-close aria-label="Fechar"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
-      <div class="p-detail-grid">
-        <div class="p-detail-media">${M[p.id] || ''}</div>
-        <div class="p-detail-body">
-          <div><div class="p-eyebrow">${p.sub}</div><h2>${p.nome}</h2></div>
-          <div class="p-axis" aria-label="Eixo ${p.eixo[0]} a ${p.eixo[1]}"><i style="left:${p.eixo[2] * 100}%"></i><span>${p.eixo[0]}</span><span>${p.eixo[1]}</span></div>
-          <p style="color:var(--text-muted);font-size:var(--fs-14);line-height:1.55">${p.texto}</p>
-          <div class="p-kv">${kv.map(([k, v]) => `<div class="k">${k}</div><div class="num">${v}</div>`).join('')}</div>
-          <a class="p-link" href="https://axisfitomed.com.br/laudo/${p.lote}" target="_blank" rel="noopener">Ver laudo (CoA) do lote ${p.lote}</a>
-          <div class="p-cta">
-            ${p.tamanhos.length > 1 ? `<div class="p-sizes">${p.tamanhos.map(x => `<button class="p-size" aria-pressed="${x.label === t.label}" data-dsize="${x.label}">${x.label} · ${brl(x.preco)}</button>`).join('')}</div>` : `<span class="p-price num">${brl(t.preco)}<small>/ ${t.label}</small></span>`}
-            ${p.estoque === 0 ? `<button class="btn btn-ghost" data-avisar>Avisar quando voltar</button>` : `<button class="btn btn-primary" data-dadd>Adicionar ao pedido</button>`}
+      <button type="button" class="icon-btn close" data-close aria-label="Fechar">${ICON.x}</button>
+      <div class="detail-grid">
+        <div class="detail-media">${M[p.id] || ''}</div>
+        <div class="detail-body">
+          <div><div class="cat">${esc(p.sub)}</div><h2>${esc(p.nome)}</h2></div>
+          <div class="axis" role="img" aria-label="Eixo ${p.eixo[0]} a ${p.eixo[1]}: ${Math.round(p.eixo[2] * 100)} %"><i style="left:${p.eixo[2] * 100}%"></i><span>${p.eixo[0]}</span><span>${p.eixo[1]}</span></div>
+          <p>${esc(p.texto)}</p>
+          <div class="kv">${kv.map(([k, v]) => `<div class="k">${esc(k)}</div><div class="num">${esc(v)}</div>`).join('')}</div>
+          <a class="link" href="https://axisfitomed.com.br/laudo/${p.lote}" target="_blank" rel="noopener">Ver laudo (CoA) do lote ${p.lote}</a>
+          <div class="detail-cta">
+            ${p.tamanhos.length > 1 ? `<div class="variants" role="group" aria-label="Apresentação">${p.tamanhos.map(x => `<button type="button" class="variant" aria-pressed="${x.label === t.label}" data-dsize="${esc(x.label)}">${esc(x.label)}<span class="m num">${brl(x.preco)}</span></button>`).join('')}</div>` : `<div class="price"><b class="num">${brl(t.preco)}</b><small>por ${esc(t.label)}</small></div>`}
+            ${p.estoque === 0 ? `<button type="button" class="btn btn-ghost" data-avisar>Avise-me quando voltar</button>` : `<button type="button" class="btn btn-primary" data-dadd ${why ? `disabled title="${esc(why)}"` : ''}>Adicionar ao pedido</button>`}
           </div>
+          ${why && p.estoque ? `<div class="cta-why" style="text-align:left">${esc(why)}</div>` : ''}
         </div>
       </div>`;
-    $$('[data-dsize]', dlg).forEach(b => b.addEventListener('click', () => { state.tam[p.id] = b.dataset.dsize; openDetail(id); renderCatalog(); }));
-    const add = $('[data-dadd]', dlg); if (add) add.addEventListener('click', () => { addToCart(p.id, size(p, state.tam[p.id]).label); dlg.close(); });
+    $$('[data-dsize]', dlg).forEach(b => b.addEventListener('click', () => { ui.tam[p.id] = b.dataset.dsize; openDetail(id); renderCatalog(); }));
+    const addB = $('[data-dadd]', dlg); if (addB) addB.addEventListener('click', () => { if (add(p.id, t.label)) dlg.close(); });
     const av = $('[data-avisar]', dlg); if (av) av.addEventListener('click', () => { toast(`Avisaremos quando ${p.nome} voltar ao estoque.`); dlg.close(); });
     $('[data-close]', dlg).addEventListener('click', () => dlg.close());
     if (!dlg.open) dlg.showModal();
@@ -257,41 +318,43 @@
   if (page === 'pedido') {
     renderRx(); renderCatalog(); renderCart();
     $('#grid').addEventListener('click', (e) => {
-      const card = e.target.closest('.p-card'); if (!card) return; const id = card.dataset.id;
-      if (e.target.closest('[data-size]')) { state.tam[id] = e.target.closest('[data-size]').dataset.size; renderCatalog(); return; }
-      if (e.target.closest('[data-add]')) { addToCart(id, size(prod(id), state.tam[id]).label); return; }
+      if (e.target.closest('[data-clear]')) { ui.filtro = 'todos'; ui.busca = ''; const b = $('#busca'); if (b) b.value = ''; renderCatalog(); return; }
+      const card = e.target.closest('.card'); if (!card) return; const id = card.dataset.id;
+      const v = e.target.closest('[data-size]'); if (v) { if (v.disabled) return; ui.tam[id] = v.dataset.size; renderCatalog(); $(`.card[data-id="${id}"] [data-size="${v.dataset.size}"]`)?.focus(); return; }
+      const a = e.target.closest('[data-add]'); if (a) { add(id, size(prod(id), ui.tam[id]).label, a); return; }
       if (e.target.closest('[data-avisar]')) { toast(`Avisaremos quando ${prod(id).nome} voltar ao estoque.`); return; }
       if (e.target.closest('[data-open]')) openDetail(id);
     });
-    $('#grid').addEventListener('keydown', (e) => { if (e.key === 'Enter' && e.target.matches('.p-media')) openDetail(e.target.closest('.p-card').dataset.id); });
-    $$('.p-chip[data-filtro]').forEach(c => c.addEventListener('click', () => { state.filtro = c.dataset.filtro; renderCatalog(); }));
-    const busca = $('#busca'); if (busca) busca.addEventListener('input', () => { state.busca = busca.value.trim(); renderCatalog(); });
-    const ordem = $('#ordem'); if (ordem) ordem.addEventListener('change', () => { state.ordem = ordem.value; renderCatalog(); });
-    $('#detail').addEventListener('click', (e) => { if (e.target === e.currentTarget) e.currentTarget.close(); });
+    $$('.chip[data-filtro]').forEach(c => c.addEventListener('click', () => { ui.filtro = c.dataset.filtro; renderCatalog(); }));
+    const busca = $('#busca');
+    if (busca) { busca.addEventListener('input', () => { ui.busca = busca.value.trim(); renderCatalog(); }); busca.addEventListener('keydown', (e) => { if (e.key === 'Escape') { busca.value = ''; ui.busca = ''; renderCatalog(); } }); }
+    const clr = $('[data-clear-search]'); if (clr) clr.addEventListener('click', () => { busca.value = ''; ui.busca = ''; renderCatalog(); busca.focus(); });
+    const ordem = $('#ordem'); if (ordem) ordem.addEventListener('change', () => { ui.ordem = ordem.value; renderCatalog(); });
+    const detail = $('#detail'); detail.addEventListener('click', (e) => { if (e.target === detail) detail.close(); });
+    document.addEventListener('keydown', (e) => { if (e.key === '/' && document.activeElement !== busca && !(e.target.closest('input,select,textarea'))) { e.preventDefault(); busca.focus(); } });
   }
 
   // ---- histórico ----
   if (page === 'historico') {
     const novo = new URLSearchParams(location.search).get('novo');
     const todos = [...store.get('axisPedidos', []), ...D.pedidos];
-    const el = $('#orders');
-    el.innerHTML = todos.map(o => `<article class="p-order" ${o.num === novo ? 'style="border-color:rgba(95,200,155,.5)"' : ''}>
+    $('#orders').innerHTML = todos.map(o => `<article class="order ${o.num === novo ? 'new' : ''}">
       <div>
-        <div class="p-order-head"><b>Pedido ${o.num}</b><span>${o.data}</span></div>
-        <div class="p-order-items">${o.itens.map(([n, q, v]) => `<div><span>${q}× ${n}</span><span class="num">${brl(v)}</span></div>`).join('')}<div class="tot"><span>Total com frete</span><span class="num">${brl(o.total)}</span></div></div>
+        <div class="order-head"><b>Pedido ${esc(o.num)}</b><span class="status-pill ${o.status === 0 ? 'wait' : ''}">${o.concluido ? 'Entregue' : o.status === 0 ? 'Aguardando pagamento' : D.statusLabels[o.status]}</span><span class="d num">${esc(o.data)}${o.simulado ? ' · simulado' : ''}</span></div>
+        <div class="order-items">${o.itens.map(([n, q, v]) => `<div><span>${q}× ${esc(n)}</span><span class="num">${brl(v)}</span></div>`).join('')}<div><span>Frete</span><span class="num">${o.frete == null ? 'a calcular' : brl(o.frete)}</span></div><div class="tot"><span>Total</span><span class="num">${brl(o.total)}</span></div></div>
       </div>
       <div>
-        <div class="p-steps">${D.statusLabels.map((s, i) => `<div class="p-step ${i <= o.status ? 'done' : ''} ${i === o.status ? 'now' : ''}">${s}</div>`).join('')}</div>
-        <div class="p-track">${o.rastreio ? `Rastreio <span class="mono">${o.rastreio}</span> · <a href="https://melhorrastreio.com.br/" target="_blank" rel="noopener">acompanhar</a>` : (o.status === 0 ? 'Aguardando confirmação do Pix. Estoque reservado por 24 h.' : 'Em separação. O código de rastreio aparece aqui no envio.')}</div>
+        <div class="steps" aria-label="Etapas do pedido">${D.statusLabels.map((s, i) => `<div class="step ${o.concluido || i < o.status ? 'done' : ''} ${!o.concluido && i === o.status ? 'now' : ''}">${s}</div>`).join('')}</div>
+        <div class="track">${o.rastreio ? `Rastreio <span class="mono">${esc(o.rastreio)}</span> · <a href="https://melhorrastreio.com.br/" target="_blank" rel="noopener">acompanhar</a>` : esc(D.statusTexto[o.status] || '')}</div>
       </div>
     </article>`).join('');
-    if (novo) toast(`Pedido ${novo} gerado. Pix enviado ao seu e-mail.`);
+    if (novo) toast(`Pedido ${novo} gerado (simulação). Pix enviado ao seu e-mail.`);
   }
 
   // ---- perfil ----
   if (page === 'perfil') {
     const a = D.associado, r = D.receita;
-    $('#perfil-dados').innerHTML = [['Nome', a.nome], ['Associado', a.id + ' · desde ' + a.desde], ['E-mail', a.email], ['Telefone', a.telefone], ['Endereço de entrega', a.endereco]].map(([k, v]) => `<div class="k">${k}</div><div>${v}</div>`).join('');
-    $('#perfil-rx').innerHTML = [['Prescritor', `${r.medico} · ${r.crm}`], ['Emitida', r.emitida], ['Válida até', r.validade], ['Limite mensal', `${g(r.limites.flor_g)} de flor · ${r.limites.oleo_frascos} frascos de óleo`], ...r.posologia].map(([k, v]) => `<div class="k">${k}</div><div class="num">${v}</div>`).join('');
+    $('#perfil-dados').innerHTML = [['Nome', a.nome], ['Associado', `${a.id} · desde ${a.desde}`], ['E-mail', a.email], ['Telefone', a.telefone], ['Endereço de entrega', a.endereco]].map(([k, v]) => `<div class="k">${k}</div><div>${esc(v)}</div>`).join('');
+    $('#perfil-rx').innerHTML = [['Prescritor', `${r.medico} · ${r.crm}`], ['Emitida', r.emitida], ['Válida até', r.validade], ['Limite mensal', `${g(r.limites.flor_g)} de flor · ${r.limites.oleo_frascos} frascos de óleo`], ...r.posologia].map(([k, v]) => `<div class="k">${esc(k)}</div><div class="num">${esc(v)}</div>`).join('');
   }
 })();
