@@ -11,6 +11,7 @@
     set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch { } }
   };
   const page = document.body.dataset.page;
+  const BASE = (document.currentScript && document.currentScript.src || '').replace(/js\/portal\.js.*$/, '');
   const ICON = {
     bag: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8h12l1 13H5L6 8z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/></svg>',
     lock: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>',
@@ -21,16 +22,16 @@
   // ---- sessão ----
   const logged = () => { try { return sessionStorage.getItem('axisSessao') === '1'; } catch { return false; } };
   if (page === 'login') {
-    if (logged()) location.replace('pedido.html');
+    if (logged()) location.replace(BASE + 'pedido.html');
     $('#login-form').addEventListener('submit', (e) => {
       e.preventDefault();
       try { sessionStorage.setItem('axisSessao', '1'); } catch { }
-      location.href = 'pedido.html';
+      location.href = BASE + 'pedido.html';
     });
     return;
   }
-  if (!logged()) { location.replace('index.html'); return; }
-  $$('[data-sair]').forEach(b => b.addEventListener('click', () => { try { sessionStorage.removeItem('axisSessao'); } catch { } location.href = 'index.html'; }));
+  if (!logged()) { location.replace(BASE + 'index.html'); return; }
+  $$('[data-sair]').forEach(b => b.addEventListener('click', () => { try { sessionStorage.removeItem('axisSessao'); } catch { } location.href = BASE + 'index.html'; }));
   $$('[data-member-name]').forEach(e => e.textContent = D.associado.nome);
   $$('[data-member-id]').forEach(e => e.textContent = D.associado.id);
   $$('[data-member-initials]').forEach(e => e.textContent = D.associado.nome.split(' ').filter(Boolean).map(w => w[0]).slice(0, 2).join(''));
@@ -271,7 +272,7 @@
     pedidos.unshift({ num: num_, data: new Date().toLocaleDateString('pt-BR'), status: 0, simulado: true, rastreio: null, itens: cart.items.map(it => { const p = prod(it.id), s = size(p, it.tamanho); return [`${p.nome} · ${s.label}`, it.qtd, s.preco * it.qtd]; }), frete: null, total: t.sub });
     store.set('axisPedidos', pedidos);
     cart.items = []; store.set('axisCart', []);
-    location.href = `historico.html?novo=${num_}`;
+    location.href = `${BASE}historico.html?novo=${num_}`;
   }
 
   // ---- drawer ----
