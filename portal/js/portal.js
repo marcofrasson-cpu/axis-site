@@ -130,45 +130,12 @@
       <div><div class="rx-k">Óleo · limite mensal</div>${meter(r.oleo, (v) => `${v} ${Math.abs(v) === 1 ? 'frasco' : 'frascos'}`, '')}</div>`;
   }
 
-  // ---- arte do card ----
-  const ART_W = 600, ART_H = 300;
-  const MARK = '<g transform="translate(%X,%Y) scale(%S) translate(-20.2,-46)" fill="none" stroke-linejoin="miter" stroke-width="5.5"><polygon points="60,46 99.8,68 99.8,112 60,134 20.2,112 20.2,68" stroke="#3a4a52"/><polygon points="99.8,68 139.6,46 179.4,68 179.4,112 139.6,134 99.8,112" stroke="#5fc89b"/><path d="M 126.6 116 L 139.6 58 L 152.6 116 M 131.1 95 L 148.1 95" stroke="#5fc89b"/><circle cx="99.8" cy="68" r="6.5" fill="#5fc89b" stroke="none"/><circle cx="99.8" cy="112" r="6.5" fill="#5fc89b" stroke="none"/></g>';
-  const ACCENT = { oleo: '#5fc89b', harlequin: '#5fc89b', acdc: '#5fc89b', 'blue-dream': '#e8a13c', 'wedding-cake': '#e8a13c', 'northern-lights': '#c6d2df' };
-  function rng(seed) { let t = 0; for (const c of seed) t = (t * 31 + c.charCodeAt(0)) >>> 0; return () => { t += 0x6D2B79F5; let r = Math.imul(t ^ (t >>> 15), 1 | t); r ^= r + Math.imul(r ^ (r >>> 7), 61 | r); return ((r ^ (r >>> 14)) >>> 0) / 4294967296; }; }
-  const artCache = {};
-  function contours(p) {
-    const R = rng(p.id), accent = ACCENT[p.id] || '#5fc89b';
-    const cx = ART_W * (0.25 + 0.5 * p.eixo[2]), cy = 110 + R() * 30;
-    const waves = Array.from({ length: 4 }, (_, i) => ({ m: 2 + i + Math.floor(R() * 2), a: (0.14 - i * 0.025) * (0.8 + R() * 0.4), ph: R() * Math.PI * 2 }));
-    const drift = Array.from({ length: 3 }, () => ({ m: 1 + Math.floor(R() * 3), a: 0.05 + R() * 0.04, ph: R() * Math.PI * 2 }));
-    const N = 14, steps = 120; let out = '';
-    for (let k = 0; k < N; k++) {
-      const base = 22 + k * 28; let d = '';
-      for (let i = 0; i <= steps; i++) {
-        const th = (i / steps) * Math.PI * 2;
-        let n = 0; for (const w of waves) n += w.a * Math.sin(w.m * th + w.ph);
-        let m = 0; for (const w of drift) m += w.a * Math.sin(w.m * th + w.ph + k * 0.35);
-        const r = base * (1 + n + m * (k / N));
-        d += (i ? 'L' : 'M') + (cx + r * Math.cos(th) * 1.3).toFixed(1) + ' ' + (cy + r * Math.sin(th)).toFixed(1);
-      }
-      out += `<path d="${d}Z" fill="none" stroke="${accent}" stroke-opacity="${(0.36 - k * 0.02).toFixed(3)}" stroke-width="1.25" stroke-linejoin="round"/>`;
-    }
-    return out;
-  }
-  function artSVG(p) {
-    if (artCache[p.id]) return artCache[p.id];
-    const accent = ACCENT[p.id] || '#5fc89b';
-    const nameSize = Math.min(84, Math.floor(520 / (p.nome.length * 0.5)));
-    const line = p.dados.slice(0, 2).map(([k, v]) => `<tspan fill="#b3bfcf">${k} </tspan><tspan fill="#f4f2ec">${esc(v)}</tspan>`).join('<tspan fill="#b3bfcf">  ·  </tspan>');
-    return artCache[p.id] = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${ART_W} ${ART_H}" aria-hidden="true" focusable="false">
-      <rect width="${ART_W}" height="${ART_H}" fill="#0d1b2a"/>${contours(p)}
-      <rect x="12" y="12" width="${ART_W - 24}" height="${ART_H - 24}" rx="4" fill="none" stroke="#f4f2ec" stroke-opacity="0.2" stroke-width="1"/>
-      ${MARK.replace('%X', 30).replace('%Y', 26).replace('%S', (28 / 88).toFixed(4))}
-      <text x="88" y="48" font-family="var(--body)" font-size="19" font-weight="500" fill="#f4f2ec">Axis FitoMed</text>
-      <text x="${ART_W - 30}" y="48" font-family="var(--mono)" font-size="17" fill="#b3bfcf" text-anchor="end">${esc(p.tamanhos[0].label)}</text>
-      <text x="28" y="${ART_H - 82}" font-family="var(--display)" font-weight="300" font-size="${nameSize}" letter-spacing="-0.025em" fill="${accent}">${esc(p.nome)}</text>
-      <text x="30" y="${ART_H - 36}" font-family="var(--mono)" font-size="23" style="font-variant-numeric:tabular-nums">${line}</text>
-    </svg>`;
+  // ---- imagem do card: close do produto (pote ou frasco) com o rótulo enrolado ----
+  const CROP = { oleo: '-5 4 80 100' }; // frasco inteiro menos o rodapé do rótulo (y 5..105)
+  const JAR_CROP = '5 4 80 100';         // pote inteiro, tampa a base (y 10..103)
+  function closeup(p) {
+    const svg = M[p.id]; if (!svg) return '';
+    return svg.replace(/viewBox="[^"]+"/, `viewBox="${CROP[p.id] || JAR_CROP}" preserveAspectRatio="xMidYMid slice"`).replace(/ class="(bottle|jar)"/, ' class="shot"').replace(/role="img" aria-label="[^"]*"/, 'aria-hidden="true" focusable="false"');
   }
 
   // ---- catálogo ----
@@ -190,7 +157,7 @@
       ? `<button type="button" class="btn btn-ghost btn-sm" data-avisar>Avise-me</button>`
       : `<button type="button" class="btn btn-add btn-sm" data-add aria-label="Adicionar ${esc(p.nome)} ${esc(t.label)} ao pedido">Adicionar</button>`;
     return `<article class="card ${p.estoque === 0 ? 'out' : ''}" data-id="${p.id}">
-      <button type="button" class="media" data-open aria-label="Ver detalhes de ${esc(p.nome)}">${artSVG(p)}${st.badge}</button>
+      <button type="button" class="media" data-open aria-label="Ver detalhes de ${esc(p.nome)}">${closeup(p)}${st.badge}</button>
       <div class="body">
         <div class="cat">${esc(p.sub)}</div>
         ${variants}
