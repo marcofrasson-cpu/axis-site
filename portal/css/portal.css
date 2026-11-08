@@ -65,7 +65,7 @@ button { background: none; border: 0; cursor: pointer; }
 .p-tabs .p-tab-right { margin-left: auto; }
 
 /* ---------- Layout ---------- */
-.p-main { padding: var(--sp-32) 0 var(--sp-56); }
+.p-main { padding-top: var(--sp-32); padding-bottom: var(--sp-56); }
 .p-layout { display: grid; grid-template-columns: minmax(0, 1fr) 340px; gap: var(--sp-32); align-items: start; }
 .p-page-title { font-family: var(--font-display); font-weight: 600; font-size: clamp(26px, 3vw, 36px); line-height: 1.12; letter-spacing: -0.02em; text-wrap: balance; }
 .p-lead { color: var(--text-muted); margin-top: 8px; max-width: 62ch; }
@@ -207,7 +207,7 @@ dialog.p-detail::backdrop { background: rgba(5, 11, 18, .72); }
 .p-login-foot a { color: var(--text-muted); text-decoration: underline; text-underline-offset: 3px; }
 
 /* ---------- Rodapé ---------- */
-.p-foot-site { border-top: 1px solid var(--border-hairline); padding: var(--sp-20) 0 var(--sp-32); font-size: var(--fs-12); color: var(--text-subtle); display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.p-foot-site { border-top: 1px solid var(--border-hairline); padding-top: var(--sp-20); padding-bottom: var(--sp-32); font-size: var(--fs-12); color: var(--text-subtle); display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
 
 /* ---------- Toast ---------- */
 .p-toast { position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%) translateY(8px); opacity: 0; background: var(--ground-lift); border: 1px solid var(--border-strong); color: var(--text-primary); font-size: var(--fs-14); padding: 10px 16px; border-radius: var(--r-pill); transition: opacity 160ms ease, transform 160ms var(--ease-settle); pointer-events: none; z-index: 60; }
