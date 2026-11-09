@@ -25,7 +25,7 @@ window.AXIS_DATA = {
       texto: 'Extrato full-spectrum de Cannabis sativa L. em óleo de coco (MCT). Uso sublingual, conforme prescrição. Agitar antes de usar.'
     },
     {
-      id: 'harlequin', tipo: 'flor', nome: 'Harlequin', sub: 'Flor curada · sativa-dominante', eixo: ['Sativa', 'Indica', 0.32],
+      id: 'harlequin', tipo: 'flor', nome: 'Harlequin', foto: 'img/harlequin.webp', sub: 'Flor curada · sativa-dominante', eixo: ['Sativa', 'Indica', 0.32],
       dados: [['THC', '7,0 %'], ['CBD', '12,0 %'], ['Terpenos', '1,8 %']],
       tamanhos: [{ label: '3,5 g', preco: 18000, g: 3.5, units: 1 }, { label: '7 g', preco: 33000, g: 7, units: 2 }], estoque: 11,
       lote: '2610-H', colheita: '09/2026', fab: '10/2026', val: '04/2027', terpenos: [['Mirceno', '0,62 %'], ['α-Pineno', '0,41 %'], ['β-Cariofileno', '0,30 %']],

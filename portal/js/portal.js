@@ -134,6 +134,7 @@
   const CROP = { oleo: '-5 4 80 100' }; // frasco inteiro menos o rodapé do rótulo (y 5..105)
   const JAR_CROP = '5 4 80 100';         // pote inteiro, tampa a base (y 10..103)
   function closeup(p) {
+    if (p.foto) return `<img src="${BASE}${esc(p.foto)}" alt="" loading="lazy" decoding="async">`;
     const svg = M[p.id]; if (!svg) return '';
     return svg.replace(/viewBox="[^"]+"/, `viewBox="${CROP[p.id] || JAR_CROP}" preserveAspectRatio="xMidYMid slice"`).replace(/ class="(bottle|jar)"/, ' class="shot"').replace(/role="img" aria-label="[^"]*"/, 'aria-hidden="true" focusable="false"');
   }
@@ -262,7 +263,7 @@
     dlg.innerHTML = `
       <button type="button" class="icon-btn close" data-close aria-label="Fechar">${ICON.x}</button>
       <div class="detail-grid">
-        <div class="detail-media">${M[p.id] || ''}</div>
+        <div class="detail-media ${p.foto ? 'photo' : ''}">${p.foto ? `<img src="${BASE}${esc(p.foto)}" alt="">` : (M[p.id] || '')}</div>
         <div class="detail-body">
           <div><div class="cat">${esc(p.sub)}</div><h2>${esc(p.nome)}</h2></div>
           <div class="axis" role="img" aria-label="Eixo ${p.eixo[0]} a ${p.eixo[1]}: ${Math.round(p.eixo[2] * 100)} %"><i style="left:${p.eixo[2] * 100}%"></i><span>${p.eixo[0]}</span><span>${p.eixo[1]}</span></div>

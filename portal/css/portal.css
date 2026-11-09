@@ -131,7 +131,7 @@ button { background: none; border: 0; cursor: pointer; }
 .card:hover { border-color: var(--line-hi); background: var(--card-hi); }
 .card.out .media { opacity: .72; }
 .media { position: relative; aspect-ratio: 4 / 5; cursor: pointer; border-bottom: 1px solid var(--hair); display: block; width: 100%; text-align: left; overflow: hidden; background: radial-gradient(80% 55% at 50% 38%, #1c3048 0%, #10202f 55%, #0a1522 100%); }
-.media svg { width: 100%; height: 100%; display: block; }
+.media svg, .media img { width: 100%; height: 100%; display: block; object-fit: cover; }
 .badge { position: absolute; top: var(--s3); left: var(--s3); font-size: 12px; font-weight: 600; padding: 4px 10px; border-radius: var(--pill); border: 1px solid var(--line); color: var(--text); background: rgba(13,27,42,.78); }
 .badge.low { color: var(--amber); border-color: rgba(232,161,60,.45); }
 .badge.out { color: var(--coral); border-color: rgba(244,165,148,.45); }
@@ -204,6 +204,8 @@ dialog.detail::backdrop { background: rgba(5,11,18,.72); }
 .detail-grid { display: grid; grid-template-columns: 320px minmax(0, 1fr); }
 .detail-media { display: flex; align-items: flex-end; justify-content: center; padding: var(--s6) var(--s5) 0; border-right: 1px solid var(--hair); background: radial-gradient(120% 80% at 50% 100%, rgba(255,255,255,.04), transparent 60%); }
 .detail-media svg { width: 100%; max-height: 440px; }
+.detail-media.photo { padding: 0; align-items: stretch; }
+.detail-media img { width: 100%; height: 100%; object-fit: cover; display: block; }
 .detail-body { padding: var(--s6); display: grid; gap: var(--s5); align-content: start; }
 .detail-body h2 { font-family: var(--display); font-weight: 600; font-size: var(--t-2xl); line-height: 1.05; letter-spacing: -0.02em; }
 .detail-body p { color: var(--muted); font-size: var(--t-sm); line-height: 1.55; }
