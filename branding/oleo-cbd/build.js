@@ -476,6 +476,9 @@ function writePortalMockups() {
   fs.writeFileSync(path.join(dir, 'mockups.js'), '// Gerado por branding/oleo-cbd/build.js. Não editar à mão.\nwindow.AXIS_MOCKUPS = ' + JSON.stringify(m) + ';\n');
 }
 
+module.exports = { OIL, FLOWERS, PORTAL_EXTRA, oilBody, flowerBody, wrap, FONT_CSS, GFONTS, NAVY, CREAM, MUTED };
+if (require.main !== module) return;
+
 // ---------- Escrita ----------
 writePortalMockups();
 fs.writeFileSync(path.join(OUT, 'rotulo-oleo-cbd.svg'), svgFile(95, 45, 'Axis FitoMed · Óleo de CBD 30 mL · rótulo 95 × 45 mm', oilBody(OIL)));
