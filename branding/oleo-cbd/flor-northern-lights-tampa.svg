@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 42 42" width="42mm" height="42mm">
+<title>Axis FitoMed · Flor Northern Lights · rótulo de tampa Ø 42 mm</title>
+<style>@import url('https://fonts.googleapis.com/css2?family=Spectral:wght@300;400&family=Hanken+Grotesk:wght@400;500&family=IBM+Plex+Mono:wght@400&display=swap'); :root{--f-display:'Spectral',Georgia,serif;--f-body:'Hanken Grotesk',-apple-system,system-ui,sans-serif;--f-mono:'IBM Plex Mono',ui-monospace,Menlo,monospace;} text{font-variant-numeric:tabular-nums}</style>
+<circle cx="21" cy="21" r="21" fill="#0d1b2a"/>
+<circle cx="21" cy="21" r="19.2" fill="none" stroke="rgba(244,242,236,0.32)" stroke-width="0.14"/>
+<g transform="translate(13.9,7.6) scale(0.08863636363636364) translate(-20.2,-46)" fill="none" stroke-linejoin="miter" stroke-width="5.5">
+    <polygon points="60,46 99.8,68 99.8,112 60,134 20.2,112 20.2,68" stroke="#3a4a52"/>
+    <polygon points="99.8,68 139.6,46 179.4,68 179.4,112 139.6,134 99.8,112" stroke="#5fc89b"/>
+    <path d="M 126.6 116 L 139.6 58 L 152.6 116 M 131.1 95 L 148.1 95" stroke="#5fc89b"/>
+    <circle cx="99.8" cy="68" r="6.5" fill="#5fc89b" stroke="none"/>
+    <circle cx="99.8" cy="112" r="6.5" fill="#5fc89b" stroke="none"/>
+  </g>
+<text x="21" y="22.6" font-family="var(--f-body)" font-size="2.4" font-weight="500" fill="#f4f2ec" text-anchor="middle">Axis FitoMed</text>
+<text x="21" y="29" font-family="var(--f-display)" font-size="3.4" font-weight="300" fill="#c6d2df" text-anchor="middle">Northern Lights</text>
+<text x="21" y="33.2" font-family="var(--f-mono)" font-size="1.5" font-weight="400" fill="#a2b0c2" text-anchor="middle">THC 18,0 % · CBD 0,30 % · 3,5 g</text>
+</svg>
